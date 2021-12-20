@@ -4,11 +4,18 @@
 
 using namespace std;
 
+// Declaration of all currencies, that are available in convertor
 string  currencies [] =
         {
                 "eur", "usd", "pln", "uah", "rub", "gbp"
         };
 
+// function greets the user
+void greet(){
+    cout << "Hi! I'm glad to see you using our currency convertor!" << endl;
+}
+
+// function makes all letters capitalized
 string toUppercase(string str){
     char charArr [str.length()];
 
@@ -18,6 +25,7 @@ string toUppercase(string str){
     return charArr;
 }
 
+// function makes all letters lowercase
 string toLowercase(string str){
     char charArr [str.length()];
 
@@ -27,10 +35,7 @@ string toLowercase(string str){
     return charArr;
 }
 
-void greet(){
-    cout << "Hi! I'm glad to see you using our currency convertor!" << endl;
-}
-
+// function displays all currencies and asks for currency to sell
 void displayCurrency(){
     cout << "\nFollowing currencies are available:" << endl;
     for(const string& currency : currencies){
@@ -39,6 +44,7 @@ void displayCurrency(){
     cout << "\nChoose the currency to convert from: ";
 }
 
+// function checks, if the entered string is in the list of currencies
 bool checkFrom(string f ){
     for(const string& currency : currencies){
         if (toLowercase(f) == currency){
@@ -48,6 +54,7 @@ bool checkFrom(string f ){
     return false;
 }
 
+// function checks, if the entered string is in the list of currencies
 bool checkTo(string t){
     for(const string& currency : currencies){
         if (toLowercase(t) == currency){
@@ -57,10 +64,12 @@ bool checkTo(string t){
     return false;
 }
 
+// function checks, that the currencies to be exchanged are different
 bool checkFromTo (string f, string t){
     return !(t == f);
 }
 
+// function does all stuff with exchanging
 void calculate(){
     string from, to;
     double rate = 0;
@@ -155,9 +164,8 @@ void calculate(){
     }
 }
 
-int main(){
-    greet();
-
+// Convertor
+void convert(){
     string answer = "yes";
     while (answer == "yes"){
         displayCurrency();
@@ -173,6 +181,10 @@ int main(){
             answer = toLowercase(answer);
         }
     }
+}
 
+int main(){
+    greet();
+    convert();
     return 0;
 }
