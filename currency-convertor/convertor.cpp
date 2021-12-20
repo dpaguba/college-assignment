@@ -11,18 +11,25 @@ string  currencies [] =
         };
 
 string toUppercase(string str){
-
     char charArr [str.length()];
 
     for (int i = 0; i < str.length(); i++) {
-        charArr[i] = str.at(i);
+        charArr[i] = (char) toupper(str.at(i));
     }
-
-    for (int i = 0; i < strlen(charArr); ++i) {
-        charArr[i] = (char) toupper(charArr[i]);
-    }
-
     return charArr;
+}
+
+string toLowercase(string str){
+    char charArr [str.length()];
+
+    for (int i = 0; i < str.length(); i++) {
+        charArr[i] =  (char) tolower(str.at(i));
+    }
+    return charArr;
+}
+
+void greet(){
+    cout << "Hi! I'm glad to see you using our currency convertor!\n\nFollowing currencies are available:" << endl;
 }
 
 void displayCurrency(){
@@ -30,13 +37,12 @@ void displayCurrency(){
     for(const string& currency : currencies){
         cout << toUppercase(currency) + " ";
     }
-    cout << "\n";
-    cout << "Choose the currency to convert from: ";
+    cout << "\n\nChoose the currency to convert from: ";
 }
 
 bool checkFrom(string f ){
     for(const string& currency : currencies){
-        if (f == currency){
+        if (toLowercase(f) == currency){
             return true;
         }
     }
@@ -45,7 +51,7 @@ bool checkFrom(string f ){
 
 bool checkTo(string t){
     for(const string& currency : currencies){
-        if (t == currency){
+        if (toLowercase(t) == currency){
             return true;
         }
     }
@@ -66,6 +72,9 @@ void calculate(){
     cin >> to;
     cout << "Enter your money: ";
     cin >> number;
+
+    from = toLowercase(from);
+    to = toLowercase(to);
 
     if (checkFrom(from) && checkTo(to) && checkFromTo(from, to)){
         if (from == "eur"){
@@ -141,13 +150,14 @@ void calculate(){
                 rate = 98.25;
             }
         }
-        printf("%f", number * rate);
+        printf("%.2f", number * rate);
     }else{
         printf("ERROR");
     }
 }
 
 int main(){
+    greet();
     displayCurrency();
     calculate();
     return 0;
