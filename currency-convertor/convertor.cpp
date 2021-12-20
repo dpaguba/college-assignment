@@ -1,7 +1,6 @@
 #include <iostream>
-#include <cstring>
 #include <cctype>
-
+#include <iomanip>
 
 using namespace std;
 
@@ -29,15 +28,15 @@ string toLowercase(string str){
 }
 
 void greet(){
-    cout << "Hi! I'm glad to see you using our currency convertor!\n\nFollowing currencies are available:" << endl;
+    cout << "Hi! I'm glad to see you using our currency convertor!" << endl;
 }
 
 void displayCurrency(){
-
+    cout << "\nFollowing currencies are available:" << endl;
     for(const string& currency : currencies){
         cout << toUppercase(currency) + " ";
     }
-    cout << "\n\nChoose the currency to convert from: ";
+    cout << "\nChoose the currency to convert from: ";
 }
 
 bool checkFrom(string f ){
@@ -150,15 +149,30 @@ void calculate(){
                 rate = 98.25;
             }
         }
-        printf("%.2f", number * rate);
+        cout << fixed << setprecision(2) << number * rate << endl;
     }else{
-        printf("ERROR");
+        cout << "Invalid input" << endl;
     }
 }
 
 int main(){
     greet();
-    displayCurrency();
-    calculate();
+
+    string answer = "yes";
+    while (answer == "yes"){
+        displayCurrency();
+        calculate();
+
+        cout << "Do you want to change something else? Please answer yes or no!" << endl;
+        cin >> answer;
+        while (answer == "yes") {
+            displayCurrency();
+            calculate();
+            cout << "Do you want to change something else? Please answer yes or no!" << endl;
+            cin >> answer;
+            answer = toLowercase(answer);
+        }
+    }
+
     return 0;
 }
