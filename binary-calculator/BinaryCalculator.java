@@ -34,6 +34,21 @@ public class BinaryCalculator {
             }
         }
     }
+    
+    private static int [] toBinary(String str){
+        int [] numbers = new int[str.length()];
+
+        for (int position = 0; position < numbers.length; position++) {
+            try{
+                numbers[position] = Integer.parseInt(String.valueOf(str.charAt(position)));
+            }catch (Exception e){
+                System.out.println("Invalid Input of number: " + str);
+                break;
+            }
+        }
+
+        return numbers;
+    }
 
 
 }
