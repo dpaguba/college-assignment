@@ -14,22 +14,25 @@ public class BinaryCalculator {
         String secondInput = in.next();
         System.out.println("What should I do? (+, -, *): ");
         String sign = in.next();
-
-        switch (sign){
-            case "+":
-                // do addition
-                break;
-            case "-":
-                //do substraktion
-                break;
-            case "*":
-                //do multiplikation
-                break;
-            default:
-                System.out.println("Invalid Input");
-                break;
+        
+        if (firstInput.length() != secondInput.length()){
+            System.out.println("ERROR: You entered numbers with unequal quantity of digits. Try again!");
+        }else {
+            switch (sign){
+                case "+":
+                    // do addition
+                    break;
+                case "-":
+                    //do substraktion
+                    break;
+                case "*":
+                    //do multiplikation
+                    break;
+                default:
+                    System.out.println("ERROR: Invalid sign. Try again!");
+                    break;
+            }
         }
-
     }
 
 
