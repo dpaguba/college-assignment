@@ -20,7 +20,7 @@ public class BinaryCalculator {
         }else {
             switch (sign){
                 case "+":
-                    // do addition
+                    display(add(toBinary(firstInput), toBinary(secondInput)));
                     break;
                 case "-":
                     //do substraktion
