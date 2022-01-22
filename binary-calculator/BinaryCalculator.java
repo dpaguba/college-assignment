@@ -49,6 +49,42 @@ public class BinaryCalculator {
 
         return numbers;
     }
+    
+    private static int [] add(int [] firstNumber, int [] secondNumber){
+        int [] result = new int[firstNumber.length + 1];
+        int carryBit = 0;
+
+        for (int position = result.length - 1; position > 0; position--) { 
+            if ((firstNumber[position - 1] + secondNumber[position - 1]) == 0){
+                if (carryBit == 0){
+                    result[position] = 0;
+                }else {
+                    result[position] = 1;
+                    carryBit = 0;
+                }
+            }else if ((firstNumber[position - 1] + secondNumber[position - 1]) == 1){
+                if (carryBit == 0){
+                    result[position] = 1;
+                }else {
+                    result[position] = 0;
+                    carryBit = 1;
+                }
+            }else if ((firstNumber[position - 1] + secondNumber[position - 1]) == 2){
+                if (carryBit == 0){
+                    result[position] = 0;
+                }else {
+                    result[position] = 1;
+                }
+                carryBit = 1;
+            }
+        }
+
+        if (carryBit == 1){
+            result[0] = carryBit;
+        }
+
+        return result;
+    }
 
 
 }
