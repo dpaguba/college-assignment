@@ -50,6 +50,13 @@ public class BinaryCalculator {
         return numbers;
     }
     
+    private static void display(int [] numbers){
+        System.out.print("Result: ");
+        for (int num : numbers) {
+            System.out.print(num);
+        }
+    }
+    
     private static int [] add(int [] firstNumber, int [] secondNumber){
         int [] result = new int[firstNumber.length + 1];
         int carryBit = 0;
