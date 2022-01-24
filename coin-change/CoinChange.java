@@ -55,4 +55,8 @@ public class CoinChange {
             System.out.println("FEHLER: Falsche Parameteranzahl!");
             displayExample();
         }catch (Exception e){
+          System.out.println("FEHLER: Unbekannte Waehrung " + args[0] + "!");
+            displayExample();
+        }
+    }
 }
