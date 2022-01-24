@@ -59,4 +59,20 @@ public class CoinChange {
             displayExample();
         }
     }
+  
+  private static int [] change(int changeValue, int [] nominalValue){
+        if (changeValue == 0){
+            return new int[nominalValue.length];
+        }else {
+            int position = 0;
+            int [] result = new int[nominalValue.length];
+
+            while (changeValue != 0){
+
+                if (changeValue >= nominalValue[position]){
+                    if (changeValue % nominalValue[position] == 0){
+                        result[position] = changeValue / nominalValue[position];
+                        changeValue -= nominalValue[position] * result[position];
+                        System.out.println("(" + nominalValue[position] + "," + result[position] + "," + changeValue + ")");
+                        break;
 }
