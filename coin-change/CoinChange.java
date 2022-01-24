@@ -12,4 +12,16 @@ public class CoinChange {
                 String currency = args[0];
                 //Variable fuer das Wechselgeld
                 int change;
+              // ueberpruefen, ob der int-Wert uebergegeben wird. Falls nicht, wirft die Ausnahme in der Zeile 21.
+                try {
+                    //wandelt String-Wert in int-Wert
+                    change = Integer.parseInt(args[1]);
+                }catch (IllegalArgumentException iae){
+                    System.out.println( "FEHLER: Falscher Parametertyp fuer das Wechselgeld!");
+                    displayExample();
+                    return;
+                }
+
+                // ueberprueft, ob die bekannte Waehrung angegeben wird. Falls nicht, wirft die Ausnahme in der Zeile 59.
+                if (currency.equals("Euro") || currency.equals("Mira")){
 }
