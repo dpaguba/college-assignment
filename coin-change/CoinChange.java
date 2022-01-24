@@ -40,4 +40,19 @@ public class CoinChange {
                             int [] result = change(change, nominalValue);
                             System.out.println("Ausgegebenes Wechselgeld: " + change + " Mira");
                         }
+                      }else {
+                        System.out.println("FEHLER: Wechselgeld darf nicht negativ sein!");
+                        displayExample();
+                        return;
+                      }
+                }else {
+                    throw new Exception();
+                }
+            }else {
+                throw new RuntimeException();
+            }
+        }catch (RuntimeException re){
+            System.out.println("FEHLER: Falsche Parameteranzahl!");
+            displayExample();
+        }catch (Exception e){
 }
