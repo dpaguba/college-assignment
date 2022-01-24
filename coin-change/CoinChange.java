@@ -75,4 +75,21 @@ public class CoinChange {
                         changeValue -= nominalValue[position] * result[position];
                         System.out.println("(" + nominalValue[position] + "," + result[position] + "," + changeValue + ")");
                         break;
+                      }else {
+                        int temp = changeValue % nominalValue[position];
+                        result[position] = changeValue / nominalValue[position];
+                        changeValue = temp;
+                        System.out.println("(" + nominalValue[position] + "," + result[position] + "," + changeValue + ")");
+                    }
+                }
+                position++;
+            }
+            return result;
+        }
+    }
+
+    private static void displayExample(){
+        System.out.println("Aufruf mit : java DAP2.Praktikum.CoinChange Euro|Mira n");
+        System.out.println("Bsp: java DAP2.Praktikum.CoinChange Euro 100");
+    }
 }
