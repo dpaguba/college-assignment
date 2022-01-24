@@ -24,4 +24,20 @@ public class CoinChange {
 
                 // ueberprueft, ob die bekannte Waehrung angegeben wird. Falls nicht, wirft die Ausnahme in der Zeile 59.
                 if (currency.equals("Euro") || currency.equals("Mira")){
+                  //ueberprueft, ob der fuers Wechselgeld keine negative Zahl ist. Falls nicht, wirft die Ausnahme in der Zeile 45.
+                    if (change >= 0){
+                        // betrachtet man der Fall, wenn der Wert Euro als Waehrung uebergegeben wird.
+                        if (currency.equals("Euro")){
+                            int [] nominalValue = {200,100,50,20,10,5,2,1};
+                            //Ausgabe
+                            System.out.println("Auszugebendes Wechselgeld: " + change + " Eurocent");
+                            int [] result = change(change, nominalValue);
+                            System.out.println("Ausgegebenes Wechselgeld: " + change + " Eurocent");
+                        }else {
+                            int [] nominalValue = {200,100,50,20,10,9,7,5,2,1};
+                            // Ausgabe fuer Mira
+                            System.out.println("Auszugebendes Wechselgeld: " + change + " Mira");
+                            int [] result = change(change, nominalValue);
+                            System.out.println("Ausgegebenes Wechselgeld: " + change + " Mira");
+                        }
 }
