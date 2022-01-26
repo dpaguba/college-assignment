@@ -26,4 +26,22 @@ public class Eratosthenes {
                     }else {
                         throw new IllegalArgumentException();
                     }
+                    }catch (IllegalArgumentException q1){
+                    System.out.print("Falscher Parameter! Nur Integer groesser 0 sind erlaubt.\nAufruf mit : java DAP2.Praktikum.Eratosthenes n [-o]\nEs wird die Anzahl der Primzahlen aus dem Bereich [2,n] berechnet.\nMit -o werden diese Zahlen auch ausgegeben.\nBsp: java DAP2.Praktikum.Eratosthenes 100 -o");
+                }
+
+                // An dieser Stelle erwartet man die Eingabe: n -o
+            }else if (args.length == 2){
+                try {
+                    /*
+                    Falls der Parameter zum Integer-Wert nicht umgewandelt werden kann,
+                    erwartet man hier Fehlermeldung (57-59)
+
+                    Falls nur ein Parameter eingetippt wird, erwartet man die Zahl.
+                    Dem String-Wert wird "" zugewiesen. Koennte der Wert zum int-Wert nicht zugewiesen werden,
+                    erwartet man die Fehlermeldung (Zeile 57-59)
+
+                    Werden zwei Parameter eingegeben, dann erwartet man, dass der zweite Wert dem Ausdruck "-o"
+                    entspricht und der erste Parameter weist man zum int-Wert.
+                     */
                   
