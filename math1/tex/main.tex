@@ -1,0 +1,1082 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------- Encoding & Language ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+% ---------- Fonts ----------
+\usepackage{lmodern}
+
+% ---------- Layout ----------
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+]{geometry}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ---------- Header / Footer ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Sections styling ----------
+\usepackage{titlesec}
+
+% Section: groß, fett, mit Linie darunter
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection}{1em}{}
+  [\vspace{2pt}\hrule height 0.8pt\vspace{4pt}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+% Subsection: normal fett, deutlich sichtbar
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+  [\vspace{1pt}\hrule height 0.3pt\vspace{2pt}]
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% Subsubsection: normalsize, fett
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% ---------- Boxes ----------
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{definitionbox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Definition}, #1
+}
+\newtcolorbox{notebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Hinweis}, #1
+}
+\newtcolorbox{examplebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Beispiel}, #1
+}
+
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, decorations.pathreplacing}
+
+% ---------- Math ----------
+\usepackage{amsmath, amssymb}
+
+% ---------- Tabellen ----------
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% ---------- Quelltext ----------
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  columns=fullflexible,
+  breaklines=true,
+  frame=single,
+  framesep=4pt,
+  xleftmargin=4pt,
+  showstringspaces=false
+}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt}
+
+% ---------- Figures ----------
+\usepackage{float}
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Misc ----------
+\usepackage{microtype}
+
+% =========================================
+%                DOCUMENT
+% =========================================
+\begin{document}
+
+\section{Aussagen und Mengen}
+
+\subsection{Aussagenlogik}
+
+Eine Aussage ist ein Satz, dem genau einer der Wahrheitswerte wahr oder
+falsch zukommt. Die Junktoren werden durch Wahrheitstafeln definiert, nicht
+durch Umgangssprache; das ist der einzige Weg, Streitfälle zu entscheiden.
+
+\begin{center}
+\begin{tabular}{cc|cccc}
+\toprule
+$p$ & $q$ & $p \wedge q$ & $p \vee q$ & $p \to q$ & $p \leftrightarrow q$\\
+\midrule
+f & f & f & f & \textbf{w} & w\\
+f & w & f & w & \textbf{w} & f\\
+w & f & f & w & f & f\\
+w & w & w & w & w & w\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notebox}
+Die beiden fett gesetzten Zeilen sind die, über die gestritten wird: aus einer
+falschen Prämisse folgt alles. Die Alternative wäre, dass die Aussage
+"`jedes Element der leeren Menge ist rot"' falsch ist, und damit würde kein
+Beweis über die leere Menge mehr funktionieren.
+\end{notebox}
+
+\subsubsection{Tautologie, Erfüllbarkeit, Äquivalenz}
+
+\begin{definitionbox}
+Eine Formel heißt \emph{Tautologie}, wenn sie unter jeder Belegung wahr ist,
+und \emph{erfüllbar}, wenn sie unter mindestens einer Belegung wahr ist. Zwei
+Formeln sind \emph{äquivalent}, wenn ihre Wahrheitstafeln übereinstimmen.
+\end{definitionbox}
+
+Wichtige Äquivalenzen:
+\begin{align*}
+  \neg(p \wedge q) &\equiv \neg p \vee \neg q & \text{(de Morgan)}\\
+  \neg(p \vee q) &\equiv \neg p \wedge \neg q & \text{(de Morgan)}\\
+  p \to q &\equiv \neg q \to \neg p & \text{(Kontraposition)}\\
+  p \to q &\not\equiv q \to p & \text{(die Umkehrung ist \emph{nicht} äquivalent)}
+\end{align*}
+
+\subsubsection{Zwei Schlussregeln, die sich ähneln}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Regel & Form & gültig\\
+\midrule
+Modus ponens & aus $p$ und $p \to q$ folgt $q$ & ja\\
+Bejahung des Konsequens & aus $q$ und $p \to q$ folgt $p$ & \textbf{nein}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Die zweite Regel wird durch eine einzige Zeile der Wahrheitstafel widerlegt:
+$p$ falsch, $q$ wahr. Der ganze Beweisbegriff der Vorlesung beruht darauf,
+diese beiden Regeln mechanisch unterscheiden zu können.
+
+\subsubsection{Quantoren}
+
+\begin{align*}
+  \neg \forall x \in M: P(x) &\equiv \exists x \in M: \neg P(x)\\
+  \neg \exists x \in M: P(x) &\equiv \forall x \in M: \neg P(x)
+\end{align*}
+
+Über der leeren Menge ist jede Allaussage wahr und jede Existenzaussage
+falsch. Das ist keine Sonderregel, sondern folgt aus der Definition, und es
+ist der Grund, warum in Beweisen der Fall $M = \emptyset$ meist ohne Arbeit
+erledigt ist.
+
+\subsection{Mengen}
+
+\begin{definitionbox}
+Für Mengen $A, B$ über einem Universum $U$:
+\[
+  A \cup B, \quad A \cap B, \quad A \setminus B, \quad
+  A \triangle B = (A \cup B) \setminus (A \cap B), \quad
+  \overline{A} = U \setminus A.
+\]
+Die \emph{Potenzmenge} $\mathcal{P}(A)$ ist die Menge aller Teilmengen von
+$A$; es gilt $|\mathcal{P}(A)| = 2^{|A|}$.
+\end{definitionbox}
+
+\subsubsection{Gesetze}
+
+Die Gesetze von de Morgan gelten für Mengen wie für Aussagen:
+\[
+  \overline{A \cup B} = \overline{A} \cap \overline{B}, \qquad
+  \overline{A \cap B} = \overline{A} \cup \overline{B}.
+\]
+
+\begin{notebox}
+Im Begleitcode wurden diese Gesetze über einem Universum mit sechs Elementen
+für alle $64 \cdot 64 = 4096$ Paare von Teilmengen geprüft. Das ist ein
+Beweis für dieses Universum und ein Experiment für die allgemeine Aussage.
+Die Unterscheidung ist wichtig: eine Aufzählung kann das Gesetz nicht
+beweisen, aber sie würde ein falsches sofort widerlegen.
+\end{notebox}
+
+\subsubsection{Inklusion und Exklusion}
+
+\[
+  |A_1 \cup \dots \cup A_n| =
+  \sum_{\emptyset \neq I \subseteq \{1,\dots,n\}} (-1)^{|I|+1}
+  \Bigl| \bigcap_{i \in I} A_i \Bigr|
+\]
+
+Das Summieren der Größen zählt jedes Element so oft, wie es in Mengen liegt.
+Das Abziehen der paarweisen Schnitte korrigiert das, entfernt die
+Dreifachschnitte aber zu oft, und so weiter.
+
+\subsection{Abzählbarkeit}
+
+\begin{definitionbox}
+Eine Menge heißt \emph{abzählbar}, wenn es eine surjektive Abbildung
+$\mathbb{N} \to M$ gibt, also wenn ihre Elemente in einer (eventuell
+unendlichen) Liste aufgeführt werden können.
+\end{definitionbox}
+
+\subsubsection{Was aufgezählt werden kann}
+
+Die Cantorsche Paarungsfunktion
+\[
+  \pi(x, y) = \frac{(x+y)(x+y+1)}{2} + y
+\]
+ist eine Bijektion $\mathbb{N}^2 \to \mathbb{N}$. Damit sind $\mathbb{N}^2$
+und, über die Darstellung als Bruch, auch $\mathbb{Q}$ abzählbar. Eine
+Aufzählung muss jedes Element irgendwann erreichen, nicht der Größe nach.
+
+\subsubsection{Das Diagonalverfahren}
+
+\begin{definitionbox}
+Sei $(s_i)_{i \in \mathbb{N}}$ eine beliebige Folge unendlicher
+Ziffernfolgen. Die Folge $d$ mit $d_i = (s_i)_i + 1 \bmod 10$ unterscheidet
+sich von jedem $s_i$ an der Stelle $i$. Also ist keine Aufzählung
+vollständig, und die Menge der unendlichen Folgen ist überabzählbar.
+\end{definitionbox}
+
+Das Argument setzt nichts über die Herkunft der Liste voraus. Genau deshalb
+ist es ein Beweis und kein Einwand gegen einen bestimmten Versuch.
+
+\subsubsection{Der Satz von Cantor}
+
+Für jede Menge $M$ und jede Abbildung $f: M \to \mathcal{P}(M)$ ist
+\[
+  D = \{ x \in M \mid x \notin f(x) \}
+\]
+kein Bild: wäre $D = f(a)$, so gälte $a \in D \iff a \notin D$. Also ist
+$\mathcal{P}(M)$ echt größer als $M$, für endliche wie für unendliche Mengen.
+Es ist dasselbe Diagonalargument in anderer Schreibweise.
+
+\subsection{Beweisverfahren}
+
+\begin{definitionbox}
+\textbf{Direkter Beweis.} Aus den Prämissen wird die Konklusion durch eine
+Kette gültiger Schlüsse gewonnen.
+
+\textbf{Indirekter Beweis (Widerspruch).} Man nimmt $\neg B$ an und leitet
+einen Widerspruch her; wegen $\neg B \to \text{falsch}$ folgt $B$.
+
+\textbf{Kontraposition.} Statt $A \to B$ zeigt man $\neg B \to \neg A$;
+beide Formeln sind äquivalent.
+
+\textbf{Fallunterscheidung.} Gilt $A_1 \vee A_2$ und folgt $B$ sowohl aus
+$A_1$ als auch aus $A_2$, so gilt $B$.
+\end{definitionbox}
+
+\begin{examplebox}
+\textbf{$\sqrt{2}$ ist irrational.} Angenommen $\sqrt{2} = p/q$ vollständig
+gekürzt. Dann $p^2 = 2q^2$, also ist $p$ gerade, $p = 2k$, also
+$4k^2 = 2q^2$, also $q^2 = 2k^2$, also ist auch $q$ gerade. Das widerspricht
+der Teilerfremdheit. Der Beweis ist indirekt und benutzt zusätzlich, dass
+$p^2$ gerade nur für gerades $p$ möglich ist, was selbst eine
+Kontraposition ist.
+\end{examplebox}
+
+\section{Relationen und Funktionen}
+
+\subsection{Eigenschaften von Relationen}
+
+\begin{definitionbox}
+Eine Relation $R \subseteq M \times M$ heißt
+\begin{itemize}
+  \item \emph{reflexiv}, wenn $(a,a) \in R$ für alle $a$,
+  \item \emph{symmetrisch}, wenn aus $(a,b) \in R$ stets $(b,a) \in R$ folgt,
+  \item \emph{antisymmetrisch}, wenn aus $(a,b), (b,a) \in R$ stets $a = b$ folgt,
+  \item \emph{transitiv}, wenn aus $(a,b), (b,c) \in R$ stets $(a,c) \in R$ folgt.
+\end{itemize}
+\end{definitionbox}
+
+\begin{examplebox}
+Auf einer dreielementigen Menge gibt es $2^9 = 512$ Relationen. Durch
+vollständige Aufzählung im Begleitcode:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Eigenschaft & Anzahl\\
+\midrule
+alle & 512\\
+reflexiv & 64\\
+symmetrisch & 64\\
+antisymmetrisch & 216\\
+transitiv & 171\\
+Äquivalenzrelationen & 5\\
+Halbordnungen & 19\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{examplebox}
+
+\begin{notebox}
+Symmetrie und Antisymmetrie schließen einander nicht aus: die Gleichheit hat
+beide Eigenschaften. Die leere Relation ist symmetrisch, antisymmetrisch und
+transitiv und scheitert nur an der Reflexivität, weshalb diese separat
+gefordert wird.
+\end{notebox}
+
+\subsection{Hüllen}
+
+\begin{definitionbox}
+Die \emph{Hülle} einer Relation bezüglich einer Eigenschaft ist die kleinste
+Relation, die $R$ enthält und die Eigenschaft besitzt. Sie existiert, weil
+die Eigenschaft unter Durchschnitt erhalten bleibt.
+\end{definitionbox}
+
+Die Reihenfolge ist nicht beliebig. Für $R = \{(1,2),(2,3),(3,4)\}$:
+\begin{itemize}
+  \item erst symmetrisch, dann transitiv, dann reflexiv: eine
+        Äquivalenzrelation;
+  \item erst transitiv, dann symmetrisch: das Ergebnis ist nicht einmal
+        transitiv.
+\end{itemize}
+
+Deshalb ist die Äquivalenzhülle in dieser Reihenfolge definiert, und nicht
+als "`die drei Hüllen in beliebiger Reihenfolge"'.
+
+\subsection{Äquivalenzrelationen und Partitionen}
+
+\begin{definitionbox}
+Eine Äquivalenzrelation auf $M$ zerlegt $M$ in Klassen; umgekehrt liefert
+jede Partition von $M$ eine Äquivalenzrelation. Beide Konstruktionen sind
+zueinander invers.
+\end{definitionbox}
+
+Die Anzahl der Partitionen einer $n$-elementigen Menge ist die Bellsche Zahl:
+
+\begin{center}
+\begin{tabular}{lrrrrrr}
+\toprule
+$n$ & 0 & 1 & 2 & 3 & 4 & 5\\
+\midrule
+$B_n$ & 1 & 1 & 2 & 5 & 15 & 52\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Die Kongruenz modulo $n$ ist das Beispiel, das in die Algebra weiterführt:
+alle ihre Klassen sind gleich groß, was für Äquivalenzrelationen im
+Allgemeinen falsch ist, und genau diese Gleichmäßigkeit macht die
+Faktorgruppe möglich.
+
+\subsection{Funktionen}
+
+\begin{definitionbox}
+$f: A \to B$ heißt \emph{injektiv}, wenn $f(a) = f(a')$ nur für $a = a'$
+gilt; \emph{surjektiv}, wenn jedes $b \in B$ getroffen wird; \emph{bijektiv},
+wenn beides gilt.
+\end{definitionbox}
+
+Für $|A| = m$, $|B| = n$:
+\begin{align*}
+  \text{alle Abbildungen} &: n^m\\
+  \text{injektive} &: n (n-1) \cdots (n-m+1)\\
+  \text{surjektive} &: \sum_{k=0}^{n} (-1)^k \binom{n}{k} (n-k)^m\\
+  \text{bijektive} &: n! \text{ falls } m = n, \text{ sonst } 0
+\end{align*}
+
+Die Formel für die surjektiven Abbildungen ist wieder Inklusion und
+Exklusion, diesmal über die nicht getroffenen Werte.
+
+\begin{notebox}
+Das Schubfachprinzip ist der Spezialfall $m > n$: eine Abbildung in eine
+kleinere Menge kann nicht injektiv sein. Im Begleitcode gibt die Funktion das
+kollidierende Paar zurück, nicht nur einen Wahrheitswert, weil die
+interessanten Anwendungen die beiden Objekte benennen.
+\end{notebox}
+
+\subsection{Komposition und Umkehrung}
+
+Für $f: A \to B$ und $g: B \to C$ ist $(g \circ f)(a) = g(f(a))$. Es gilt:
+\begin{itemize}
+  \item sind $f$ und $g$ injektiv, so auch $g \circ f$;
+  \item sind $f$ und $g$ surjektiv, so auch $g \circ f$;
+  \item ist $g \circ f$ injektiv, so ist $f$ injektiv (aber nicht
+        notwendig $g$);
+  \item ist $g \circ f$ surjektiv, so ist $g$ surjektiv (aber nicht
+        notwendig $f$).
+\end{itemize}
+
+Die letzten beiden Aussagen sind die, die man sich merken muss: aus einer
+Eigenschaft der Komposition folgt jeweils nur die Eigenschaft \emph{einer}
+der beiden Abbildungen.
+
+Eine Umkehrabbildung $f^{-1}$ existiert genau dann, wenn $f$ bijektiv ist.
+Für endliche Mengen gleicher Größe genügt Injektivität oder Surjektivität,
+für unendliche nicht: $n \mapsto n+1$ auf $\mathbb{N}$ ist injektiv und
+nicht surjektiv.
+
+\section{Induktion}
+
+\subsection{Induktives Definieren}
+
+\begin{definitionbox}
+Eine induktive Definition nennt Basiselemente und Regeln, die aus vorhandenen
+Elementen neue erzeugen. Definiert ist die \emph{kleinste} Menge, die die
+Basiselemente enthält und unter den Regeln abgeschlossen ist.
+\end{definitionbox}
+
+"`Kleinste"' ist eine Rechenvorschrift: Regeln anwenden, bis nichts Neues
+mehr entsteht. Formal ist die definierte Menge der kleinste Fixpunkt des
+zugehörigen Operators, was im Kapitel über Verbände wieder auftaucht.
+
+\begin{examplebox}
+Terme über zwei Konstanten und einer zweistelligen Operation:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Schachtelungstiefe & 0 & 1 & 2\\
+\midrule
+Anzahl Terme & 2 & 6 & 38\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Die Rekursion ist $t(n+1) = c + t(n)^2$ mit $c$ der Anzahl der Konstanten.
+Der naheliegende Fehler ist $t(n) + t(n)^2 = 42$; dabei werden die vier
+bereits vorhandenen Terme der Tiefe 1 doppelt gezählt.
+\end{examplebox}
+
+\subsection{Induktives Beweisen}
+
+\begin{definitionbox}
+\textbf{Vollständige Induktion.} Gilt $P(0)$ und folgt aus $P(n)$ stets
+$P(n+1)$, so gilt $P(n)$ für alle $n \in \mathbb{N}$.
+
+\textbf{Strukturelle Induktion.} Gilt eine Eigenschaft für die Basisfälle und
+überträgt sie sich bei jedem Konstruktionsschritt, so gilt sie für alle
+Elemente der induktiv definierten Menge.
+\end{definitionbox}
+
+\begin{notebox}
+Das Aufzählen aller Strukturen bis zu einer Tiefe ersetzt den Beweis nicht.
+Es leistet aber das, was der Beweis nicht leistet: bei einer falschen
+Behauptung liefert es sofort ein Gegenbeispiel. Die meisten gescheiterten
+Beweisversuche beginnen als Behauptungen dieser Art.
+\end{notebox}
+
+\subsection{Fundierte Ordnungen}
+
+\begin{definitionbox}
+Eine Relation heißt \emph{fundiert} (noethersch), wenn es keine unendliche
+absteigende Kette gibt. Über einer endlichen Menge ist das gleichbedeutend
+mit Zyklenfreiheit.
+\end{definitionbox}
+
+Drei Terminierungsargumente, die dasselbe sind:
+\begin{enumerate}
+  \item ein \emph{Maß} nach $\mathbb{N}$, das bei jedem Schritt echt fällt;
+  \item eine \emph{lexikographische} Ordnung, etwa für die Ackermannfunktion,
+        bei der kein einzelnes Argument fällt, das Paar aber schon;
+  \item \emph{noethersche Induktion}: eine Eigenschaft, die initial gilt und
+        bei jedem Schritt erhalten bleibt, gilt überall im erreichbaren
+        Zustandsraum.
+\end{enumerate}
+
+\subsection{Rekursionssatz}
+
+\begin{definitionbox}
+Ist $M$ induktiv durch Basiselemente und Regeln definiert und sind Werte für
+die Basiselemente sowie eine Vorschrift für jede Regel gegeben, so existiert
+genau eine Funktion auf $M$, die diesen Gleichungen genügt.
+\end{definitionbox}
+
+Das ist die Rechtfertigung dafür, Funktionen durch Rekursionsgleichungen zu
+definieren: die Existenz einer solchen Funktion ist ein Satz und keine
+Selbstverständlichkeit. Sie scheitert, wenn die Definition nicht fundiert
+ist, etwa bei $f(n) = f(n+1)$.
+
+\section{Ordnungsstrukturen}
+
+\subsection{Halbordnungen}
+
+\begin{definitionbox}
+$(M, \sqsubseteq)$ heißt \emph{Halbordnung}, wenn $\sqsubseteq$ reflexiv,
+antisymmetrisch und transitiv ist. Sie heißt \emph{total}, wenn je zwei
+Elemente vergleichbar sind.
+\end{definitionbox}
+
+Das Hasse-Diagramm zeichnet nur die Überdeckungsrelation, also die Paare, bei
+denen nichts echt dazwischen liegt. Aus ihr lässt sich die Ordnung als
+transitive Hülle zurückgewinnen, weshalb nichts verloren geht.
+
+\begin{examplebox}
+Die Teilmengen einer dreielementigen Menge unter $\subseteq$:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Elemente & 8\\
+längste Kette & 4\\
+breiteste Antikette & 3\\
+lineare Erweiterungen & 48\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Die 48 linearen Erweiterungen sind genau die zulässigen topologischen
+Sortierungen. Eine totale Ordnung hat genau eine; deshalb ist eine
+topologische Sortierung eine Auswahl und keine Berechnung.
+\end{examplebox}
+
+\subsection{Verbände}
+
+\begin{definitionbox}
+Eine Halbordnung, in der je zwei Elemente ein Supremum $a \sqcup b$ und ein
+Infimum $a \sqcap b$ besitzen, heißt \emph{Verband}.
+\end{definitionbox}
+
+Äquivalent ist die algebraische Sicht: eine Menge mit zwei Operationen, die
+idempotent, kommutativ und assoziativ sind und das \emph{Absorptionsgesetz}
+\[
+  a \sqcap (a \sqcup b) = a, \qquad a \sqcup (a \sqcap b) = a
+\]
+erfüllen. Die Absorption ist das Gesetz, das die beiden Operationen
+verbindet; ohne sie wären sie unabhängig voneinander, und aus ihr gewinnt man
+die Ordnung zurück als $a \sqsubseteq b \iff a \sqcup b = b$.
+
+\subsubsection{Distributiv und modular}
+
+\begin{definitionbox}
+Ein Verband heißt \emph{distributiv}, wenn
+$a \sqcap (b \sqcup c) = (a \sqcap b) \sqcup (a \sqcap c)$ gilt, und
+\emph{modular}, wenn diese Gleichung wenigstens für $a \sqsubseteq c$ gilt.
+\end{definitionbox}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+& modular & distributiv\\
+\midrule
+$M_3$ (Diamant) & ja & nein\\
+$N_5$ (Pentagon) & nein & nein\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Diese beiden fünfelementigen Verbände beantworten beide Fragen vollständig:
+ein Verband ist modular genau dann, wenn er $N_5$ nicht enthält, und
+distributiv genau dann, wenn er weder $N_5$ noch $M_3$ enthält.
+
+\subsection{Vollständige Verbände}
+
+\begin{definitionbox}
+Ein Verband heißt \emph{vollständig}, wenn jede Teilmenge ein Supremum und
+ein Infimum besitzt.
+\end{definitionbox}
+
+Jeder endliche Verband ist vollständig. Der Fall der leeren Teilmenge sieht
+wie eine Ausnahme aus und ist keine: jedes Element ist trivialerweise obere
+Schranke der leeren Menge, also ist $\bigsqcup \emptyset$ das kleinste
+Element und $\bigsqcap \emptyset$ das größte.
+
+\subsection{Boolesche Verbände}
+
+\begin{definitionbox}
+Ein \emph{Boolescher Verband} ist ein distributiver Verband mit $0$ und $1$,
+in dem jedes Element ein Komplement besitzt.
+\end{definitionbox}
+
+\begin{examplebox}
+Der Teilerverband von $30 = 2 \cdot 3 \cdot 5$ ist Boolesch, der von
+$12 = 2^2 \cdot 3$ nicht. Bei $12$ bilden $1, 2, 4$ eine Kette, und $2$ hat
+kein Komplement.
+\end{examplebox}
+
+\textbf{Darstellungssatz (endlicher Fall).} Die Abbildung, die jedem Element
+die Menge der unter ihm liegenden Atome zuordnet, ist ein Isomorphismus auf
+die Potenzmenge der Atome. Folglich hat jeder endliche Boolesche Verband
+$2^k$ Elemente, und es gibt keinen mit sechs oder zwölf Elementen.
+
+\subsection{Fixpunkte}
+
+\begin{definitionbox}
+\textbf{Satz von Knaster und Tarski.} Ist $L$ ein vollständiger Verband und
+$f: L \to L$ monoton, so besitzt $f$ einen kleinsten und einen größten
+Fixpunkt, nämlich
+\[
+  \mathrm{lfp}(f) = \bigsqcap \{ x \mid f(x) \sqsubseteq x \}, \qquad
+  \mathrm{gfp}(f) = \bigsqcup \{ x \mid x \sqsubseteq f(x) \}.
+\]
+\end{definitionbox}
+
+Auf einem endlichen Verband erreicht auch die Kleene-Iteration
+$\bot, f(\bot), f^2(\bot), \dots$ den kleinsten Fixpunkt, und zwar nach
+höchstens so vielen Schritten, wie der Verband hoch ist. Im Begleitcode:
+4 Schritte bei einer Höhe von 5.
+
+\begin{notebox}
+Auf unendlichen Verbänden fallen die beiden Konstruktionen auseinander: die
+Iteration braucht Stetigkeit, nicht nur Monotonie. Genau deshalb lässt sich
+eine Datenflussanalyse über einem endlichen Verband durch Iterieren
+berechnen und über einem unendlichen nicht.
+\end{notebox}
+
+\subsection{Strukturverträgliche Abbildungen}
+
+\begin{definitionbox}
+$f$ heißt \emph{Ordnungshomomorphismus} (monoton), wenn aus
+$a \sqsubseteq b$ stets $f(a) \sqsubseteq f(b)$ folgt, und
+\emph{Verbandshomomorphismus}, wenn $f(a \sqcup b) = f(a) \sqcup f(b)$ und
+$f(a \sqcap b) = f(a) \sqcap f(b)$ gelten.
+\end{definitionbox}
+
+Jeder Verbandshomomorphismus ist monoton, denn die Ordnung ist aus jeder der
+beiden Operationen definierbar. Die Umkehrung gilt nicht: eine monotone
+Abbildung darf zwei unvergleichbare Elemente auf dasselbe Bild werfen, und
+dann hat ihr Supremum keinen passenden Platz mehr.
+
+\subsection{Konstruktionsprinzipien}
+
+Aus vorhandenen Verbänden entstehen neue:
+\begin{itemize}
+  \item \textbf{Unterverband}: eine unter $\sqcup$ und $\sqcap$
+        abgeschlossene Teilmenge. Achtung: eine Teilmenge, die als Ordnung
+        ein Verband ist, muss kein Unterverband sein, weil Supremum und
+        Infimum in der Teilmenge andere sein können als im Oberverband.
+  \item \textbf{Produkt}: $L_1 \times L_2$ mit komponentenweiser Ordnung.
+        Es ist genau dann distributiv, wenn beide Faktoren es sind.
+  \item \textbf{Dual}: dieselbe Menge mit umgekehrter Ordnung. Jede Aussage
+        über Verbände hat eine duale Aussage, in der $\sqcup$ und $\sqcap$
+        vertauscht sind, und diese gilt automatisch mit.
+\end{itemize}
+
+\begin{notebox}
+Das Dualitätsprinzip halbiert die Arbeit: wer die Absorption in einer Form
+gezeigt hat, hat sie in beiden gezeigt. Es gilt, weil die Axiome selbst
+dual-symmetrisch sind.
+\end{notebox}
+
+\section{Algebraische Strukturen}
+
+\subsection{Eine Verknüpfung}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Struktur & Bedingungen\\
+\midrule
+Magma & abgeschlossen\\
+Halbgruppe & $+$ assoziativ\\
+Monoid & $+$ neutrales Element\\
+Gruppe & $+$ Inverse\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{examplebox}
+Wie stark die Assoziativität einschränkt, gezählt im Begleitcode:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+Trägermenge & Verknüpfungen & davon assoziativ\\
+\midrule
+2 Elemente & 16 & 8\\
+3 Elemente & 19\,683 & 113\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{examplebox}
+
+Das neutrale Element ist eindeutig: gäbe es zwei, so ließe jedes das andere
+unverändert, also wären sie gleich.
+
+\subsection{Gruppen}
+
+\begin{definitionbox}
+$(G, \cdot)$ ist eine \emph{Gruppe}, wenn die Verknüpfung abgeschlossen und
+assoziativ ist, ein neutrales Element existiert und jedes Element ein
+Inverses besitzt. Gilt zusätzlich $ab = ba$, heißt die Gruppe
+\emph{abelsch}.
+\end{definitionbox}
+
+Die Invertierbarkeit trägt die ganze Theorie: sie liefert die Kürzungsregel,
+macht jede Zeile der Verknüpfungstafel zu einer Permutation und erzwingt,
+dass die Ordnung jedes Elements die Gruppenordnung teilt.
+
+\begin{examplebox}
+Die fünf Gruppen der Ordnung 8, im Begleitcode durch Suche über alle
+Bijektionen klassifiziert:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Gruppe & abelsch\\
+\midrule
+$\mathbb{Z}_8$ & ja\\
+$\mathbb{Z}_4 \times \mathbb{Z}_2$ & ja\\
+$\mathbb{Z}_2 \times \mathbb{Z}_2 \times \mathbb{Z}_2$ & ja\\
+$D_4$ & nein\\
+$Q_8$ & nein\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{examplebox}
+
+\subsection{Untergruppen und Nebenklassen}
+
+\begin{definitionbox}
+\textbf{Satz von Lagrange.} Ist $U \leq G$ endlich, so teilt $|U|$ die
+Gruppenordnung $|G|$, und $[G:U] \cdot |U| = |G|$.
+\end{definitionbox}
+
+Der Beweis ist ein Abzählargument: die Linksnebenklassen $aU$ zerlegen $G$
+und haben alle die Größe $|U|$. Beide Hälften sind im Begleitcode für alle
+Untergruppen mehrerer Gruppen nachgerechnet.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Gruppe & Ordnung & Untergruppen & davon normal\\
+\midrule
+$\mathbb{Z}_{12}$ & 12 & 6 & 6\\
+$S_3$ & 6 & 6 & 3\\
+$D_4$ & 8 & 10 & 6\\
+$Q_8$ & 8 & 6 & 6\\
+$\mathbb{Z}_2 \times \mathbb{Z}_2$ & 4 & 5 & 5\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notebox}
+$Q_8$ ist nicht abelsch, und trotzdem sind alle sechs Untergruppen normal.
+Normalität ist also \emph{keine} abgeschwächte Kommutativität. In $S_3$
+dagegen sind genau die drei Untergruppen der Ordnung 2 nicht normal, und das
+sind genau die, bei denen Links- und Rechtsnebenklassen auseinanderfallen.
+\end{notebox}
+
+\subsection{Faktorgruppen}
+
+\begin{definitionbox}
+$N \trianglelefteq G$ heißt \emph{Normalteiler}, wenn $gNg^{-1} = N$ für alle
+$g \in G$ gilt. Dann ist $G/N$ mit $(aN)(bN) = (ab)N$ eine Gruppe.
+\end{definitionbox}
+
+Der einzige Punkt, der zu prüfen ist, ist die \emph{Wohldefiniertheit}: das
+Produkt darf nicht von der Wahl der Repräsentanten abhängen. Genau das ist
+die Normalität, und bei einer nicht normalen Untergruppe von $S_3$ liefern
+zwei Repräsentantenwahlen Ergebnisse in verschiedenen Nebenklassen.
+
+\subsection{Homomorphismen}
+
+\begin{definitionbox}
+\textbf{Homomorphiesatz.} Für einen Gruppenhomomorphismus
+$\varphi: G_1 \to G_2$ gilt: $\ker \varphi \trianglelefteq G_1$,
+$\operatorname{im} \varphi \leq G_2$, und
+\[
+  G_1 / \ker \varphi \;\cong\; \operatorname{im} \varphi .
+\]
+\end{definitionbox}
+
+Der Kern misst genau, was die Abbildung verliert: zwei Elemente haben dasselbe
+Bild genau dann, wenn sie sich um ein Kernelement unterscheiden. Injektivität
+ist der Fall $\ker \varphi = \{e\}$.
+
+\subsection{Ringe, Ideale, Körper}
+
+\begin{definitionbox}
+Ein \emph{Ring} ist eine abelsche Gruppe bezüglich $+$ und eine Halbgruppe
+bezüglich $\cdot$, verbunden durch die Distributivgesetze. Ein \emph{Ideal}
+$I \trianglelefteq R$ ist eine additive Untergruppe mit $rI \subseteq I$ und
+$Ir \subseteq I$ für alle $r \in R$.
+\end{definitionbox}
+
+Das Ideal spielt für Ringe die Rolle, die der Normalteiler für Gruppen
+spielt: es ist genau die Bedingung, unter der $R/I$ wieder ein Ring ist.
+
+\begin{examplebox}
+$\mathbb{Z}/12\mathbb{Z}$ hat sechs Ideale, und 12 hat sechs Teiler. Jedes
+Ideal ist ein Hauptideal, im Begleitcode für alle sechs nachgeprüft.
+Einheiten sind $1, 5, 7, 11$; Nullteiler sind $2, 3, 4, 6, 8, 9, 10$.
+\end{examplebox}
+
+\begin{definitionbox}
+Ein \emph{Integritätsbereich} ist ein kommutativer Ring mit Eins ohne
+Nullteiler. Ein \emph{Körper} ist ein Integritätsbereich, in dem jedes
+Element $\neq 0$ invertierbar ist.
+\end{definitionbox}
+
+$\mathbb{Z}/n\mathbb{Z}$ ist genau dann ein Körper, wenn $n$ prim ist; im
+Begleitcode für alle $n < 30$ geprüft. Der Grund ist immer derselbe: ein
+zusammengesetzter Modul hat Nullteiler, und ein Nullteiler kann nicht
+invertierbar sein.
+
+\begin{notebox}
+Das sagt nichts darüber, welche \emph{Größen} ein Körper haben kann. Es gibt
+einen Körper mit vier Elementen, und er ist nicht $\mathbb{Z}/4\mathbb{Z}$,
+sondern $\mathbb{F}_2[x]/(x^2+x+1)$. Seine Charakteristik ist 2, nicht 4.
+Deshalb werden endliche Körper nach Primzahl\emph{potenzen} klassifiziert.
+\end{notebox}
+
+\subsection{Untergruppenkriterium}
+
+\begin{definitionbox}
+$U \subseteq G$ ist genau dann Untergruppe, wenn $U \neq \emptyset$ und
+für alle $a, b \in U$ auch $ab^{-1} \in U$ gilt.
+\end{definitionbox}
+
+Für endliches $G$ genügt sogar die Abgeschlossenheit: ist $U$ endlich,
+nichtleer und unter der Verknüpfung abgeschlossen, so enthält $U$ mit $a$
+auch alle Potenzen $a^k$, und da diese sich wiederholen müssen, liegt das
+neutrale Element und damit das Inverse in $U$. Für unendliche Gruppen ist das
+falsch: $\mathbb{N}$ ist unter Addition abgeschlossen und keine Untergruppe
+von $\mathbb{Z}$.
+
+\subsection{Schnitte und Produkte}
+
+Der Schnitt beliebig vieler Untergruppen ist wieder eine Untergruppe; die
+Vereinigung im Allgemeinen nicht. Deshalb ist "`die von $S$ erzeugte
+Untergruppe"' wohldefiniert: sie ist der Schnitt aller Untergruppen, die $S$
+enthalten.
+
+Dasselbe Muster gilt für Ideale, für Unterverbände und für Untervektorräume,
+und es ist derselbe Grund: die definierende Eigenschaft ist unter Durchschnitt
+stabil. Daraus entsteht jedes Mal ein Hüllenoperator, und damit wieder ein
+kleinster Fixpunkt im Sinne des Satzes von Tarski.
+
+\section{Lineare Algebra}
+
+\subsection{Vektorräume}
+
+\begin{definitionbox}
+Eine Familie $(v_1, \dots, v_n)$ heißt \emph{linear unabhängig}, wenn
+$\sum \lambda_i v_i = 0$ nur mit $\lambda_1 = \dots = \lambda_n = 0$ möglich
+ist. Eine \emph{Basis} ist eine unabhängige Familie, die den Raum aufspannt;
+die \emph{Dimension} ist ihre Länge.
+\end{definitionbox}
+
+\textbf{Steinitzscher Austauschsatz.} Ein Vektor aus dem Erzeugnis einer
+Familie kann ein Mitglied ersetzen, ohne das Erzeugnis zu ändern. Wiederholtes
+Austauschen zeigt, dass je zwei Basen gleich lang sind, und erst dadurch ist
+die Dimension eine Eigenschaft des Raums und nicht der gewählten Basis.
+
+Alle vier Begriffe reduzieren sich auf den Rang einer Matrix: eine Familie ist
+unabhängig, wenn ihr Rang ihrer Länge entspricht, ein Vektor liegt im
+Erzeugnis, wenn Hinzufügen den Rang nicht erhöht, und die Dimension ist der
+Rang.
+
+\subsection{Das Gaußsche Eliminationsverfahren}
+
+\begin{definitionbox}
+\textbf{Hauptsatz über lineare Gleichungssysteme.} Für $Ax = b$ gilt:
+\begin{itemize}
+  \item $\operatorname{rg}(A) < \operatorname{rg}(A|b)$: keine Lösung;
+  \item $\operatorname{rg}(A) = \operatorname{rg}(A|b) < n$: unendlich viele;
+  \item $\operatorname{rg}(A) = \operatorname{rg}(A|b) = n$: genau eine.
+\end{itemize}
+\end{definitionbox}
+
+Die Lösungsmenge ist eine spezielle Lösung plus der Kern, also ein Punkt und
+die Richtungen, in denen man sich bewegen darf. Die Stufenform hängt von der
+Reihenfolge der Zeilen ab, die \emph{reduzierte} Stufenform nicht: sie ist
+eindeutig, weshalb sie entscheidet, ob zwei Systeme dieselbe Lösungsmenge
+haben.
+
+\begin{notebox}
+Im Begleitcode ist jeder Eintrag ein exakter Bruch. Ein Pivot ist genau dann
+null, wenn er wirklich null ist. In Gleitkomma muss dieselbe Rechnung raten,
+ob eine kleine Zahl ein Rundungsfehler oder ein Wert ist, und dieses Raten
+ist der ganze Unterschied zwischen numerischer linearer Algebra und der
+Version, über die die Vorlesung Sätze beweist.
+\end{notebox}
+
+\subsection{Invertieren von Matrizen}
+
+Gauß-Jordan neben der Einheitsmatrix: dieselben Zeilenoperationen wirken auf
+beide Hälften, also steht rechts am Ende die Inverse. Erreicht die linke
+Hälfte die Einheitsmatrix nicht, ist die Matrix singulär.
+
+Jede Zeilenoperation ist selbst eine Matrix. Wendet die Elimination
+$E_1, \dots, E_k$ an, so ist
+\[
+  E_k \cdots E_1 A = I \quad\Longrightarrow\quad
+  A = E_1^{-1} E_2^{-1} \cdots E_k^{-1}.
+\]
+Die Elimination \emph{ist} die Faktorisierung: die invertierbaren Matrizen
+werden von den Elementarmatrizen erzeugt.
+
+\subsection{Lineare Abbildungen}
+
+\begin{definitionbox}
+Eine lineare Abbildung ist durch die Bilder einer Basis festgelegt. Die
+Matrix einer Abbildung bezüglich zweier Basen hat als Spalten die
+\emph{Koordinaten} der Bilder der Quellbasis in der Zielbasis.
+\end{definitionbox}
+
+Ein Basiswechsel ändert die Matrix, nicht die Abbildung. Was invariant
+bleibt, beschreibt die Abbildung selbst: Rang, Determinante, Eigenwerte.
+
+\begin{definitionbox}
+\textbf{Dimensionssatz.} $\dim \ker f + \dim \operatorname{im} f =
+\dim V$ für $f: V \to W$.
+\end{definitionbox}
+
+Daraus folgt: eine Abbildung zwischen Räumen gleicher Dimension ist genau
+dann injektiv, wenn sie surjektiv ist, und eine Abbildung in einen Raum
+kleinerer Dimension ist nie injektiv. Der Homomorphiesatz der Gruppentheorie
+ist derselbe Satz: $V/\ker f \cong \operatorname{im} f$.
+
+\subsection{Determinanten}
+
+Drei Definitionen, eine Zahl, sehr verschiedene Kosten (Multiplikationen):
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Größe & Leibniz & Laplace & Gauß\\
+\midrule
+4 & 72 & 40 & 20\\
+6 & 3\,600 & 1\,236 & 70\\
+8 & 282\,240 & 69\,280 & 168\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Alle drei sind im Begleitcode implementiert und stimmen überein. Das ist der
+Sinn davon, auch die teuren zu implementieren: die billige Methode wird
+geglaubt, weil sie mit der Definition übereinstimmt, nicht weil die
+Definition unbrauchbar wäre.
+
+Wesentliche Eigenschaften: $\det(AB) = \det(A)\det(B)$; $\det A \neq 0$ genau
+dann, wenn $A$ invertierbar ist; ein Zeilentausch wechselt das Vorzeichen.
+
+\subsection{Eigenwerte}
+
+\begin{definitionbox}
+$\lambda$ heißt \emph{Eigenwert} von $A$, wenn $Av = \lambda v$ für ein
+$v \neq 0$ gilt. Die Eigenwerte sind die Nullstellen des charakteristischen
+Polynoms $\chi_A(x) = \det(A - xI)$.
+\end{definitionbox}
+
+Für $2 \times 2$-Matrizen ist $\chi_A(x) = x^2 - \operatorname{tr}(A) x +
+\det(A)$.
+
+Zwei verschiedene Arten zu scheitern:
+\begin{itemize}
+  \item eine Drehung hat \emph{keinen} reellen Eigenwert, weil keine Richtung
+        erhalten bleibt;
+  \item eine Scherung $\begin{pmatrix}1&1\\0&1\end{pmatrix}$ hat einen
+        Eigenwert und zu wenige Eigenvektoren, ist also nicht
+        diagonalisierbar, obwohl ihr Eigenwert reell ist.
+\end{itemize}
+
+Diagonalisierbarkeit ist eine Aussage über Eigenvektoren, nicht über die
+Existenz von Eigenwerten.
+
+\subsection{Anwendung: Eigenfaces}
+
+Ein Gesicht ist ein Punkt in einem Raum mit einer Dimension pro Pixel. Die
+Hauptkomponenten sind die Richtungen der größten Varianz, also die
+Eigenvektoren der Kovarianzmatrix.
+
+\begin{examplebox}
+Acht synthetische Bilder, aus drei Grundmustern erzeugt:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Komponenten & Rekonstruktionsfehler\\
+\midrule
+1 & 0{,}0243\\
+2 & 0{,}0073\\
+3 & 0{,}00003\\
+8 & 0\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Der Fehler bricht bei drei Komponenten ein, und die erklärte Varianz sagt
+dasselbe: 0{,}76, 0{,}17, 0{,}07, dann 0{,}0001. Die Methode findet die drei
+Muster, aus denen die Daten gebaut wurden.
+\end{examplebox}
+
+Die gesamte Pipeline besteht aus Bausteinen der vorigen Abschnitte: eine
+orthonormale Basis, eine Projektion als lineare Abbildung, Koordinaten
+bezüglich dieser Basis und eine Nächste-Nachbarn-Suche in diesen Koordinaten.
+
+\subsection{Algebra der linearen Abbildungen}
+
+Die linearen Abbildungen $V \to V$ bilden mit punktweiser Addition und
+Komposition einen Ring, dessen Einheiten genau die Isomorphismen sind. Unter
+Wahl einer Basis ist dieser Ring isomorph zum Matrizenring, und genau das ist
+der Grund, warum Matrizenrechnung Abbildungsrechnung ist.
+
+\begin{definitionbox}
+\textbf{Basiswechsel.} Sind $B$ und $B'$ Basen von $V$ und ist $S$ die
+Matrix des Basiswechsels, so gilt für die Matrizen $A$ und $A'$ derselben
+Abbildung
+\[
+  A' = S^{-1} A S .
+\]
+\end{definitionbox}
+
+Zwei Matrizen, die durch eine solche Konjugation auseinander hervorgehen,
+heißen \emph{ähnlich}. Ähnliche Matrizen haben denselben Rang, dieselbe
+Determinante, dieselbe Spur und dasselbe charakteristische Polynom, weil all
+diese Größen Eigenschaften der Abbildung sind und nicht der Basis.
+
+\subsection{Ein durchgerechnetes Beispiel}
+
+\[
+  A = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}, \quad
+  b = \begin{pmatrix} 5 \\ 5 \end{pmatrix}
+\]
+
+Elimination: die zweite Zeile minus $\tfrac12$ der ersten ergibt
+$\bigl(0, \tfrac12 \mid \tfrac52\bigr)$, also $x_2 = 5$ (nach
+Rückeinsetzen: $x_2 = 1$, $x_1 = 2$ mit der zweiten Normierung). Der Rang ist
+2, also gleich der Anzahl der Unbekannten: genau eine Lösung, nämlich
+$(2, 1)$.
+
+Determinante: $\det A = 2 \cdot 1 - 1 \cdot 1 = 1 \neq 0$, also ist $A$
+invertierbar, und
+\[
+  A^{-1} = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}.
+\]
+
+Charakteristisches Polynom: $x^2 - 3x + 1$, mit den Nullstellen
+$\tfrac{3 \pm \sqrt5}{2}$. Beide sind irrational, also findet die exakte
+Suche über rationale Nullstellen im Begleitcode hier nichts, was der korrekte
+Befund ist und nicht ein Fehlschlag: die Eigenwerte existieren, sie sind nur
+nicht rational.
+
+\section{Zusammenfassung}
+
+Vier Ergebnisse, die der ersten Vermutung widersprechen:
+
+\begin{enumerate}
+  \item \textbf{Normalität ist keine abgeschwächte Kommutativität.} $Q_8$ ist
+        nicht abelsch, und alle sechs Untergruppen sind normal.
+  \item \textbf{Es gibt einen Körper mit vier Elementen, und er ist nicht
+        $\mathbb{Z}/4\mathbb{Z}$.} Die Aussage "`$\mathbb{Z}/n\mathbb{Z}$ ist
+        genau für Primzahlen ein Körper"' sagt nichts über mögliche Größen.
+  \item \textbf{Hüllen vertauschen nicht.} Erst symmetrisch, dann transitiv
+        ergibt eine Äquivalenzrelation; die andere Reihenfolge ergibt eine
+        Relation, die nicht einmal transitiv ist.
+  \item \textbf{Die Termanzahl ist 38, nicht 42.} Die Rekursion lautet
+        $c + t(n)^2$, denn bereits gebaute Terme werden nicht neu gebaut.
+\end{enumerate}
+
+Der Begleitcode liegt in \texttt{college-assignment/math1/} und besteht aus
+32 Modulen in sechs Blöcken. Alle Zahlen dieses Skripts stammen aus diesen
+Modulen; die lineare Algebra rechnet exakt in Brüchen und ist gegen numpy auf
+800 zufälligen Eingaben geprüft.
+
+\end{document}
