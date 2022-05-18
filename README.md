@@ -63,3 +63,5 @@ In this section, you can find a list of courses I've taken and the corresponding
   - Folder: [📁 mnp](/fachprojekt/)
   - Fachprojekt:
     - Document Analysis 1 - [📄 ](/fachprojekt/document-analysis/)
+
+# Modified 2025-08-11 10:24:29
