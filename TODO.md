@@ -15,3 +15,5 @@ d. Geben Sie einen Algorithmus an, der die Anzahl der Inversionen einer Permu-
 tation von n Elementen bestimmt und dessen Laufzeit im schlechtesten Fall in
 Θ(nlgn) liegt. (Hinweis: Modifizieren Sie Sortieren durch Mischen.)
 - [] 
+
+# Modified 2025-08-11 10:24:29
