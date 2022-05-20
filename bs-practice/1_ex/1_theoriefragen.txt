@@ -17,3 +17,4 @@ Move and Rename: $ mv example.txt ~/Documents/file.txt
 Wenn man Verzeichnis umsetzen will, nutzt man mv fromPath toPath. Z.B.
 $ mv /home/user/oldpath /home/user/newpath
 $ mv /home/user/oldname /home/user/newname
+# Modified 2025-08-11 10:24:29
