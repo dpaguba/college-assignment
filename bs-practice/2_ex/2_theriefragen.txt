@@ -24,3 +24,4 @@ for (;;) fork();
 Was ist das Problem bei der Ausführung dieses Codes? Beschreibt das Programmverhalten in
 der 1., 2., 3. und n. „Generation“. Legt zu Grunde, dass alle Prozesse (hier insbesondere obige
 for-Schleife) parallel ausgeführt werden. Betrachtet die Gesamtheit der parallelen Schleifendurchläufe als eine „Generation“.
+# Modified 2025-08-11 10:24:29
