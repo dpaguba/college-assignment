@@ -1,0 +1,19 @@
+FRAGE 1: Mit welchem Parameter zeigt ls den gesamten Inhalt eines Verzeichnisses im (langen) Listenformat an?
+-l      (The lowercase letter “ell”.) List files in the long format, as described in the The Long Format subsection below.
+ls -l
+
+
+FRAGE 2: Erklärt in eigenen Worten, wofür man das UNIX-Kommando man verwendet. Erklärt den Unterschied zwischen den Befehlen man 1 printf und man 3 printf, und was in den beiden
+Manpages beschrieben wird.
+UNIX-Kommando man öffnet die Beschreibungsseite des bestimmten Kommandos und gibt die präzise Info über das Kommando und mögliche Parameter
+
+printf(3) ist eine Funktion, die im Dateicode geschrieben wird, um die Ausgabe in Konsole zu zeigen. printf("hello")
+printf(1) wird in Terminal benutzt, damit man in Terminal was printen kann. Z.B. $ printf "%+d\n%d\n%d\n" 1 -2 13
+
+FRAGE 3: Mit welchem UNIX-Kommando kann man Dateien und Ordner umbenennen? Für welchen Zweck kann man dieses Kommando noch verwenden?
+mv Kommando ermoeglicht Datei umbenennen und auch umzusetzen. Z.B
+Rename:  mv example.txt file.txt
+Move and Rename: $ mv example.txt ~/Documents/file.txt
+Wenn man Verzeichnis umsetzen will, nutzt man mv fromPath toPath. Z.B.
+$ mv /home/user/oldpath /home/user/newpath
+$ mv /home/user/oldname /home/user/newname
