@@ -19,3 +19,4 @@ def add_binary_numbers(bin1, bin2):
 # Add the two random binary numbers
 result = add_binary_numbers(random_array_1, random_array_2)
 print("Sum of binary numbers:", result)
+# Modified 2025-08-11 10:24:29
