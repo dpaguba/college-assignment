@@ -20,3 +20,4 @@ if index != -1:
     print(f"Value {target_value} found at index {index}.")
 else:
     print(f"Value {target_value} not found in the array.")
+# Modified 2025-08-11 10:24:29
