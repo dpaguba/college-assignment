@@ -1,0 +1,26 @@
+FRAGE 1: Erklärt den Unterschied zwischen fork(2) und vfork(2)? Gibt es zwischen den beiden heutzutage effektiv noch einen Unterschied
+Der Aufruf von vfork() suspendiert der Elternprozess, bis Kindprozess terminiert oder mit _exit() endet.
+Der Kindprozess benutzt das Code un die Daten des Elternprozesses, ohne das gebrauchte zu kopieren.
+vfork() sieht keine Veraenderungsmoeglichkeiten aus der Seite des Kindprozesses aus. 
+Der Kindprozess in vfork() endet mit _exit().
+
+FRAGE 2:  Betrachtet die folgenden beiden Kommandozeilen:
+ls -l > sort
+ls -l | sort
+Erklärt zunächst, was die beiden Kommandos jeweils tun. Worin besteht nun der Unterschied?
+ls -l > sort
+ls - l stellt alle Dateien im Verzeichnis im langen Format dar
+> sort schreibt das Ergebnis von ls -l in die Datei sort rein.
+Im Endeffekt wird die Liste der Dateien im langem Format in die Datei sort gespeichert
+ls -l | sort
+| sort sortiert das Ergebnis von ls -l
+D.h. die Liste der Dateien wird alpabetisch sortiert.
+
+FRAGE 3: Welchen für ein Betriebssystem wichtigen Zweck erfüllt der Systemaufruf wait(2)?
+wait() suspendiert der Elternprozess in fork(), bis der Kindprozess terminiert.
+
+FRAGE 4: Betrachtet folgendes C-Code-Schnipsel: (!) nicht ausführen (!)
+for (;;) fork();
+Was ist das Problem bei der Ausführung dieses Codes? Beschreibt das Programmverhalten in
+der 1., 2., 3. und n. „Generation“. Legt zu Grunde, dass alle Prozesse (hier insbesondere obige
+for-Schleife) parallel ausgeführt werden. Betrachtet die Gesamtheit der parallelen Schleifendurchläufe als eine „Generation“.

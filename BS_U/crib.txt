@@ -1,0 +1,4 @@
+HOW TO COMPILE AND RUN C PROGRAM:
+gcc -std=c11 -Wall -o PROGRAM PROGRAM.c
+then run in terminal:
+./PROGRAM

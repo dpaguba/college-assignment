@@ -16,11 +16,11 @@ int calc_fib(int num){
 int main(int argc, char *argv[]){
 
     if(argc < 2){
-        printf("ERROR: No Parameter defiend");
+        printf("ERROR: No Parameter defiend\n");
     }else{
 
         int num = atoi(argv[1]);
-        printf("%d", num);
+        // printf("%d", num);
 
         if(num > 0){
             int res = calc_fib(num);
