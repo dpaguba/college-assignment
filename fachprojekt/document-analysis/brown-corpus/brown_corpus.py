@@ -25,3 +25,5 @@ Kategorie zurück, und len() gibt die Anzahl dieser Wörter zurück.
 num_words_per_category = [len(brown.words(categories=category)) for category in categories]
 
 
+
+# Modified 2025-08-11 10:24:29
