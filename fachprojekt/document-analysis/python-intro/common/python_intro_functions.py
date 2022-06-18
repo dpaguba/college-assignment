@@ -54,3 +54,4 @@ def bar_plot(ax, x_values, y_values, y_err=None, title=None):
         ax.set_xticks(np.linspace(0, len(y_values), len(x_values)))  # , x_values, rotation='vertical')
     if title is not None:
         ax.set_title(title)
+# Modified 2025-08-11 10:24:29
