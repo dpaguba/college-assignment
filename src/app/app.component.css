@@ -16,6 +16,27 @@ body, html {
     margin: 0;
 }
 
+.toppane {
+    width: 95%;
+    height: 7%;
+    float: right;
+    border-collapse: collapse;
+    background-color: #FBFDFD;
+    display: flex;
+    justify-content: center;
+}
+
+.toppane mat-icon{
+    font-size: 36px;
+    padding: 10px;
+    color: #22B07E;
+    transition: 0.3s;
+}
+
+.toppane mat-icon:hover{
+    cursor: pointer;
+}
+
 .leftpane {
     width: 5%;
     height: 100%;
@@ -49,11 +70,16 @@ body, html {
     justify-content: center;
     align-items: center;
     padding: 10px;
-    font-size: 40px;
+    font-size: 36px;
 }
 
 .leftpane button:hover{
     background: rgba(234,249,241, 0.3);
+}
+
+.leftpane mat-icon:hover{
+    transform: scale(1.2);
+    transition: 0.3s ease-in-out;
 }
 
 .middlepane {
@@ -73,14 +99,7 @@ body, html {
     border-collapse: collapse;
 } */
 
-.toppane {
-    width: 95%;
-    height: 7%;
-    float: right;
-    border-collapse: collapse;
-    background-color: #FBFDFD;
-    
-}
+
 
 .downpane{
     width: 95%;
