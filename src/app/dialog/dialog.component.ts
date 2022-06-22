@@ -9,6 +9,8 @@ export class DialogComponent implements OnInit {
 
   constructor() { }
 
+  selected!: Date | null;
+
   ngOnInit(): void {
   }
 
