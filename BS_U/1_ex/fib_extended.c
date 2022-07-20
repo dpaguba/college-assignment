@@ -20,7 +20,6 @@ int main(int argc, char *argv[]){
     }else{
 
         int num = atoi(argv[1]);
-        // printf("%d", num);
 
         if(num > 0){
             int res = calc_fib(num);
