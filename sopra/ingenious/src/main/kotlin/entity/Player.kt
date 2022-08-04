@@ -62,3 +62,4 @@ data class Player (val name : String, val type : PlayerType){
         return scoreBoard.filter { it.value == minValues }.keys.toList()
     }
 }
+# Modified 2025-08-11 10:24:31
