@@ -410,3 +410,4 @@ class AiService(private val playerService: PlayerService) : Refreshable {
      */
     data class Action(val column: Int, val row: Int, val orientation: TileOrientation)
 }
+# Modified 2025-08-11 10:24:31
