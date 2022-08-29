@@ -169,3 +169,5 @@ class PauseScene (private val rootService: RootService) : MenuScene(1000,1000,
         rootService.game = Game(isNetworkGame = false, isTeamMode = false)
     }
 }
+
+# Modified 2025-08-11 10:24:32
