@@ -8,3 +8,5 @@ data class DrawStack(val suit: CardSuit, val value: CardValue) {
 
     var drawStack: MutableList<Card> = ArrayList(32) // rename into drawPile
 }
+
+# Modified 2025-08-11 10:24:33
