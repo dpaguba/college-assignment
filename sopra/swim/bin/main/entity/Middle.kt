@@ -10,3 +10,5 @@ data class Middle(val suit: CardSuit, val value: CardValue) {
 
     var middle: MutableList<Card> = mutableListOf() // rename into tableCards
 }
+
+# Modified 2025-08-11 10:24:33
