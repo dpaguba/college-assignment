@@ -50,3 +50,5 @@ class Player(val name: String) {
         return handCardsValues.foldRight(0) { total, next -> total + next }.toFloat()
     }
 }
+
+# Modified 2025-08-11 10:24:33
