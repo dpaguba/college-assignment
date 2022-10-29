@@ -13,3 +13,5 @@ data class Schwimmen(
         var currentPlayer: Player = Player("Nomen Nominandum"),
         var players: MutableList<Player> = mutableListOf()
 )
+
+# Modified 2025-08-11 10:24:33
