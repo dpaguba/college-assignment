@@ -28,3 +28,5 @@ abstract class AbstractRefreshingService {
      */
     fun onAllRefreshables(method: Refreshable.() -> Unit) = refreshables.forEach { it.method() }
 }
+
+# Modified 2025-08-11 10:24:33
