@@ -92,3 +92,5 @@ private val CardValue.column get() = when (this) {
     CardValue.QUEEN -> 11
     CardValue.KING -> 12
 }
+
+# Modified 2025-08-11 10:24:34
