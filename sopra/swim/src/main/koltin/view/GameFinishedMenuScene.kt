@@ -157,3 +157,5 @@ class GameFinishedMenuScene(private val schwimmenService: SchwimmenService) : Bo
 
     override fun refreshAfterGameEnd() = refreshGUI()
 }
+
+# Modified 2025-08-11 10:24:34
