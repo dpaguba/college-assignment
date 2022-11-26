@@ -16,3 +16,5 @@ export abstract class AuthService {
 
   abstract get isLoggedIn(): boolean;
 }
+
+# Modified 2025-08-11 10:24:34
