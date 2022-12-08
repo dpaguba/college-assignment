@@ -12,3 +12,4 @@ public class AngularConfig implements ErrorController {
         return "index.html";
     }
 }
+# Modified 2025-08-11 10:24:35
