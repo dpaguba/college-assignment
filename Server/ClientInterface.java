@@ -6,7 +6,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,9 +20,11 @@ public class ClientInterface extends Thread {
     private DataInputStream input;
     private DataOutputStream output;
     // private SocketAddress clientAddress;
+    
 
 
     public ClientInterface(Socket client){
+        
         
 
         // this.client = client;
@@ -45,12 +49,9 @@ public class ClientInterface extends Thread {
         ArrayList<String> commands = new ArrayList<String>();
         commands.add("ECHO");
         commands.add("HISTORY");
-        // commands.add("CURRENT TIME");
-        // commands.add("CURRENT DATE");
         commands.add("PING");
         commands.add("GET");
         commands.add("HOLIDAYS");
-        commands.add("LATEST NEWS");
         commands.add("EXIT");
         ArrayList<String> commandHistoryList = new ArrayList<String>();
 
@@ -67,6 +68,13 @@ public class ClientInterface extends Thread {
                     } else if(userInput.toUpperCase().equals("CURRENT DATE")){
                         commandHistoryList.add(userInput.toUpperCase());
                         output.writeUTF(getCurrentDate());
+                    }else{
+                        output.writeUTF(print400Error());
+                    }
+                }else if(userInput.toUpperCase().startsWith("LATEST")){
+                    if(userInput.toUpperCase().equals("LATEST NEWS")){
+                        commandHistoryList.add(userInput.toUpperCase());
+                        output.writeUTF(getLatestNews());
                     }else{
                         output.writeUTF(print400Error());
                     }
@@ -96,6 +104,16 @@ public class ClientInterface extends Thread {
                                     output.writeUTF(print400Error());
                                 }
                                 
+                            }
+                        }
+
+                        if(userInput.toUpperCase().startsWith("HOLIDAYS")){
+                            commandHistoryList.add(strings[0].toUpperCase());
+                            try {
+                                int year = Integer.parseInt(strings[1]);
+                                output.writeUTF(getHolidays(year));
+                            } catch (Exception e) {
+                                output.writeUTF(print400Error());
                             }
                         }
 
@@ -132,6 +150,7 @@ public class ClientInterface extends Thread {
             }
         } catch (IOException e) {
             // this exception occurs each time if client disconnects
+            
         }
     }
 
@@ -229,8 +248,84 @@ public class ClientInterface extends Thread {
         
     }
 
+    public static String getLatestNews() {
+        
+        BufferedReader reader;
+        String line;
+        StringBuffer responseContent = new StringBuffer();
+        try {
+            HttpURLConnection connection;
+            URL url = new URL("https://www.tagesschau.de/api2/");
+            connection = (HttpURLConnection) url.openConnection();
+
+            // Request setup
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int status = connection.getResponseCode();
+
+            if(status > 299){
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while((line = reader.readLine()) != null){
+                    responseContent.append(line);
+                }
+                reader.close();
+            }else{
+                int lineQuantity = 0;
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while((line = reader.readLine()) != null && lineQuantity  < 100){
+                    responseContent.append(line);
+                    lineQuantity++;
+                }
+                reader.close();
+            }
+            connection.disconnect();
+            return responseContent.toString() + "\n\nWenn Sie mehr Nachrichten lesen möchten, können Sie folgenden Link in Ihrem Browser aufrufen:\nhttps://www.tagesschau.de/api2/";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+        
+    }
+
     public static String getHolidays(int year) {
-        return null;
+        BufferedReader reader;
+        String line;
+        StringBuffer responseContent = new StringBuffer();
+        try {
+            HttpURLConnection connection;
+            URL url = new URL("https://feiertage-api.de/api/?jahr=" + year + "&nur_land=NW");
+            connection = (HttpURLConnection) url.openConnection();
+
+            // Request setup
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int status = connection.getResponseCode();
+
+            if(status > 299){
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while((line = reader.readLine()) != null){
+                    responseContent.append(line);
+                }
+                reader.close();
+            }else{
+                int lineQuantity = 0;
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while((line = reader.readLine()) != null && lineQuantity  < 100){
+                    responseContent.append(line);
+                    lineQuantity++;
+                }
+                reader.close();
+            }
+            connection.disconnect();
+            return responseContent.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
         
     }
 

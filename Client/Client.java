@@ -40,8 +40,7 @@ public class Client {
                         }
                     }
 
-                    client.close();
-                    printClientStop();
+                    client.close();                    
                 }catch(UnknownHostException | ConnectException e){
                     System.err.println("\nFehler beim Verbindungsaufbau! Es konnte keine TCP-Verbindung zum Server mit \nder IP-Adresse " + serverIP + " (Port: " + serverPort +") hergestellt werden.");
                     printClientStop();
