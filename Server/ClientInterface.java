@@ -8,30 +8,44 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+/**
+ * Diese Klasse ist für die Kommunikation mit dem Client verantwortlich
+ *
+ * @author Dmytro Pahuba
+ */
 public class ClientInterface extends Thread {
 
-    // private Socket client;
+    /** Schnittstelle zur Verbindung mit dem Client */
+    private Socket client;
+
+    /** Zum Empfangen von Daten des Clients */
     private DataInputStream input;
+
+    /** Zum Senden von Daten an den Client */
     private DataOutputStream output;
-    // private SocketAddress clientAddress;
+
+    /** IP-Adresse und Port des Clients */
+    private SocketAddress clientAddress;
     
 
-
+    /**
+    * Verbindungsaufbau mit dem Client.
+    * 
+    * @param client:Socket 
+    */
     public ClientInterface(Socket client){
-        
-        
-
-        // this.client = client;
+        this.client = client;
         try{
             this.input = new DataInputStream(client.getInputStream());
             this.output = new DataOutputStream(client.getOutputStream());
-            // this.clientAddress = client.getRemoteSocketAddress();
+            this.clientAddress = client.getRemoteSocketAddress();
 
             this.output.writeUTF("Darf ich TCP-Verbindung aufbauen?");
             
@@ -45,6 +59,11 @@ public class ClientInterface extends Thread {
         }
     }
 
+    /**
+     * Diese Methode startet die Kommunkation mit dem Client: Benutzereingabe.
+     * 
+     * Verarbeiten der Benutzereingabe
+     */
     public void run() {
         ArrayList<String> commands = new ArrayList<String>();
         commands.add("ECHO");
@@ -154,23 +173,32 @@ public class ClientInterface extends Thread {
         }
     }
 
+    /**
+     * Diese Methode gibt dem Client die jetzige Zeit zurück.
+     */
     public static String getCurrentTime() {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Calendar cal = Calendar.getInstance();
         return dateFormat.format(cal.getTime());
     }
 
+    /**
+     * Diese Methode gibt dem Client das heutige Datum zurück.
+     */
     public static String getCurrentDate() {
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Calendar cal = Calendar.getInstance();
         return dateFormat.format(cal.getTime());
     }
 
+    /**
+     * Diese Methode gibt dem Client die Geschichte der Benutzereingaben (Befehle).
+     * 
+     * @param list:ArrayList<String> - die Liste aller Befehle.
+     * @param num:int - diese Zahl begrenzt die auszugebende Anzahl der Befehle.
+     */
     public static String getHistory(ArrayList<String> list, int... num) {
-        // TODO: handle exceptions like Arraysindexoutofbound
-
         if(list.isEmpty() || (num != null && num[0] < 1)){
-
             return print400Error();
         }else{
             String history = "";
@@ -185,16 +213,17 @@ public class ClientInterface extends Thread {
                     }
                 }else{
                     return print400Error();
-                }
-                
+                }       
             }
             return history;
         }
-        
-        
     }
 
-   
+   /**
+     * Diese Methode gibt dem Client alle nach dem Befehl eingegebene Symbole zurück.
+     * 
+     * @param strings:String[] - die Liste der Symbolen, die zurückgegeben werden müssen.
+     */
     public static String getEcho(String [] strings) {
         String str = "";
         for (int i = 1; i < strings.length; i++) {
@@ -204,6 +233,12 @@ public class ClientInterface extends Thread {
         return str.trim();
     }
 
+    /**
+     * Diese Methode überprüft ob der Server das eingegebene Befehl annehmen kann.
+     * 
+     * @param list:ArrayList<String> - die Liste aller Befehle.
+     * @param userInput:String - der zu überprüfende Befehle
+     */
     public static boolean checkIfCommand(ArrayList<String> commands, String userInput) {
         for (String string : commands) {
             if(string.equals(userInput)){
@@ -213,6 +248,13 @@ public class ClientInterface extends Thread {
         return false;
     }
 
+
+    /**
+     * Diese Methode sendet die GET-Anfrage und der Server ruft per HTTP-Request die Ressource ab.
+     * 
+     * @param host:String - host der Webseite.
+     * @param path:String - der Pfad zu der Webseite
+     */
     public static String getRequestResponse(String host, String path) throws IOException{
 
         try (Socket socket = new Socket(host, 80)) {
@@ -248,6 +290,10 @@ public class ClientInterface extends Thread {
         
     }
 
+
+    /**
+     * Diese Methode sendet API-Request und gibt dem Client die neuesten Nachrichten in JSON-Format zurück.
+     */
     public static String getLatestNews() {
         
         BufferedReader reader;
@@ -289,6 +335,11 @@ public class ClientInterface extends Thread {
         
     }
 
+    /**
+     * Diese Methode sendet API-Request und gibt dem Client die Feiertage aus bestimmten Jahr.
+     * 
+     * @param year:int - das Jahr der Feiertage.
+     */
     public static String getHolidays(int year) {
         BufferedReader reader;
         String line;
@@ -329,10 +380,16 @@ public class ClientInterface extends Thread {
         
     }
 
+    /**
+     * Diese Methode signalisiert, dass Anfrage vom Client nicht verarbeitet werden kann.
+     */
     public static String print400Error() {
         return "400 BAD REQUEST";
     }
 
+    /**
+     * Diese Methode signalisiert, dass der Fehler auf der Serverseite passierte.
+     */
     public static String print500Error() {
         return "500 INTERNAL SERVER ERROR";
     }
