@@ -14,7 +14,7 @@ import java.net.*;
 /**
  * Diese Klasse startet den Server und verbindet neue Clients mit der Anwendung.
  */
-public class Server{
+public class Server implements Runnable{
     /**
     * Port des Servers, mit dem die Clients kommunizieren.
     */
@@ -25,15 +25,23 @@ public class Server{
      * Der Server wird gestartet.
      */
     public static void main(String[] args) throws IOException {
+        Server obj = new Server();
+        Thread th = new Thread(obj);
+
         if(checkPort()){
             try{
-                runServer();
+                th.start();
+                while(th.isAlive()){
+                    runServer();
+                }
+                
             }catch(IOException e){
                 e.printStackTrace();
             }
         }else{
             printWrongPort();
-        }   
+        }
+        
     }
 
     
@@ -58,7 +66,7 @@ public class Server{
      */
 
     public static void connectClients(ServerSocket server) throws IOException {    
-        System.out.print("\nDer Server wurde gestartet und wartet am Port 2022 auf Anfragen vom Client.\nWenn Sie den Server beenden wollen, dann geben Sie 'J' ein: ");
+        
         
         while(true){
             Socket client = server.accept();
@@ -66,9 +74,6 @@ public class Server{
             ClientInterface newClientInterface = new ClientInterface(client);
             newClientInterface.start();
         } 
-
-        
-        
     }
 
     
@@ -113,6 +118,23 @@ public class Server{
      */
     public static void printStoppedServer() {
         System.out.println("\nDer Server wurde beendet.");
+    }
+
+
+    @Override
+    public void run(){
+        System.out.print("\nDer Server wurde gestartet und wartet am Port 2022 auf Anfragen vom Client.\nWenn Sie den Server beenden wollen, dann geben Sie 'J' ein: ");
+        String input = "";
+        try {
+            input = readInput();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if(input.toUpperCase().equals("J")){
+            printStoppedServer();
+            System.exit(0);
+        }
     }
 
 }

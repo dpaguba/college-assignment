@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,10 +30,7 @@ public class ClientInterface extends Thread {
     /** Zum Senden von Daten an den Client */
     private DataOutputStream output;
 
-    /** IP-Adresse und Port des Clients */
-    private SocketAddress clientAddress;
     
-
     /**
     * Verbindungsaufbau mit dem Client.
     * 
@@ -45,7 +41,6 @@ public class ClientInterface extends Thread {
         try{
             this.input = new DataInputStream(client.getInputStream());
             this.output = new DataOutputStream(client.getOutputStream());
-            this.clientAddress = client.getRemoteSocketAddress();
 
             this.output.writeUTF("Darf ich TCP-Verbindung aufbauen?");
             
