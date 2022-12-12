@@ -45,6 +45,7 @@ public class Client {
                     System.err.println("\nFehler beim Verbindungsaufbau! Es konnte keine TCP-Verbindung zum Server mit \nder IP-Adresse " + serverIP + " (Port: " + serverPort +") hergestellt werden.");
                     printClientStop();
                 }catch(IOException e){
+                    System.out.println("Der Fehler ist bei der Arbeit des Clients entstanden.");
                     e.printStackTrace();
                 }
             }else{
@@ -104,6 +105,7 @@ public class Client {
                 }
             }
         } catch (Exception e) {
+            System.out.println("Der Fehler ist beim Einlesen der Benutzereingabe für IP-Adresse entstanden.");
             e.printStackTrace();
         }
         return false;
@@ -125,6 +127,7 @@ public class Client {
             setServerPort(input);
             return 2022 == input;
         } catch (NumberFormatException e) {
+            System.out.println("Der Fehler ist beim Einlesen der Benutzereingabe für Port entstanden.");
             e.printStackTrace();
         }
         return false;

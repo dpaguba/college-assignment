@@ -36,6 +36,7 @@ public class Server implements Runnable{
                 }
                 
             }catch(IOException e){
+                System.out.println("Der Fehler ist bei der Arbeit des Servers entstanden.");
                 e.printStackTrace();
             }
         }else{
@@ -53,7 +54,6 @@ public class Server implements Runnable{
     public static void runServer() throws IOException {
         ServerSocket server = new ServerSocket(port);
         connectClients(server);         
-        
     }
 
 
@@ -100,6 +100,7 @@ public class Server implements Runnable{
         try{
             port = Integer.parseInt(readInput());
         }catch(NumberFormatException e){
+            System.out.println("Der Fehler ist beim Einlesen der Benutzereingabe für Port entstanden.");
             e.printStackTrace();
         }
         return port == 2022;
@@ -121,6 +122,9 @@ public class Server implements Runnable{
     }
 
 
+    /**
+     * Diese Methode liest die Benutzereingabe und stoppt den Server.
+     */
     @Override
     public void run(){
         System.out.print("\nDer Server wurde gestartet und wartet am Port 2022 auf Anfragen vom Client.\nWenn Sie den Server beenden wollen, dann geben Sie 'J' ein: ");
@@ -128,7 +132,7 @@ public class Server implements Runnable{
         try {
             input = readInput();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            System.out.println("Der Fehler ist beim Einlesen der Benutzereingabe für das Beenden des Servers entstanden.");
             e.printStackTrace();
         }
         if(input.toUpperCase().equals("J")){

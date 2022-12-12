@@ -30,7 +30,7 @@ public class ClientInterface extends Thread {
     /** Zum Senden von Daten an den Client */
     private DataOutputStream output;
 
-    
+
     /**
     * Verbindungsaufbau mit dem Client.
     * 
@@ -164,7 +164,6 @@ public class ClientInterface extends Thread {
             }
         } catch (IOException e) {
             // this exception occurs each time if client disconnects
-            
         }
     }
 
@@ -369,6 +368,7 @@ public class ClientInterface extends Thread {
             connection.disconnect();
             return responseContent.toString();
         } catch (IOException e) {
+            System.out.println("Der Fehler ist bei API-Anfrage entstanden.");
             e.printStackTrace();
         }
         return "";
