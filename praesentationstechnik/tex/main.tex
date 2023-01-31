@@ -1,0 +1,1462 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------- Encoding & Language ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+% ---------- Fonts ----------
+\usepackage{lmodern}
+
+% ---------- Layout ----------
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+]{geometry}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ---------- Header / Footer ----------
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Sections styling ----------
+\usepackage{titlesec}
+
+% Section: groß, fett, mit Linie darunter
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection}{1em}{}
+  [\vspace{2pt}\hrule height 0.8pt\vspace{4pt}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+% Subsection: normal fett, deutlich sichtbar
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+  [\vspace{1pt}\hrule height 0.3pt\vspace{2pt}]
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% Subsubsection: normalsize, fett
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% ---------- Boxes ----------
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{definitionbox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Definition}, #1
+}
+\newtcolorbox{notebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Hinweis}, #1
+}
+\newtcolorbox{examplebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Beispiel}, #1
+}
+
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, decorations.pathreplacing}
+
+% ---------- Math ----------
+\usepackage{amsmath, amssymb}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt}
+
+% ---------- Figures ----------
+\usepackage{float}
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Misc ----------
+\usepackage{microtype}
+
+% =========================================
+%                DOCUMENT
+% =========================================
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Präsentationstechnik}\\[6pt]
+  {\large Vorlesungsnotizen}\\[4pt]
+  {\small Stand: \today}
+\end{center}
+
+\vspace{1em}
+\tableofcontents
+\newpage
+
+% =========================================
+\section{Grundlagen der Kommunikation}
+% =========================================
+
+Der erste Block klärt, was beim Sprechen zwischen zwei Menschen überhaupt
+passiert. Die Modelle sind das Handwerkszeug für alles Weitere: wer weiß,
+warum eine Aussage anders ankommt als sie gemeint war, kann seinen Vortrag
+darauf einstellen.
+
+\subsection{Sender-Empfänger-Modell}
+
+Das Modell stammt von Shannon und Weaver. Der Sender \emph{denkt},
+\emph{codiert} und \emph{sendet}; der Empfänger \emph{empfängt},
+\emph{decodiert} und \emph{versteht}. Zurück läuft eine Antwort, so dass ein
+Kreis entsteht.
+
+\begin{itemize}
+  \item Beide Seiten haben einen \textbf{begrenzten Zeichenvorrat}. Was der
+        eine nicht ausdrücken und der andere nicht auflösen kann, geht
+        verloren.
+  \item Codieren und Decodieren hängen von \textbf{Persönlichkeit und
+        Sozialisation} ab. Dasselbe Wort trägt bei zwei Menschen nicht
+        dieselbe Bedeutung.
+  \item Auf dem Weg wirken \textbf{Störungen}.
+  \item Übergeordnete Rahmenbedingungen: zeitlich, sozial, physikalisch
+        (Hitze, Gerüche, Licht) und kulturell.
+\end{itemize}
+
+\begin{notebox}
+Das Modell erklärt, warum Missverständnisse der Normalfall und nicht die
+Ausnahme sind: die Nachricht wird zweimal übersetzt, und beide Übersetzungen
+benutzen verschiedene Wörterbücher.
+\end{notebox}
+
+\subsection{Die fünf Axiome von Paul Watzlawick}
+
+\begin{enumerate}
+  \item \textbf{Man kann nicht \emph{nicht} kommunizieren.} Jedes Verhalten
+        ist Kommunikation; sie beginnt, sobald Menschen einander wahrnehmen.
+        Schweigen und Wegsehen sind ebenfalls Botschaften.
+  \item \textbf{Jede Kommunikation hat einen Inhalts- und einen
+        Beziehungsaspekt.} Der Inhaltsaspekt ist die WAS-Botschaft, reine
+        Sachinformation, überwiegend verbal übermittelt. Der
+        Beziehungsaspekt ist die WIE-Botschaft, verbal und nonverbal, und er
+        gibt vor, wie die Sachinformation aufzufassen ist. Widersprechen
+        sich beide direkt, wird die Kommunikation schwierig.
+  \item \textbf{Kommunikation ist immer Ursache und Wirkung.} Sie ist
+        zirkulär; was Ursache und was Wirkung ist, liegt in der subjektiven
+        Interpretation der Beteiligten. Grundlage ist der Konstruktivismus:
+        wir leben in einer konstruierten Wirklichkeit, geformt aus
+        persönlichen Erfahrungen und Werten, und diese bestimmt unser
+        Handeln. Das Problem entsteht, wenn zwei Interaktionspartner von
+        verschiedenen Wirklichkeiten ausgehen.
+  \item \textbf{Menschliche Kommunikation bedient sich analoger und digitaler
+        Modalitäten.} Digital ist das Miteinander-Sprechen: es verfügt über
+        logische Operatoren, es mangelt ihm aber an Wortschatz für die
+        Beziehungsebene. Analog sind Körpersprache, Sprechweise und Kontext:
+        reich an Beziehungsinformation, dafür nicht eindeutig. Beide
+        ergänzen sich und sind getrennt voneinander schwer zu interpretieren;
+        eine Diskrepanz stört die Kommunikation.
+  \item \textbf{Kommunikation ist symmetrisch oder komplementär.}
+        Symmetrisch heißt gleichwertig, die Beteiligten versuchen
+        Ungleichheit zu vermeiden. Komplementär heißt ergänzend,
+        unterschiedliche Verhaltensweisen ergänzen sich und bestimmen so den
+        Interaktionsprozess. Wir leben in vielen Rollen und wechseln
+        zwischen beidem.
+\end{enumerate}
+
+\subsection{Die vier Seiten einer Nachricht (Schulz von Thun)}
+
+Jede Äußerung hat vier Seiten. Der Sender hat vier Schnäbel, der Empfänger
+vier Ohren, und ob \emph{gemeint} gleich \emph{aufgenommen} ist, entscheidet
+sich daran, welches Ohr gerade groß ist.
+
+\begin{itemize}
+  \item \textbf{Sachinformation:} worüber ich informiere.
+  \item \textbf{Beziehungsbotschaft:} was ich von dir halte und wie wir
+        zueinander stehen.
+  \item \textbf{Selbstkundgabe:} was ich von mir zu erkennen gebe.
+  \item \textbf{Appell:} wozu ich dich veranlassen möchte.
+\end{itemize}
+
+\begin{examplebox}
+\textbf{\glqq Was ist das Grüne in der Soße?\grqq}
+
+\emph{Er} meint:
+Sachebene \glqq Da ist was Grünes\grqq{},
+Selbstoffenbarung \glqq Ich weiß nicht, was es ist\grqq{},
+Beziehung \glqq Du wirst es wissen\grqq{},
+Appell \glqq Sag mir, was es ist!\grqq{}
+
+\emph{Sie} versteht:
+Sachebene \glqq Da ist was Grünes\grqq{},
+Selbstoffenbarung \glqq Mir schmeckt das nicht\grqq{},
+Beziehung \glqq Du bist eine miese Köchin!\grqq{},
+Appell \glqq Lass nächstes Mal das Grüne weg!\grqq{}
+
+Die Antwort \glqq Wenn es dir hier nicht schmeckt, kannst du ja woanders
+essen gehen!\grqq{} ist die Reaktion auf die empfangene, nicht auf die
+gesendete Nachricht.
+\end{examplebox}
+
+\subsection{Transaktionsanalyse von Eric Berne}
+
+Ziel: Konflikte im Gespräch lösen, das Gesprächsverhalten interpretieren und
+steuern, das Gesprächsklima verbessern. Kleinste Einheit ist die
+\textbf{Transaktion} aus Transaktions-Stimulus und Transaktions-Reaktion.
+
+\subsubsection{Die Ich-Zustände}
+
+\begin{itemize}
+  \item \textbf{kEL} Kontrollierendes Eltern-Ich: tadelnd, anweisend,
+        bewertend, kritisierend, moralisierend, verallgemeinernd.
+  \item \textbf{fEL} Fürsorgliches Eltern-Ich: lobend, umsorgend,
+        beschützend, bevormundend, behütend, schonend.
+  \item \textbf{ER} Erwachsenen-Ich: zuhörend, fragend, feststellend,
+        überprüfend, kritisch, emotionslos, sachlich.
+  \item \textbf{rK} Rebellisches Kind-Ich: aufbegehrend, schert sich nicht um
+        Konventionen.
+  \item \textbf{aK} Angepasstes Kind-Ich: freundlich, brav, zuverlässig,
+        pflichtbewusst.
+  \item \textbf{fK} Freies Kind-Ich: bedürfnisorientiert,
+        begeisterungsfähig, kontaktfreudig, Konventionen spielen keine
+        Rolle.
+\end{itemize}
+
+\subsubsection{Die drei Transaktionsarten}
+
+\begin{itemize}
+  \item \textbf{Parallele (einfache, komplementäre) Transaktion:} der Partner
+        reagiert aus dem Ich-Zustand, aus dem der andere gesprochen hat. Das
+        Gespräch läuft glatt.
+  \item \textbf{Gekreuzte Transaktion:} die Reaktion kommt nicht aus dem
+        angesprochenen Ich-Zustand und ist unerwartet. Hier entstehen
+        Konflikte.
+  \item \textbf{Verdeckte Transaktion:} die Gesprächspartner sagen etwas
+        anderes, als sie meinen. Neben der offenen läuft eine zweite,
+        verdeckte Botschaft.
+\end{itemize}
+
+\subsection{Konstruktives Feedback}
+
+Feedback ist die individuelle und \textbf{subjektive Reaktion} auf einen
+Menschen: \glqq So nehme ich Sie wahr, und so reagiere ich darauf.\grqq{} Es
+hat drei Elemente: \textbf{Wahrnehmung}, \textbf{Interpretation},
+\textbf{Reaktion}.
+
+\subsubsection{Feedback geben}
+
+\begin{itemize}
+  \item Negatives Feedback von positivem flankieren.
+  \item Konkret und präzise bleiben, keine Verallgemeinerungen oder
+        pauschalen Aussagen.
+  \item Auf professioneller Ebene kommunizieren, Kritik sachlich äußern.
+  \item Subjektiv formulieren: \glqq Ich-Botschaften\grqq{}.
+  \item Konstruktiv sein, also Perspektiven aufzeigen, aber nicht
+        herablassend.
+  \item Raum für Rückmeldungen geben und diese annehmen: offene
+        Formulierungen, Dialog auf Augenhöhe.
+\end{itemize}
+
+\subsubsection{Feedback annehmen}
+
+\begin{itemize}
+  \item Ausreden lassen und aktiv zuhören.
+  \item Wiederholen, was man verstanden hat.
+  \item Bei Unklarheiten nachfragen, aber die Aussagen nicht in Frage
+        stellen.
+  \item \textbf{Nicht rechtfertigen.}
+  \item Sich bedanken.
+  \item Das Feedback akzeptieren und in Ruhe, mit Abstand reflektieren: eine
+        Chance zur kritischen Selbstreflexion.
+\end{itemize}
+
+\subsection{Stress und Lampenfieber}
+
+Öffentlich zu reden ist mit \textbf{41\,\%} die häufigste Angst der Menschen,
+vor großen Höhen (32\,\%), Geldmangel, tiefem Wasser und Ungeziefer (je
+22\,\%). Subjektiv wahrgenommen wird sie als \textbf{Leistungsangst} und als
+\textbf{soziale Angst}. Eine Präsentation beansprucht die Ressourcen stark,
+die Folge ist Stress.
+
+\subsubsection{Stresslevel und Leistung}
+
+Die Kurve ist ein umgekehrtes U. Bereich A ist zu wenig Erregung: wenig
+Energie, Unterspannung, im Extrem Schlaf. Bereich B ist das Optimum mit hoher
+Aufmerksamkeit. Bereich C ist Überregung: Kontrollverlust, Angst und Panik.
+
+\begin{notebox}
+Ein wenig Lampenfieber ist keine Störung, sondern der Arbeitspunkt. Ziel ist
+nicht null Erregung, sondern die Mitte der Kurve.
+\end{notebox}
+
+\subsubsection{Drei Zugänge zum Stressbegriff}
+
+\begin{itemize}
+  \item \textbf{Stress als Input}, Situationsansatz von Holmes und Rahe
+        (1967): Stress hängt von externen Umweltbedingungen ab, den
+        \emph{Stressoren}, etwa kritischen Lebensereignissen. Diese lassen
+        sich nach ihrem stressbedingten Krankheitswert vergleichen. Da jeder
+        Mensch anders auf Umweltreize reagiert, gibt es keinen
+        allgemeingültigen Katalog von Stressfaktoren.
+  \item \textbf{Stress als Transaktion}, Verarbeitungsprozesse nach Lazarus
+        (1999): 1. primäre Bewertung, die Stressoren werden bewertet;
+        2. sekundäre Bewertung, die eigenen Bewältigungsmöglichkeiten werden
+        eingeschätzt; 3. beide Ergebnisse werden zusammengeführt. Personen-
+        und Umweltmerkmale spielen eine Rolle, also Nature (genetische
+        Anlagen) und Nurture (Erfahrung).
+  \item \textbf{Stress als Reaktion}, Selye (1936): Stress ist die
+        unspezifische Reaktion des Organismus auf Anforderungen aus der
+        Umwelt. Allgemeines Adaptionssyndrom in drei Phasen: 1. Alarmphase,
+        2. Widerstandsphase, 3. krankhafter Erschöpfungszustand.
+\end{itemize}
+
+Zusammengesetzt: Stressoren (Input) $\rightarrow$ Verarbeitung (Transaktion)
+$\rightarrow$ Reaktionen (Output).
+
+\subsubsection{Umgang mit Stress}
+
+Ressourcenaktivierung (was habe ich in der Vergangenheit bereits geschafft,
+und wie?), positive Glaubenssätze und kognitive Umstrukturierung, Planung und
+Zeitmanagement, eine Notfallstrategie, Entspannung, Sport und Genießen
+lernen. Über allem steht die soziale Unterstützung.
+
+% =========================================
+\section{Vortragsplanung}
+% =========================================
+
+\subsection{Präsentationssituation: die Checkliste vorab}
+
+\begin{itemize}
+  \item \textbf{Vorbereitung:} Rahmen der Präsentation, klare
+        Zielvorstellungen (eigene Ziele, Ziele des Auftraggebers,
+        Erwartungen des Publikums), Stoff sammeln.
+  \item \textbf{Inhalt:} Strukturierung und Gliederung, Notizen.
+  \item \textbf{Vortragsart:} üben und Feedback holen, Körpersprache
+        einsetzen.
+  \item \textbf{Organisation:} Raum, Zeitpunkt.
+  \item \textbf{Technik:} Formate klären, mehrere Medien, Back-up der
+        Präsentation.
+  \item \textbf{Für die Präsentation:} Handout, Back-up-Folien für die
+        Diskussion, ein Glas Wasser.
+\end{itemize}
+
+\subsection{Rahmen und Redeart}
+
+Zu klären ist, in welchem Rahmen die Präsentation stattfindet, wie formell
+oder informell er ist und welchen Ton der Vortrag haben soll:
+Informationsrede, Argumentationsrede (begeistern, überzeugen) oder
+Gelegenheitsrede zu einem bestimmten Anlass.
+
+\subsection{Drei Zielgruppen}
+
+Die Ziele kommen aus drei Richtungen: den \textbf{eigenen Zielen}, den Zielen
+des \textbf{Auftraggebers} und den Erwartungen des \textbf{Publikums}.
+
+\begin{examplebox}
+Beim Referat: der \emph{Dozent} will Studierende bewerten können, die eigene
+Veranstaltung strukturieren und das Gesagte für die Diskussion nutzen. Der
+\emph{Student} will die Prüfung ableisten, eine gute Note bekommen, das
+Referat hinter sich bringen und sich nicht blamieren. Die \emph{Kommilitonen}
+wollen etwas für sich mitnehmen, unterhalten werden oder die Zeit absitzen.
+\end{examplebox}
+
+\subsection{Ziele}
+
+\begin{itemize}
+  \item \textbf{Ziele bestimmen die Inhalte.} Sie bilden den roten Faden und
+        halten den Vortrag zusammen.
+  \item Ein Ziel sagt, was \emph{erreicht} werden soll, nicht, was ich sagen
+        möchte.
+  \item Gibt es eine \textbf{Zielhierarchie}? Was sind zentrale Ziele, was
+        Nebenziele?
+  \item \textbf{Anzahl der Ziele:} wie viele lassen sich in der Zeit
+        erreichen? Zu viele Ziele überfrachten den Vortrag.
+\end{itemize}
+
+\begin{definitionbox}
+\textbf{SMARTe Ziele}\\
+\textbf{S}pezifisch: konkret, unmissverständlich, detailliert.\\
+\textbf{M}essbar: qualitativ und quantitativ.\\
+\textbf{A}ttraktiv: angemessen, erreichbar, ausführbar.\\
+\textbf{R}ealistisch: finanziell, technisch, zeitlich.\\
+\textbf{T}erminiert: Zeitrahmen, was bis wann?
+\end{definitionbox}
+
+\subsection{Erwartungen der Zuhörer}
+
+Zu fragen ist: Wer ist das Publikum, wer nimmt teil und wie viele? Was ist
+seine Motivation, warum sind die Zuhörer dort, ist die Veranstaltung
+freiwillig? Wie steht das Publikum zum Thema, welche Haltungen gibt es, was
+weiß es und was nicht?
+
+Der Zuhörer darf verlangen, dass Vortragende ihr Thema beherrschen, den
+Zusammenhang zwischen Aussagen und Zielen verdeutlichen, Aussagen angemessen
+und verständlich darstellen, die Zuhörer respektieren, den Vortrag auf deren
+Kenntnisstand abstimmen und Aufmerksamkeit und Interesse aufrecht halten.
+
+\subsection{Inhalte planen in vier Phasen}
+
+\begin{enumerate}
+  \item \textbf{Auflisten:} Wie lassen sich die Ziele erreichen? Relevante
+        Aussagen sammeln, Kreativitätstechniken wie Mind Mapping einsetzen.
+  \item \textbf{Sortieren:} die gesammelten Argumente, Beispiele und Ideen
+        strukturieren. Was sind zentrale Punkte, wie lassen sie sich
+        veranschaulichen? Was fehlt, was kann weg? Zeit und zentrale Aussage
+        im Auge behalten.
+  \item \textbf{Gliedern:} Ablauf festlegen, Kernbotschaften herausarbeiten,
+        den Vortrag nicht überfrachten (sonst gehen Prägnanz und
+        Verständlichkeit verloren), Einleitungs- und Schlussteil entwerfen.
+  \item \textbf{Überarbeiten:} Sind die Übergänge logisch? Ist der zeitliche
+        Rahmen realistisch, oder müsste ich durchhetzen? Sprechernotizen als
+        Stichpunkte und Regieanweisungen anlegen. Wenn möglich ganz frei
+        vortragen.
+\end{enumerate}
+
+\subsection{Aufbau und Zeitaufwand}
+
+\begin{center}
+\begin{tabular}{lr}
+\textbf{Teil} & \textbf{Anteil}\\\hline
+Eröffnung & 15\,\%\\
+Hauptteil & 75\,\%\\
+Schluss & 10\,\%\\
+\end{tabular}
+\end{center}
+
+Weitere Gliederungsmuster: chronologisch, räumlich, kausal, vergleichend,
+thematisch, lösungsorientiert.
+
+\subsection{Orientierung}
+
+Der Vortrag muss klar strukturiert sein, und die Struktur muss während des
+gesamten Vortrags sichtbar bleiben. Es muss klar sein, warum welcher Punkt
+wann kommt und wo der Vortragende gerade steht.
+
+\begin{itemize}
+  \item Überblick am Anfang.
+  \item Neue Redeabschnitte deutlich machen.
+  \item Wegweiser nutzen: \glqq Zunächst möchte ich Ihnen A zeigen, um dann
+        zu verdeutlichen, wie dies mit Punkt B zusammenhängt\grqq{},
+        \glqq Hier ein Beispiel\grqq{}, \glqq An dieser Stelle möchte ich
+        etwas hinzufügen.\grqq{}
+\end{itemize}
+
+\subsection{Die Einleitung}
+
+Sie klärt Organisatorisches und die Dauer, weckt Aufmerksamkeit und Interesse
+und baut eine Beziehung zu den Zuhörern auf. Sie beantwortet: Worum geht es
+und was ist das Ziel? Warum ist das Thema wichtig? Was soll man mitnehmen?
+Wie ist der Vortrag gegliedert?
+
+\subsubsection{Einstiegsarten}
+
+\begin{itemize}
+  \item \textbf{Orientierende Vortragseröffnung:} Überblick geben, Personal
+        Story.
+  \item \textbf{Problem- und Nutzeneinstiege:} Knobel-Denkanreiz,
+        \glqq Nutzenlocker\grqq{}.
+  \item \textbf{Der aktuelle Bezug:} brandaktuell, Anknüpfen an die
+        Geschichte der Gruppe.
+\end{itemize}
+
+\subsubsection{Aufmerksamkeit wecken: DOs}
+
+Mit einer Frage beginnen; eine Aufgabe oder Handlungsaufforderung geben; eine
+gemeinsame Erinnerung oder Erfahrung ansprechen; eine passende, kurze
+Anekdote oder ein Zitat; Neuigkeiten; Anschauungsobjekte.
+
+\begin{notebox}
+Die ersten Worte bestimmen maßgeblich die Haltung der Zuhörer. Ein guter
+Einstieg macht neugierig und gespannt auf mehr.
+\end{notebox}
+
+\subsubsection{DON'Ts beim Einstieg}
+
+Sich entschuldigen; Witze oder Geschichten, die nichts mit dem Thema zu tun
+haben; eine banale, ideenlos vorgetragene Feststellung; eine langatmige
+Aussage oder Geschichte; abgedroschene Phrasen.
+
+\subsection{Der Hauptteil}
+
+Anfang und Schluss lassen sich leichter gestalten, wenn der Hauptteil schon
+steht. Hier gilt: nicht überfrachten. Die Kernbotschaften ausdrücken, mit
+Argumenten untermauern und mit Beispielen veranschaulichen.
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Empirische Arbeit} & \textbf{Literaturarbeit}\\\hline
+Problemstellung & Problemstellung\\
+Zielsetzung & Zielsetzung\\
+Theorie & Theorie I\\
+Vorgehensweise & Theorie II\\
+Empirische Ergebnisse & Theorie III\\
+Schlussfolgerung \& Empfehlungen & Zusammenführung \& Schlussfolgerung\\
+\end{tabular}
+\end{center}
+
+\subsection{Beziehung zum Publikum}
+
+Enthusiasmus verbreiten, Augenkontakt halten, einbindende Formulierungen
+nutzen (\glqq Wir sollten in Betracht ziehen\ldots\grqq{}), das Publikum
+einbeziehen, Feedback suchen.
+
+Verloren geht der Bezug durch: zu viel und unnatürlich lächeln; das Publikum
+nicht ansehen; sich immer wieder die Folien ansehen und dem Publikum den
+Rücken zeigen; keine Fragen zulassen; eine monotone Stimme; den Vortrag
+vorlesen; genervt oder verängstigt auf Fragen reagieren; sich auf Kosten
+dummer Fragen profilieren; sich für Fehler rechtfertigen.
+
+\subsection{Der Abschluss}
+
+Summen bilden und den Vortrag abschließen, Perspektiven aufzeigen, im
+Gedächtnis bleiben. Bei wissenschaftlichen Vorträgen folgen Nachfragen,
+Kritik und die Abschlussdiskussion.
+
+\begin{itemize}
+  \item \textbf{Schlussaussage:} Was ist das Fazit, das die Zuhörer mitnehmen
+        können?
+  \item \textbf{Schlusssatz:} ähnliche Stilmittel wie in der Einleitung, also
+        Frage, Zitat oder Handlungsaufforderung.
+\end{itemize}
+
+\begin{notebox}
+Das Ende bleibt den Zuhörern am längsten in Erinnerung. Hier ist die Chance,
+die Kernbotschaften zu verstärken.
+\end{notebox}
+
+Zu vermeiden: den Zeitrahmen überziehen; auf das Ende zu hasten (vorher
+klären, was bei Zeitnot wegfallen kann); das Ende immer wieder antäuschen und
+doch weitermachen; eine weitschweifende Zusammenfassung mit viel
+Wiederholung; mit \glqq Ich danke Ihnen für Ihre Aufmerksamkeit\grqq{} enden,
+weil das dem Vortrag die Wirkung nimmt. Besser: danken und dann einen
+aussagekräftigen Schlusssatz.
+
+% =========================================
+\section{Präsentation}
+% =========================================
+
+\begin{definitionbox}
+Eine \textbf{Präsentation} ist der mündliche Vortrag einer oder mehrerer
+Personen, bei dem einem Publikum bestimmte Inhalte in strukturierter Form
+unter Verwendung visueller Hilfsmittel dargeboten werden.
+\end{definitionbox}
+
+\subsection{Arten, Medien und Programme}
+
+\textbf{Präsentationsarten:} Informationspräsentation; Überzeugungs-,
+Meinungs- und Argumentationspräsentation; Anlass- und Gelegenheitsrede.
+
+\textbf{Präsentationsmedien} unterstützen das gesprochene Wort, niemals
+umgekehrt. Neben dem Beamer: Overhead-Projektor, Flipchart, Pinnwand,
+Whiteboard oder Tafel, Plakat.
+
+\textbf{Programme:} PowerPoint, Prezi, prezentit, SlideRocket, Keynote,
+Google Slides, Empressr.
+
+\subsection{Folienanzahl}
+
+So viele wie nötig, so wenige wie möglich. Bei guter Visualisierung sind mehr
+Folien möglich als bei reinen Textfolien. Maximal sieben Folien am Stück,
+dann eine \glqq Folienpause\grqq{}.
+
+\subsection{Visualisierung}
+
+\subsubsection{Warum}
+
+Visualisieren heißt \glqq etwas bildhaft darstellen\grqq{}. Es erhöht die
+Verständlichkeit erheblich, Präsentationen leben von Bild und Text, und die
+meisten Menschen sind visuelle Typen.
+
+\textbf{Ziele:} die Aufmerksamkeit auf das Wesentliche konzentrieren; den
+Betrachter einbeziehen; Orientierungshilfen geben; Informationen leichter
+erfassbar machen; Wesentliches verdeutlichen; Gesagtes ergänzen und
+vertiefen; das Behalten fördern.
+
+\begin{center}
+\begin{tabular}{lr}
+\textbf{Sinne} & \textbf{Behaltensquote}\\\hline
+Hören & 20\,\%\\
+Hören und Sehen & 50\,\%\\
+Selbst tun & 100\,\%\\
+\end{tabular}
+\end{center}
+
+\subsubsection{Fünf Grundsätze für visuelle Hilfsmittel}
+
+\begin{enumerate}
+  \item Der logische Zusammenhang muss erkennbar bleiben.
+  \item Beim Umschalten Zeit lassen und neue Informationskanäle ankündigen.
+  \item Weniger Visualisierung ist zumeist mehr.
+  \item Jedes Bild muss eine bestimmte Funktion haben.
+  \item Folien sind kein Ersatz für ein Stichwortkonzept.
+\end{enumerate}
+
+\subsubsection{Planung einer Visualisierung}
+
+Erst die drei Fragen: Was will ich darstellen (Inhalt)? Wozu soll die
+Darstellung dienen (Ziel)? Wen will ich informieren oder überzeugen
+(Zielgruppe)? Erst dann die Visualisierung im engeren Sinne, also wie und
+womit.
+
+Bausteine: inhaltliche Elemente $+$ Präsentationsmedien $+$
+Gestaltungselemente. Die Gestaltungselemente sind Text, Grafik und Symbole
+sowie Diagramme.
+
+\subsection{Text auf der Folie}
+
+Auf gute Lesbarkeit achten: einfache Schriftarten, Lesegewohnheiten
+beachten.
+
+\begin{definitionbox}
+\textbf{Die vier Verständlichmacher}
+\begin{enumerate}
+  \item Einfachheit
+  \item Gliederung und Ordnung
+  \item Kürze und Prägnanz
+  \item Zusätzliche Stimulanzen (Farben, Beispiele, Grafiken)
+\end{enumerate}
+\end{definitionbox}
+
+\subsubsection{Schriftart}
+
+Maximal zwei Schriftarten. Serifenfreie Schriften (etwa Arial), weil
+Serifenschriften (etwa Times) projiziert schlechter lesbar sind. Nur wenige,
+bedachte Schriftwechsel. Nicht ausschließlich Großbuchstaben, keine
+senkrechte Anordnung der Buchstaben.
+
+\subsubsection{Schriftgröße}
+
+Die Schriftgröße wird dem Raum angepasst: \textbf{16\,pt für 5\,m Distanz},
+\textbf{24\,pt für 10\,m Distanz}.
+
+\begin{examplebox}
+\textbf{Rechenbeispiel.} Monitor: 0,5\,m Abstand, 1024$\times$768 Pixel,
+10\,pt $=$ 0,353\,cm. Projektion: 5\,m Abstand, Bild 240$\times$180\,cm. Die
+Schrift wird um den Faktor 10 vergrößert, also 3,53\,cm; umgerechnet
+768\,px $\cdot$ 3{,}53\,cm $/$ 180\,cm $=$ 15\,px, also 15\,pt. Eine
+15-pt-Schrift aus 5\,m wirkt damit wie eine 10-pt-Schrift aus 0,5\,m.
+\end{examplebox}
+
+\subsection{Grafik, Symbole, Animation und Medien}
+
+Grafiken verdeutlichen und heben Informationen hervor und lockern trockene
+Themen auf, sollen aber nicht \glqq zu viel des Guten\grqq{} sein und den
+Inhalt nicht verdrängen.
+
+Bei Animationen, Effekten und Übergängen sparsam vorgehen. Am einfachsten und
+oft am besten: Erscheinen und Verschwinden. Zu viele Effekte lenken vom
+Vortragenden ab, das Publikum blickt auf die Folie und die Aufmerksamkeit
+gilt der Animation; das wirkt schnell unprofessionell. Eingebettete Videos
+und Audios sollen professionell und nicht zu lang sein und zum Ziel
+beitragen.
+
+\subsection{Diagramme}
+
+\begin{definitionbox}
+\textbf{Diagramme} sind standardisierte Darstellungsformen für bestimmte
+Sachverhalte.
+\end{definitionbox}
+
+Am besten selbst erstellen und auf Screenshots verzichten. Überschrift und
+gegebenenfalls Quellenangabe gehören immer dazu.
+
+\begin{itemize}
+  \item \textbf{Liste und Tabelle:} machen Zahlen und Werte transparent und
+        verschaffen einen Überblick. Bedarfsorientiert, das Wichtigste
+        hervorheben (etwa durch Umrahmung), Spaltenüberschriften sollen sich
+        entsprechen und optisch abheben, bei vielen Zeilen nummerieren,
+        nicht zu sehr ins Detail gehen.
+  \item \textbf{Kurvendiagramm:} zeigt Entwicklungsverläufe und vergleicht
+        Prozesse. Ausgangspunkt ist der Nullpunkt des Koordinatensystems,
+        die horizontale Achse (Abszisse) trägt in der Regel den zeitlichen
+        Ablauf. Die Achseneinteilung bestimmt den Kurvenverlauf, jede Achse
+        wird klar bezeichnet, bei mehreren Kurven verschiedene Linienarten.
+  \item \textbf{Säulen- und Balkendiagramm:} vergleichende Darstellung von
+        Größen. Entscheiden, ob Absolutzahlen, Prozentwerte oder kumulierte
+        Werte die Aussage am deutlichsten machen; Achseneinteilung sorgfältig
+        wählen; gleiche Breite; Abstand höchstens die Säulenbreite;
+        Nulllinien deutlich beschriften und die Skalierung angeben.
+  \item \textbf{Kreis- oder Tortendiagramm:} stellt das Ganze und seine Teile
+        dar. 360 Grad $=$ 100\,\%. Keine zu kleinen Teilmengen, mehrere
+        kleine zu einer \glqq Sammeleinheit\grqq{} zusammenfassen, Teile
+        optisch klar trennen.
+  \item \textbf{Organigramm bzw.\ Aufbaudiagramm:} zeigt Aufgabenverteilung
+        und Hierarchien mittels Kästchen; Zusammenhänge durch Lage,
+        Strichstärken und Schraffuren. Klassisch von oben nach unten
+        detaillierter, alternativ vom Mittelpunkt ausgehend.
+  \item \textbf{Ablaufdiagramm bzw.\ Netzplan:} zeigt vorbestimmte Soll- oder
+        ermittelte Ist-Abläufe mit einfachen, normierten Symbolen.
+\end{itemize}
+
+\subsubsection{Entscheidungs-Matrix}
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Darzustellende Information} & \textbf{Diagrammart}\\\hline
+Aufzählung & Liste\\
+Datenzuordnung & Tabelle\\
+Absolute Werte & Liste, Säulen, Balken\\
+Anteile eines Ganzen & Kreis\\
+Organisationsstrukturen & Organigramm, Aufbau\\
+Aufbau, Zusammensetzung & Organigramm, Aufbau\\
+Entwicklungsverläufe, Abläufe & Kurven, Ablauf\\
+Gegenüberstellung & Säulen, Balken\\
+\end{tabular}
+\end{center}
+
+\subsection{Komposition und Farben}
+
+Die Gestaltungselemente werden zu einer präsentationsreifen Vorlage
+zusammengestellt. Drei Punkte:
+
+\begin{itemize}
+  \item \textbf{Aufteilung:} für eine klare Grobstruktur, hilfreich ist ein
+        Raster. Muster sind Reihung, Symmetrie, Rhythmus und Dynamik.
+  \item \textbf{Anordnung und Logik:} nicht zufällig, sondern die logische
+        Struktur dessen widerspiegelnd, was dargestellt werden soll.
+  \item \textbf{Farben und Formen} als Bedeutungsträger: wichtige
+        Informationen hervorheben, Zusammenhänge verdeutlichen, Querverweise
+        herstellen, aufeinanderfolgende Darstellungen verbinden.
+        Kontrastreiche, gut lesbare Farben; \textbf{kein Gelb oder Grün für
+        Text}; sparsam und bewusst, \textbf{höchstens drei Farben}; möglichst
+        in einer Farbpalette bleiben.
+\end{itemize}
+
+\subsubsection{Hintergrund}
+
+\begin{center}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\textbf{Weiß auf Schwarz} & \textbf{Schwarz auf Weiß}\\\hline
+auffällig; gut für Bildschirmpräsentationen; Lesbarkeit hängt vom Medium ab;
+nicht gut bei den meisten Beamern und in hellen Räumen
+&
+leichte Lesbarkeit, auch bei schwächeren Beamern und in helleren Räumen;
+Handouts lassen sich leichter ausdrucken\\
+\end{tabular}
+\end{center}
+
+Grafiken im Hintergrund dürfen nicht ablenken, sonst lieber ganz darauf
+verzichten.
+
+\subsection{Struktur der Folie und allgemeine Tipps}
+
+Nur 5 bis 7 Punkte pro Folie (situationsabhängig: Studentenvortrag gegen
+klausurrelevanten Dozentenvortrag). Nicht zu viel Text, Symbole und Pfeile.
+Schnell erfassbare Überschriften. Nur die wesentlichen Aussagen in
+Stichworten. Foliennummer und Namen nicht vergessen.
+
+Allgemein: Blöcke bilden; gleiche Farben und Formen für zusammengehörende
+Sachverhalte; Wichtiges hervorheben; Freiflächen als Gestaltungselement;
+\glqq im Weglassen liegt die Kunst\grqq{}.
+
+Weitere Tipps: Zeit investieren; Folien ankündigen und Überleitungen
+schaffen; ein Bild sagt mehr als 1000 Worte; mehr sagen als das, was auf den
+Folien steht; PowerPoint lernt sich nur in der praktischen Übung.
+
+\subsection{Checkliste}
+
+Gliederung und Ablauf; kurze, knappe Sätze oder Stichworte; Schriftart (Arial,
+Verdana); Schriftgröße; optische Sinnabschnitte; einheitliche Folien;
+Masterfolie benutzt; Gliederung auf jeder Folie; Grafik und Bilder dienen dem
+Inhalt; nicht mehr als drei Farben; hoher Kontrast zwischen Hintergrund und
+Text; konsistente Seitenzahlen; unter realen Bedingungen durchgeklickt.
+
+% =========================================
+\section{Rhetorik}
+% =========================================
+
+\begin{definitionbox}
+\textbf{Rhetorik} ist Theorie und Praxis mündlicher Kommunikation. Angewandte
+Rhetorik ist im engeren Sinne die Rede- und Gesprächspädagogik. Ihre
+Geburtsstätte ist Griechenland; im 5.\ Jahrhundert v.\ Chr.\ entstand die
+eigentliche Rhetorik.
+\end{definitionbox}
+
+Fachliches Know-how (Hard Skills) und rhetorisches Geschick (Soft Skills)
+gehören zusammen; das eine trägt ohne das andere nicht.
+
+\subsection{Warum Rhetorik wichtig ist}
+
+\begin{enumerate}
+  \item Wir sind auf das gemeinsame Gespräch angewiesen.
+  \item Was wir sagen, ist oft nicht identisch mit dem, was wir sagen
+        wollten.
+  \item Was der Zuhörer aufnimmt, ist nicht immer identisch mit dem wirklich
+        Gesagten.
+  \item Richtiges setzt sich nicht allein deshalb durch, weil es richtig ist;
+        es muss anderen auch als richtig erklärt werden.
+\end{enumerate}
+
+Das eigene Sprechen verbessert man in drei Schritten: rhetorische Prozesse
+erkennen lernen, die Techniken der Kommunikation kennen, den Transfer in die
+Praxis üben.
+
+\subsection{Was Rhetorik umfasst}
+
+\begin{center}
+\begin{tabular}{lll}
+\multicolumn{2}{c}{\textbf{Nonverbale Kommunikation}} &
+\textbf{Verbale Kommunikation}\\\hline
+\textbf{Körpersprache} & \textbf{Räumliches Verhalten} & \textbf{Tonalität}\\
+Körperhaltung, Gestik, & Distanzverhalten, & Stimme und Stimmklang,\\
+Blickkontakt, Mimik & Körperorientierung, & Aussprache, Betonung\\
+ & Bewegung im Raum & \\
+\end{tabular}
+\end{center}
+
+\subsection{Die drei Säulen der Rhetorik}
+
+\begin{itemize}
+  \item \textbf{Ethos}, Vertrauen durch persönliche Werte: Reputation,
+        Expertise, Zitate, Publikumsinteraktion, Gemeinsamkeiten.
+  \item \textbf{Pathos}, die Welt der Emotionen: Vision und Träume,
+        Metaphern, Humor, Geschichten, Verletzlichkeit.
+  \item \textbf{Logos}, Fakten: Fakten und Daten, Forschung und Statistiken,
+        rhetorische Fragen, Demonstrationen, Testergebnisse.
+\end{itemize}
+
+\subsection{Körperhaltung}
+
+\textbf{Der Stand:} mit beiden Füßen fest auf dem Boden stehen, das Gewicht
+gleichmäßig verteilen, gelegentlich Stand- und Spielbein wechseln. Das ist
+ein Zeichen für eine gute Mischung aus Standhaftigkeit und Flexibilität. Die
+Bewertungsskala reicht von \emph{zurückgezogen} über \emph{unsicher} bis
+\emph{selbstbewusst}.
+
+\textbf{Das Sitzen:} Oberkörper möglichst aufrecht halten, Schultern locker,
+aber nicht hängen lassen, keine Barriere mit den Beinen bilden, Raum
+einnehmen und selbstbewusst wirken, jedoch nicht zu viel. Die Skala reicht
+von \emph{ablehnend} über \emph{verkrampft} bis \emph{souverän}.
+
+\subsubsection{Die vier Distanzen}
+
+\begin{center}
+\begin{tabular}{ll}
+Intime Distanz & $<$ 60\,cm\\
+Persönliche Distanz & 60--120\,cm\\
+Gesellschaftliche Distanz & 1--4\,m\\
+Öffentliche Distanz & $>$ 4\,m\\
+\end{tabular}
+\end{center}
+
+Für einen Vortrag vor einer Gruppe mindestens die persönliche Distanz wählen.
+Achtung: Distanzen sind kulturabhängig.
+
+\subsection{Gestik}
+
+Arme, Hände und Finger nutzen; punktuell bestimmte Aussagen unterstreichen;
+Demonstrationsgesten nutzen, indem man Gesagtes bildhaft darstellt;
+Aufzählungen mit den Fingern mitzählen. Auch Gesten können kulturabhängig
+sein.
+
+Die Körpersprache soll offen sein, also keine verschränkten Arme. Hände in
+Bauchhöhe strahlen konzentrierte Ruhe aus. Zu vermeiden sind nervöses
+Trommeln mit den Fingern und verkrampfte, verknotete Finger; möglichst oft
+die Handflächen zeigen. Hand in der Hosentasche, Stift oder Manuskript in der
+Hand: auch hier gilt es, die Balance zu finden. Gesten lassen den Vortrag
+lebendiger wirken, zu viel Gestik lässt ihn hektisch und unruhig wirken. Die
+eigene Position findet man durch Üben vor dem Spiegel.
+
+\subsection{Mimik}
+
+Menschen unterscheiden ein echtes und ein aufgesetztes Lächeln in der Regel
+sehr gut. Der Trick besteht darin, an etwas zu denken, das einen lächeln
+lässt. Eine freundliche, offene und interessierte Mimik entsteht aus einer
+freundlichen, offenen und interessierten Haltung.
+
+\textbf{Funktionen der Mimik:} sie spiegelt persönliche Eigenschaften wider,
+zeigt die innere Stellungnahme des Einzelnen, zeigt Emotionen und regelt
+Interaktionsabläufe.
+
+\textbf{Sechs Basisemotionen} (kulturunabhängig): Freude, Wut, Furcht, Ekel,
+Traurigkeit, Überraschung. Ziel ist die Kongruenz zwischen dem Gesagten und
+der Mimik, denn nur so wirkt der Vortrag glaubhaft.
+
+\textbf{Blickkontakt:} gerader Kopf mit offenem Blick, Augenkontakt suchen,
+aber nicht starren; sich freundliche oder bekannte Gesichter suchen.
+
+\subsection{Tonalität}
+
+\begin{itemize}
+  \item Klar und deutlich sprechen.
+  \item Die Stimme modulieren, eine Sprachmelodie einsetzen.
+  \item Laut, aber nicht schreien; permanent lautes Sprechen wirkt schnell
+        aggressiv.
+  \item Zu leise wirkt schüchtern und strengt an, zu hoch wirkt angespannt.
+        Tiefere Stimmlagen werden oft als angenehmer empfunden.
+\end{itemize}
+
+\textbf{Langsam sprechen:} 90\,\% aller Menschen sprechen zu schnell. Beim
+Vortragen muss das normale Sprechtempo reduziert werden, sonst werden
+undeutlich ausgesprochene Wörter verschluckt, und die Zuhörer haben keine
+Chance, Verpasstes nachzuholen.
+
+\textbf{Richtig atmen:} Sprechen ist Ausatmen. Anspannung führt zu flacher
+Atmung und damit zu gepresster Stimme, gehetztem Sprechen, Angst und
+Schwindel. Bewusstes Atmen dient dem besseren Sprechen, einer festeren
+Stimme und dem Abbau von Stress.
+
+\textbf{Sprechstil:} mit Bildern arbeiten (Beispiele, Veranschaulichung,
+Metaphern, Erfahrungen) und positive Formulierungen nutzen
+(\glqq Ich freue mich\ldots\grqq{}, \glqq Chance und Gelegenheit\grqq{}).
+
+\textbf{Pausen} sind genauso wichtig wie das Reden. Vier Arten:
+Nachwirkungspause, Vorbereitungspause, Regenerationspause, Denkpause.
+
+\subsection{Zu vermeidende Signale}
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Signal} & \textbf{Wirkung}\\\hline
+zugekniffene Augen & Abwehrhaltung\\
+seltener Blickkontakt & Unsicherheit, Verlegenheit\\
+häufiger Lidschlag, Lidflattern & Unsicherheit\\
+angehobene Augenbrauen & Ungläubigkeit, Arroganz\\
+geöffneter Mund & mangelnde Selbstkontrolle\\
+verschränkte Arme & Ablehnung, Angst\\
+aneinander reibende Hände & Selbstgefälligkeit\\
+zu einem Spitzdach geformte Hände & Arroganz, Abwehr\\
+geballte Fäuste & Wut, Aggression\\
+häufiges Achselzucken & Hilflosigkeit, Ungewissheit\\
+wippende Füße & Ängstlichkeit, Ungeduld\\
+\end{tabular}
+\end{center}
+
+\subsection{Die fünf Rednertypen}
+
+Rhetorik muss zum Redner, seiner Persönlichkeit und seinen Fähigkeiten
+passen. Man kann mehreren Typen zugleich zuzuordnen sein, und Mischformen
+sind die beste Voraussetzung für einen gelungenen Vortrag.
+
+\begin{itemize}
+  \item \textbf{Der mitteilungsfreudige Rednertyp.} Ausprägungen: der
+        Kommunikative sucht den Dialog zum Publikum, der rein
+        Mitteilungsfreudige verfällt schnell in einen Monolog. Strahlt
+        Offenheit aus, schweift leicht ab und verliert Anlass und Ziel aus
+        den Augen. Tipps: genauer Plan über Inhalte und verfügbare Zeit, den
+        Vortrag in Kontrollabschnitte unterteilen.
+  \item \textbf{Der schüchterne Rednertyp.} Leidet unter Lampenfieber und
+        Selbstzweifel und muss die Nervosität in den Griff bekommen. Tipps:
+        sicherer Einstieg, indem die ersten Zeilen 1:1 auswendig gelernt
+        werden; vorher mit Zuschauern plaudern; freundliche und interessierte
+        Gesichter im Publikum suchen; nicht einfach das Programm abspulen.
+  \item \textbf{Der theatralische Rednertyp.} Geht mit unvorhergesehenen
+        Situationen spielerisch um, tritt locker auf und wirkt authentisch.
+        Läuft Gefahr, das eigentliche Thema aus den Augen zu verlieren, und
+        kann unsympathisch wirken. Emotionen in Maßen halten das Publikum
+        wach und verhindern Monotonie, müssen aber zur Art der Rede passen.
+  \item \textbf{Der distanzierte Rednertyp.} Zeichnet sich oft durch besondere
+        Höflichkeit aus, läuft aber Gefahr, am Publikum vorbeizureden. Wirkt
+        häufig selbstbewusst und kompetent, kann aber unnahbar wirken. Sollte
+        die Distanz aufbrechen, ohne zu übertreiben: Nähe durch
+        Verständnisfragen, Blickkontakt und Einbeziehung des Publikums.
+  \item \textbf{Der überlegene Rednertyp.} Ausprägungen: der tatsächlich
+        Überlegene (Siegertyp, in besonderem Maße begabt) und der unsichere
+        Überlegene, der das Vortäuschen zum Selbstschutz nutzt. Versetzt das
+        Publikum zurück in die Schulzeit und kann arrogant, überheblich oder
+        gelangweilt wirken. Tipps: Sprechpausen für ein Lächeln ins Publikum
+        nutzen, Blickkontakt in die Runde.
+\end{itemize}
+
+\subsection{Manipulation durch Rhetorik}
+
+\begin{definitionbox}
+\textbf{Rhetorisch manipulieren} heißt, ausgewählte Personen bewusst und
+zielgerichtet unter Anwendung von Manipulationstechniken zu beeinflussen.
+Ziel ist immer die \emph{verdeckte} Manipulation des Gegenübers; dadurch kann
+das Verhalten einer Person willentlich beeinflusst werden.
+\end{definitionbox}
+
+Man sollte die grundlegenden Techniken kennen, um sich selbst davor schützen
+zu können. Sie lassen sich auch im positiven Sinne einsetzen und geben
+Aufschluss über Aspekte der menschlichen Psyche. Trotzdem gilt: vorsichtiger
+und gewissenhafter Umgang.
+
+\subsubsection{Techniken}
+
+\begin{itemize}
+  \item \textbf{Spiegeltechnik:} \glqq Gleich und Gleich gesellt sich
+        gerne.\grqq{} Es findet ein Angleichen an Körpersprache, Mimik und
+        Gestik des anderen statt. Spiegeln gaukelt Vertrauen und Sympathie
+        vor; zeitverzögertes Spiegeln wird empfohlen.
+  \item \textbf{Call to Action:} durch künstlichen Zeitdruck wird das
+        Gegenüber in Bedrängnis gebracht, sich schnell entscheiden zu müssen.
+        Oft werden nur Alternativen angeboten, die für das Gegenüber
+        nachteilig sind.
+  \item \textbf{Schlechtes Gewissen:} Mitleid ist die Anteilnahme am Unglück
+        anderer und erhöht die Bereitwilligkeit zu helfen. Der Sprecher
+        täuscht einen Gefühlsausbruch vor und stellt sich als hilfsbedürftig
+        dar. Tricks: Kindchenschema, in eine Rolle schlüpfen,
+        Emotionsworte verwenden.
+  \item \textbf{Vermeidliche Experten:} der Sprecher beruft sich auf
+        Wissenschaftler, Autoritätspersonen und namhafte Experten. Ob es
+        diese Experten wirklich gibt, spielt dabei keine Rolle.
+  \item \textbf{Assoziationstechnik:} durch Assoziationen wird beim Gegenüber
+        ein bestimmter Emotionszustand hervorgerufen und es damit in eine
+        Richtung gelenkt (Manipulation durch Visionen).
+  \item \textbf{Sprachlicher Kontrast:} Kontraste entstehen durch
+        Gegenüberstellung. Um herauszustechen, braucht man einen Vergleich,
+        neben dem man gut dasteht.
+  \item \textbf{Polarisierung:} dem anderen einen Grund liefern, etwas für
+        einen zu tun, diesen Grund aber nicht verbalisieren, sondern nur in
+        Aussicht stellen.
+\end{itemize}
+
+\subsubsection{Die dreizehn Scheinargumente}
+
+\begin{center}
+\begin{tabular}{ll}
+Traditionsargument & Kompositionsargument\\
+Autoritätsargument & Innovationsargument\\
+Mehrheitsargument & Zirkelschlussargument\\
+Entweder-Oder-Argument & Argument der penetranten Wiederholung\\
+Argument auf die Person & Strohmann-Argument\\
+Argument der Autorität & Argument des Vergleichs\\
+Argument der Ignoranz & \\
+\end{tabular}
+\end{center}
+
+Das Traditionsargument in Reinform: \glqq Das haben wir schon immer so
+gemacht!\grqq{}
+
+\begin{notebox}
+\textbf{Take home message.} Machen Sie sich die Möglichkeiten Ihres Körpers
+und vor allem Ihrer Stimme klar und setzen Sie diese bewusst ein. Deuten und
+korrigieren Sie Körpersprache bei anderen und bei sich. Überzeugend wirkt vor
+allem die Kongruenz zwischen Körpersprache und Gesagtem. Es werden sechs
+kulturunabhängige Basisemotionen unterschieden. Und es gibt zahlreiche
+rhetorische Tricks zur Manipulation: wer sie kennt, kann sich schützen.
+\end{notebox}
+
+% =========================================
+\section{Storytelling und Elevator Pitch}
+% =========================================
+
+\subsection{Der Elevator Pitch}
+
+\begin{definitionbox}
+Der \textbf{Elevator Pitch} (\glqq Aufzugspräsentation\grqq{}) ist die
+einprägsame Darstellung der Kurzfassung eines Businessplans, einer
+Geschäftsidee oder der eigenen Stärken. Er wird meist ohne Hilfsmittel und in
+freier Rede vorgetragen.
+\end{definitionbox}
+
+Wichtig ist das \textbf{Was}, nicht das \textbf{Wie}. Er fordert eine Menge
+Konzentration und Übung, und die Begeisterung muss ansteckend sein.
+
+\textbf{Zwei Längen:} der 30-Sekunden-Pitch für Networking, Events,
+Vorstellungsrunden und Telefonate; der 3-Minuten-Pitch für Präsentationen vor
+Venture Capitalists, Konferenzpräsentationen, Einstellungsgespräche und
+Verkaufsmeetings.
+
+\textbf{Herkunft:} in den 80er Jahren mussten Vertriebler mit ihren Chefs
+Ideen und Lösungen innerhalb einer Liftfahrt besprechen; in den 90ern mussten
+Unternehmensgründer die Entscheider der Venture-Capital-Gesellschaften
+treffen.
+
+\subsubsection{Die AIDA-Formel}
+
+\begin{itemize}
+  \item \textbf{A} Attention: Aufmerksamkeit erregen, Zielpersonen kurz
+        ansprechen und dabei auffallen, aus der breiten Masse abheben.
+  \item \textbf{I} Interest: Neugierde wecken, durch Bilder oder Beispiele
+        erklären, neue Gesprächsstrategie, Spaß erzeugen, Konzentration auf
+        das Wesentliche.
+  \item \textbf{D} Desire: den Wunsch erwecken, auch etwas vom Kuchen
+        abzubekommen, am Nutzen teilhaben zu können, den Herzschlag des
+        Gesprächspartners erhöhen.
+  \item \textbf{A} Action: Austausch der Visitenkarten mit der Vereinbarung
+        eines weiteren Gesprächs, vielleicht schon eine Terminvereinbarung.
+\end{itemize}
+
+\subsubsection{Vorbereitung}
+
+\textbf{Zielgruppe und Zielperson:} definieren und Inhalte und Inszenierung
+darauf anpassen; der Pitch soll auf die Zielperson genau zugeschnitten sein,
+also vorher Informationen einholen. Lässt sich keine konkrete Person nennen,
+nimmt man eine fiktive.
+
+\textbf{Ziel:} \glqq Was will ich erreichen?\grqq{} So konkret wie möglich
+überlegen, was man von dieser bestimmten Person möchte, was erreichbar ist,
+und das Ziel aufschreiben.
+
+\textbf{Was hat das Gegenüber davon?} Warum soll er mir eine Chance geben?
+Was kann mein Produkt für meinen Kunden leisten? Was sind die Nutzenvorteile?
+Oft werden Gesprächspartner mit technischen Details gelangweilt oder
+verwirrt. Die inhaltliche Ebene sollte auch die eigene Großmutter verstehen
+können.
+
+\textbf{Was unterscheidet uns?} Warum ist meine Idee besser als die des
+Mitbewerbers? In welchen Bereichen bin ich der Erste, der Einzige, der
+Schnellste, der Innovativste, der Kreativste? Dann kritisch prüfen: Ist das
+Unterscheidungsmerkmal wirklich einzigartig, oder sieht der Kunde es als
+selbstverständlich an? Was ist Standard?
+
+\textbf{Wer ist unser Markt?} Den Markt so genau wie möglich einschätzen und
+kleinere Teilmärkte auswählen, die am schnellsten Erfolg versprechen.
+
+\subsubsection{The Pitch Canvas}
+
+\begin{center}
+\begin{tabular}{p{0.46\textwidth}p{0.46\textwidth}}
+\multicolumn{2}{c}{\textbf{Simple Statement:} Sag in einem Satz, was du
+machst}\\\hline
+\textbf{Pain ($+$ Gain):} Erläutere das Problem deiner Zielgruppe &
+\textbf{Product:} Erkläre deine Lösung\\
+\textbf{Product Demo:} Zeige dein Produkt &
+\textbf{What's Unique:} Was macht deine Idee einzigartig?\\
+\textbf{Customer Traction:} Bringst du bereits deine PS auf die Straße? &
+\textbf{Business Model:} Was ist dein Geschäftsmodell?\\
+\textbf{Investment:} Wieviel Kapital benötigst du, und wofür? &
+\textbf{Team:} Investoren investieren in Persönlichkeiten\\\hline
+\multicolumn{2}{c}{\textbf{Call to Action:} Wie geht es weiter?}\\\hline
+\multicolumn{2}{c}{\textbf{Und warum gerade du?}}\\
+\end{tabular}
+\end{center}
+
+\subsubsection{Mögliche Inhalte}
+
+Zielpersonen; Nutzenargumente; Unterscheidungsmerkmale; Markteinschätzung;
+Idee, Produkt, Dienstleistung; Personen, Team, Bewerber; Ziel der
+Aufforderung.
+
+\begin{notebox}
+Der Köder muss dem Fisch schmecken und nicht uns selber.
+\end{notebox}
+
+\subsubsection{Wie Menschen entscheiden}
+
+Es gibt zwei Möglichkeiten, wie Menschen entscheiden: rational und emotional.
+Das Verhältnis ist das eines Eisbergs: \textbf{1/7 rational}, \textbf{6/7
+emotional}. Über der Wasseroberfläche liegen Fakten, Daten und Zahlen,
+darunter die vier Grundbedürfnisse.
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Grundbedürfnis} & \textbf{Inhalt}\\\hline
+Pride & Anerkennung, Bewunderung, Stolz\\
+Profit & Geld, Wohlstand, Gewinn\\
+Pleasure & Freude, Spaß, Genuss\\
+Peace & Sicherheit, Zufriedenheit, Ruhe\\
+\end{tabular}
+\end{center}
+
+Der Herzschlag ist die emotionale Bindung an eine Information. Er erhöht
+sich, wenn der Zuhörer aus Tatsachen eine Verbindung zu sich selbst und die
+damit verbundene Wirkung herstellen kann.
+
+\subsubsection{Grundsätze bildhaften Verkaufens}
+
+Zwei Formulierungen derselben Aussage bleiben unterschiedlich gut haften:
+\glqq Die Implementierung von audio-visuellen Medien bei
+Qualifizierungsmaßnahmen ist temporär umgekehrt proportional dem Einsatz von
+multimedialen Projektionssystemen\grqq{} gegen \glqq Kennen Sie auch den
+guten alten Overheadprojektor? Heute wird er kaum noch verwendet, weil wir
+mehr bewegte Bilder und Geschichten mit einem Beamer zeigen können.\grqq{}
+
+\begin{center}
+\begin{tabular}{p{0.46\textwidth}p{0.46\textwidth}}
+\textbf{Linke Gehirnhälfte} & \textbf{Rechte Gehirnhälfte}\\\hline
+digitales, rationales, analytisches und logisches Denken; Regeln und Gesetze;
+Wissenschaft; Lesen, Schreiben und Rechnen; linear; Zeit
+&
+analog; Emotionen, Kreativität, Musisches, Räumliches und Bilder;
+ganzheitliches Problembewusstsein; Intuition; non-linear; Raum\\
+\end{tabular}
+\end{center}
+
+Die Kunst ist es, beide Hälften zusammenarbeiten zu lassen. 80\,\% unseres
+Wissens stammen aus Informationen, die wir über das Auge aufgenommen haben.
+Im klassischen Elevator Pitch fehlt die Möglichkeit der Visualisierung, also
+gilt: Kopfinformationen mit dem Bauch (den 4 Ps) verknüpfen. Jeder rationale
+Nutzen soll seine bildhafte Entsprechung im Bauch finden; der
+Gesprächspartner soll innerlich sehen, hören, fühlen, schmecken und riechen.
+
+\subsubsection{Inszenierung}
+
+Ein wirkungsvoller Elevator Pitch ist wie ein kleines Theaterstück, und ein
+Theaterstück wirkt nur, wenn die gesamte Rhetorik stimmt. Darum wird es lange
+vorher geprobt. Genau das gilt auch für den Pitch: inszenieren und proben,
+und einen Spannungsbogen bauen.
+
+\subsubsection{Die zehn goldenen Regeln}
+
+\begin{enumerate}
+  \item Seien Sie zuhörerorientiert.
+  \item Beginnen Sie mit einem Interessen-Katalysator.
+  \item Was ist der Grund, sich an Sie zu erinnern?
+  \item Beschreiben Sie \emph{nicht} die Idee, das Produkt oder die
+        Dienstleistung.
+  \item Verwenden Sie eine bildhafte Sprache.
+  \item Was ist die Problemlösung?
+  \item Was hat der Andere davon?
+  \item Das Ende: die Aufforderung zur Tat.
+  \item Zeigen Sie Begeisterung.
+  \item Übung macht den Meister.
+\end{enumerate}
+
+\subsection{Storytelling}
+
+Storytelling heißt, Informationen in Form von Geschichten zu erzählen. Es
+macht wichtige Informationen besser verständlich, unterstützt das Lernen und
+Mitdenken der Beteiligten nachhaltig und fördert die geistige Beteiligung.
+
+\subsubsection{Vier Aufgaben in den Public Relations}
+
+\begin{enumerate}
+  \item Es macht auf das Unternehmen aufmerksam.
+  \item Es informiert über das Unternehmen.
+  \item Es löst bedeutende Gefühle in den internen und externen
+        Bezugsgruppen aus.
+  \item Es sorgt dafür, dass die Bezugsgruppen das Unternehmen besser
+        speichern und aus ihrem Gedächtnis leichter und schneller abrufen
+        können.
+\end{enumerate}
+
+\subsubsection{Effekte von Storytelling und Storylistening}
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Struktur} & \textbf{Empathie}\\\hline
+Fokus & Vertrauen\\
+Motivation & Bindung\\
+Erinnerung & Großzügigkeit\\
+\end{tabular}
+\end{center}
+
+\subsubsection{Story-Struktur: B-T-E}
+
+\begin{itemize}
+  \item \textbf{B} Beginn: \glqq So wie es jetzt ist.\grqq{}
+  \item \textbf{T} Transformation: \glqq Es passiert etwas.\grqq{}
+  \item \textbf{E} Ende: \glqq Es hat Veränderung stattgefunden.\grqq{}
+\end{itemize}
+
+\subsubsection{Wandel anregen}
+
+Probleme ansprechen und zeigen, dass es Gewinner und Verlierer geben wird.
+Die meisten Menschen neigen zur \textbf{Verlustaversion}: Verlust wird höher
+gewichtet als Gewinn. Sie wird überwunden, indem man demonstriert, wie der
+Wandel große Gewinner und große Verlierer hervorbringt: der Wandel in der
+Story wird so angepasst, dass er wahrscheinlich in einer sehr positiven
+Zukunft für das Gegenüber endet, während Nichtstun in einer inakzeptabel
+negativen Zukunft endet.
+
+% =========================================
+\section{Wissenschaftliches Arbeiten}
+% =========================================
+
+\subsection{Der wissenschaftliche Blick}
+
+\begin{definitionbox}
+\textbf{Vier Prinzipien wissenschaftlichen Arbeitens:} Ehrlichkeit,
+Objektivität, Überprüfbarkeit, Nachvollziehbarkeit.
+\end{definitionbox}
+
+\subsection{Literaturarbeit}
+
+Die Suche läuft über Schlagworte und boolesche Operatoren, und die Wahl des
+Operators entscheidet über die Größenordnung des Ergebnisses.
+
+\begin{examplebox}
+Suche nach \emph{University}, \emph{Industry}, \emph{Collaboration}:
+\begin{center}
+\begin{tabular}{lr}
+\textbf{Verknüpfung} & \textbf{Treffer}\\\hline
+mit OR & 888.385\\
+mit AND & 1.236\\
+als exakte Phrase & 211\\
+\end{tabular}
+\end{center}
+\end{examplebox}
+
+Zur Beurteilung von Quellen dienen \textbf{Journal Rankings} (Impact Factor,
+Financial Times 50, VHB-Ranking) und die \textbf{Zitationshäufigkeit}. Wie
+oft ein Artikel zitiert wurde, kann Aufschluss über seine Relevanz geben;
+Achtung: neuere Artikel sind natürlich weniger zitiert.
+
+\subsubsection{Zitierwürdig und zitierfähig}
+
+\begin{center}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\textbf{zitierwürdig} & \textbf{nicht zitierwürdig} &
+\textbf{z.T.\ zitierwürdig, beschränkt zitierfähig}\\\hline
+Originalarbeiten;
+wissenschaftliche Fachbücher;
+Dissertationen;
+Artikel in Fachzeitschriften;
+(Electronic) Journals
+&
+nicht wissenschaftliche Bücher;
+allgemeine Lexika;
+Einführungsliteratur;
+Skripte;
+Seminararbeiten;
+Artikel in Boulevardzeitungen;
+allgemeine Internetseiten (inkl.\ Wikipedia)
+&
+Firmenschriften;
+Diplomarbeiten;
+graue Literatur;
+Fachwörterbücher und Fachlexika\\
+\end{tabular}
+\end{center}
+
+\subsection{Zitation}
+
+Richtiges Zitieren ist das Handwerkszeug des Wissenschaftlers. Der Autor macht
+deutlich, welche Gedanken und Befunde von anderen übernommen wurden. Zweck
+ist immer die Nachprüfbarkeit und Vertiefung für andere. Plagiatsversuche
+können bis zur Exmatrikulation führen.
+
+\begin{center}
+\begin{tabular}{p{0.46\textwidth}p{0.46\textwidth}}
+\textbf{Direktes Zitat} & \textbf{Indirektes Zitat}\\
+Quelle wird wörtlich angeführt & Quelle wird sinngemäß angeführt\\\hline
+\ldots fasst Owens (1976, S.~625) wie folgt zusammen: \glqq Unser Grundaxiom
+lautet, dass der beste Prädiktor künftigen Verhaltens in der Vergangenheit
+gezeigtes Verhalten ist.\grqq{}
+&
+Zukünftiges Verhalten lässt sich am besten durch in der Vergangenheit
+gezeigtes Verhalten prognostizieren (vgl.\ Owens 1976, S.~625).\\
+\end{tabular}
+\end{center}
+
+In den Wirtschaftswissenschaften sind indirekte, sinngemäße Zitate die Regel.
+Ein umformuliertes Zitat, das dem Original zu nahe bleibt, ist trotz
+Quellenangabe ein Plagiat.
+
+\begin{examplebox}
+\textbf{Original:} \glqq Bei der einfachen Zufallsstichprobe hat jedes
+Element der Grundgesamtheit die gleiche Chance, ausgewählt zu werden
+[\ldots].\grqq{}
+
+\textbf{Plagiat:} \glqq Bei der einfachen Zufallsauswahl haben alle Elemente
+der Grundgesamtheit die gleiche Chance, ausgewählt zu werden [\ldots]\grqq{}
+(vgl.\ Ebster 1999, S.~82).
+
+\textbf{Korrektes indirektes Zitat:} \glqq Für alle Untersuchungseinheiten
+besteht bei der einfachen Zufallsauswahl die gleiche Wahrscheinlichkeit, in
+die Stichprobe aufgenommen zu werden\grqq{} (vgl.\ Ebster 1999, S.~82).
+
+Es geht um die eigene intellektuelle Leistung.
+\end{examplebox}
+
+\subsubsection{Belegweise}
+
+Es gibt zwei Möglichkeiten, Quellen im Text zu belegen: als Anmerkungen in
+Fuß- oder Endnoten (im deutschen Raum verbreitet) oder als Kurzbelege im Text
+(im angloamerikanischen Raum verbreitet), also \glqq Kundenzufriedenheit führt
+zu Kundenloyalität (Oliver, 1999, S.~35).\grqq{}
+
+\subsection{Formalitäten}
+
+\textbf{Inhaltliche Gestaltung:} die eigene Meinung zurückhalten; auch
+allgemeine Aussagen belegen; aktueller Bezug und Praxisorientierung;
+eigenständige Darstellung.
+
+\textbf{Sprachliche Gestaltung:} knapp und nüchtern, unaufgeregt und
+sachlich; Fremdwörter korrekt benutzen; Wortzusammensetzungen vermeiden;
+blumige Sprache vermeiden; gegenlesen lassen, Rechtschreibung und Grammatik
+prüfen.
+
+\textbf{Titel der Arbeit:} die Visitenkarte der Arbeit. Der Titel sollte den
+Fokus klar beschreiben, auch wenn er dann weniger griffig klingt. Untertitel
+können den Fokus weiter verdeutlichen.
+
+\begin{examplebox}
+\glqq Fortsetzung folgt\ldots{} Der Effekt von Cliffhangern bei narrativen
+Serien auf Binge-Watching am Beispiel von Netflix\grqq{}
+\end{examplebox}
+
+Alle weiteren Formalitäten (Deckblatt, Inhaltsverzeichnis, Schriftart,
+Zitationsstil) sollten mit der betreuenden Person abgesprochen werden.
+
+\subsection{Zeitmanagement}
+
+\textbf{Planung:} Ziele genau definieren; den Zeitrahmen realistisch
+einschätzen (durch Selbstbeobachtung und Durchschnittswerte); mit ToDo-Listen
+arbeiten (heute, in 2--4 Tagen, in 5--10 Tagen, später).
+
+\subsubsection{Arbeitsschritte einer wissenschaftlichen Arbeit}
+
+\begin{enumerate}
+  \item Themensuche
+  \item Grundrecherche
+  \item Grobgliederung
+  \item Literaturrecherche und -auswertung
+  \item Forschungsdesign, Datenerhebung, Auswertung
+  \item Texterstellung
+  \item Fertigstellung: Layout, Druck, Kurzfassung (Abstract)
+\end{enumerate}
+
+Zur Terminierung dient ein \textbf{Gantt-Diagramm}: die Aktivitäten stehen in
+den Zeilen, die Kalenderwochen in den Spalten, und ein Balken markiert, wann
+welche Aktivität läuft.
+
+\subsubsection{Motivation durch Belohnung}
+
+Grundlage der modernen Verhaltenstherapie, operante Konditionierung. Zwei
+Möglichkeiten, die parallel genutzt werden sollten: das Arbeitsumfeld positiv
+gestalten und die geleistete Arbeit belohnen (Urlaub, Entspannung, Sport).
+
+\subsubsection{Eisenhower-Prinzip}
+
+\begin{center}
+\begin{tabular}{lll}
+ & \textbf{dringend} & \textbf{nicht dringend}\\\hline
+\textbf{wichtig} & sofort selbst erledigen & terminieren\\
+\textbf{nicht wichtig} & delegieren & Papierkorb\\
+\end{tabular}
+\end{center}
+
+% =========================================
+\section{Zur Klausur}
+% =========================================
+
+\begin{itemize}
+  \item Format: Single Choice, 30 Fragen zu je einem Punkt, 60 Minuten.
+  \item Keine Hilfsmittel zugelassen.
+  \item Die Studienleistung ist \textbf{unbenotet}, sie muss nur bestanden
+        werden.
+  \item Klausurrelevant sind alle behandelten Themen der Vorlesung. Nicht
+        klausurrelevant sind die Inhalte der Gastvorträge und die Folien zur
+        Bedienung des Folienmasters (aus \glqq 4. Präsentation\grqq{}, ab
+        Folie 51).
+  \item Inhalte, die im Wrap-Up nicht erwähnt werden, können trotzdem
+        Bestandteil der Klausur sein.
+\end{itemize}
+
+\subsection{Was am ehesten geprüft wird}
+
+Die Zahlen und die benannten Listen sind das, was sich in einer Single-Choice-
+Frage abfragen lässt:
+
+\begin{itemize}
+  \item die fünf Axiome von Watzlawick und die vier Seiten einer Nachricht;
+  \item die sechs Ich-Zustände und die drei Transaktionsarten;
+  \item die drei Elemente des Feedbacks;
+  \item 41\,\% Angst vor öffentlichem Reden; die drei Stressmodelle mit ihren
+        Autoren; die drei Phasen des Adaptionssyndroms;
+  \item SMART; die Aufteilung 15/75/10; die vier Phasen der Inhaltsplanung;
+  \item die Behaltensquoten 20/50/100; die vier Verständlichmacher; 16\,pt
+        für 5\,m und 24\,pt für 10\,m; höchstens drei Farben; 5 bis 7 Punkte
+        und höchstens sieben Folien am Stück;
+  \item Ethos, Pathos, Logos; die vier Distanzen; die sechs Basisemotionen;
+        die vier Pausenarten; die fünf Rednertypen; die dreizehn
+        Scheinargumente;
+  \item AIDA; 30 Sekunden gegen 3 Minuten; 1/7 gegen 6/7; die vier
+        Grundbedürfnisse (Pride, Profit, Pleasure, Peace); die zehn goldenen
+        Regeln; B-T-E;
+  \item zitierwürdig gegen zitierfähig; direktes gegen indirektes Zitat; die
+        sieben Arbeitsschritte; das Eisenhower-Prinzip.
+\end{itemize}
+
+\end{document}
