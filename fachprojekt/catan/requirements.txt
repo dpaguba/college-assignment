@@ -1,0 +1,7 @@
+websockets
+protobuf
+types-protobuf
+pyside6
+numpy
+python-json-logger
+tqdm
