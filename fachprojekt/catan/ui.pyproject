@@ -1,0 +1,10 @@
+{
+    "files": [
+        "debug_and_maintenance/ui_debug.py",
+        "ai_games/learn_settlers/ui/display.py",
+        "ai_games/learn_settlers/ui/board_view.py",
+        "ai_games/learn_settlers/ui/legacy_board_widget.py",
+        "ai_games/learn_settlers/ui/form.ui",
+        "ai_games/learn_settlers/ui/ui_player.py"
+    ]
+}
