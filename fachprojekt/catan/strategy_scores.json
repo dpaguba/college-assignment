@@ -1,0 +1,77 @@
+[
+  {
+    "strategy": {
+      "building_priorities": {
+        "settlement": 4,
+        "city": 4,
+        "road": 1,
+        "card": 1
+      },
+      "resource_values": {
+        "0": 0.25,
+        "1": 0.25,
+        "2": 0.1,
+        "3": 0.25,
+        "4": 0.15
+      },
+      "dev_card_priorities": {
+        "KNIGHT": 7,
+        "ROAD_BUILDING": 6,
+        "YEAR_OF_PLENTY": 5,
+        "MONOPOLY": 6
+      }
+    },
+    "games": 57,
+    "wins": 14
+  },
+  {
+    "strategy": {
+      "building_priorities": {
+        "settlement": 5,
+        "city": 4,
+        "road": 2,
+        "card": 1
+      },
+      "resource_values": {
+        "0": 0.3,
+        "1": 0.3,
+        "2": 0.1,
+        "3": 0.2,
+        "4": 0.1
+      },
+      "dev_card_priorities": {
+        "KNIGHT": 8,
+        "ROAD_BUILDING": 7,
+        "YEAR_OF_PLENTY": 6,
+        "MONOPOLY": 5
+      }
+    },
+    "games": 73,
+    "wins": 32
+  },
+  {
+    "strategy": {
+      "building_priorities": {
+        "settlement": 2,
+        "city": 3,
+        "road": 1,
+        "card": 4
+      },
+      "resource_values": {
+        "0": 0.2,
+        "1": 0.2,
+        "2": 0.15,
+        "3": 0.25,
+        "4": 0.2
+      },
+      "dev_card_priorities": {
+        "KNIGHT": 6,
+        "ROAD_BUILDING": 5,
+        "YEAR_OF_PLENTY": 8,
+        "MONOPOLY": 7
+      }
+    },
+    "games": 71,
+    "wins": 30
+  }
+]
