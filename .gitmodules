@@ -1,0 +1,3 @@
+[submodule "sopra-swim"]
+	path = sopra-swim
+	url = https://github.com/dpaguba/sopra-swim.git
