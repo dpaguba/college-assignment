@@ -26,3 +26,8 @@ In this section, you can find a list of courses I've taken and the corresponding
    - Folder: [📁 sopra](/sopra/)
    - Assignments:
      - Assignment 1 - [📄 Game Swim](/sopra/swim/)
+
+4. **Rechnernetze und Verteilte Systeme**
+   - Folder: [📁 rvs-pactice](/rvs-pactice/)
+   - Assignments:
+     - Assignment 1 - [📄 Client-Server-App](/rvs-practice/client-server-app/)
