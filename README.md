@@ -33,3 +33,8 @@ In this section, you can find a list of courses I've taken and the corresponding
    - Folder: [📁 rvs-pactice](/rvs-pactice/)
    - Assignments:
      - Assignment 1 - [📄 Client-Server-App](/rvs-practice/client-server-app/)
+
+4. **Rechnernetze und Verteilte Systeme**
+  - Folder: [📁 web-tech](/web-tech/)
+  - Assignments:
+    - Assignment 1 - [📄 To-Do App](/web-tech/ng-todo-app/)
