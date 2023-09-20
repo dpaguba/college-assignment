@@ -1,0 +1,24 @@
+/* TODO: optimize css code */
+
+.newTask{
+    width: 100%;
+    border: none;
+}
+
+.comment{
+    width: 100%;
+    border: none
+}
+
+.datepicker{
+    width: 100%;
+    border: none;
+}
+
+.btn-save{
+    margin-left: 8px;
+    background-color: #22B07E;
+    color: #fff
+}
+
+/* TODO: resize datepicker  */

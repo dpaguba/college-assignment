@@ -1,0 +1,36 @@
+<div mat-dialog-content class="dialog-window">
+    
+    <mat-form-field class="newTask">
+        <mat-label>Task Title</mat-label>
+        <input matInput>
+    </mat-form-field>
+
+    <mat-form-field class="comment">
+        <mat-label class="comment">→ Add Comment</mat-label>
+        <textarea matInput
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="5"
+            ></textarea>
+    </mat-form-field>
+
+    <!-- <mat-card class="demo-inline-calendar-card" >
+        <mat-calendar [(selected)]="selected"></mat-calendar>
+      </mat-card>
+      <p>Selected date: {{selected}}</p> -->
+    
+    <mat-form-field class="datepicker">
+        <mat-label>Choose a date</mat-label>
+        <input matInput [matDatepicker]="picker">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    
+</div>
+<div mat-dialog-action [align]="'end'">
+    <!-- TODO: add functionality to buttons -->
+    <button mat-raised-button mat-dialog-close class="btn-close">Close</button>
+    <button mat-raised-button class="btn-save">Save</button>
+</div>
