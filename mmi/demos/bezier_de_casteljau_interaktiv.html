@@ -1,0 +1,262 @@
+
+<style>
+  canvas { display:block; border-radius:8px; cursor:crosshair; touch-action:none; }
+  .ctrl { display:flex; align-items:center; gap:10px; margin:5px 0; font-size:13px; color:var(--color-text-secondary); }
+  .ctrl label { min-width:140px; }
+  .ctrl input[type=range] { flex:1; }
+  .ctrl span { min-width:40px; text-align:right; font-family:var(--font-mono); font-size:12px; color:var(--color-text-primary); }
+  .info-row { display:flex; gap:16px; flex-wrap:wrap; margin:6px 0; font-size:12px; }
+  .chip { padding:3px 10px; border-radius:12px; font-family:var(--font-mono); }
+</style>
+
+<canvas id="cv"></canvas>
+
+<div style="padding:6px 4px 2px">
+  <div class="ctrl">
+    <label>Parameter t*</label>
+    <input type="range" id="tSlider" min="0" max="100" value="60" oninput="draw()">
+    <span id="tVal">0.60</span>
+  </div>
+  <div class="ctrl">
+    <label>Grad n (Punkte)</label>
+    <input type="range" id="degSlider" min="2" max="5" value="3" step="1" oninput="resetPts(); draw()">
+    <span id="degVal">3 (4 Punkte)</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px; margin:4px 0; font-size:12px; color:var(--color-text-secondary)">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+      <input type="checkbox" id="showSteps" checked onchange="draw()"> de-Casteljau-Schritte zeigen
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+      <input type="checkbox" id="showHull" onchange="draw()"> Konvexe Hülle zeigen
+    </label>
+  </div>
+  <div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Kontrollpunkte (farbige Kreise) mit Maus/Touch ziehen</div>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+cv.width = cv.parentElement.offsetWidth || 640;
+cv.height = 340;
+const W = cv.width, H = cv.height;
+const ctx = cv.getContext('2d');
+
+const COLORS = ['#378ADD','#1D9E75','#E85D24','#7F77DD','#D4537E','#EF9F27'];
+const PT_R = 9;
+
+let pts = [];
+function resetPts() {
+  const n = +document.getElementById('degSlider').value;
+  document.getElementById('degVal').textContent = `${n} (${n+1} Punkte)`;
+  const margin = 80;
+  pts = [];
+  // nice default positions
+  const defaults = [
+    [[margin, H*0.65],[W*0.3, H*0.15],[W*0.7, H*0.15],[W-margin, H*0.65]],
+    [[margin, H*0.65],[W*0.25, H*0.15],[W*0.5, H*0.7],[W*0.75, H*0.15],[W-margin, H*0.65]],
+    [[margin, H*0.6],[W*0.2, H*0.15],[W*0.4, H*0.8],[W*0.6, H*0.1],[W*0.8, H*0.75],[W-margin, H*0.5]],
+    [[margin, H*0.5],[W*0.2, H*0.15],[W*0.35, H*0.8],[W*0.5, H*0.2],[W*0.65, H*0.8],[W*0.8, H*0.2],[W-margin, H*0.5]],
+  ];
+  const d = defaults[n-2] || defaults[0];
+  for (let i = 0; i <= n; i++) {
+    pts.push({ x: d[i][0], y: d[i][1] });
+  }
+}
+
+function deCasteljau(pts, t) {
+  let layers = [pts.map(p => ({x:p.x, y:p.y}))];
+  let cur = pts.map(p => ({x:p.x, y:p.y}));
+  while (cur.length > 1) {
+    const next = [];
+    for (let i = 0; i < cur.length - 1; i++) {
+      next.push({
+        x: (1-t)*cur[i].x + t*cur[i+1].x,
+        y: (1-t)*cur[i].y + t*cur[i+1].y
+      });
+    }
+    layers.push(next);
+    cur = next;
+  }
+  return { point: cur[0], layers };
+}
+
+function convexHull(points) {
+  const p = [...points].sort((a,b) => a.x-b.x || a.y-b.y);
+  const cross = (o,a,b) => (a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);
+  const lower = [], upper = [];
+  for (const pt of p) {
+    while (lower.length >= 2 && cross(lower[lower.length-2],lower[lower.length-1],pt) <= 0) lower.pop();
+    lower.push(pt);
+  }
+  for (const pt of [...p].reverse()) {
+    while (upper.length >= 2 && cross(upper[upper.length-2],upper[upper.length-1],pt) <= 0) upper.pop();
+    upper.push(pt);
+  }
+  upper.pop(); lower.pop();
+  return lower.concat(upper);
+}
+
+function isDark() { return window.matchMedia('(prefers-color-scheme: dark)').matches; }
+
+function draw() {
+  const t = +document.getElementById('tSlider').value / 100;
+  document.getElementById('tVal').textContent = t.toFixed(2);
+  const showSteps = document.getElementById('showSteps').checked;
+  const showHull = document.getElementById('showHull').checked;
+  const dark = isDark();
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw convex hull
+  if (showHull) {
+    const hull = convexHull(pts);
+    ctx.beginPath();
+    ctx.moveTo(hull[0].x, hull[0].y);
+    for (let i=1; i<hull.length; i++) ctx.lineTo(hull[i].x, hull[i].y);
+    ctx.closePath();
+    ctx.fillStyle = dark ? 'rgba(127,119,221,0.08)' : 'rgba(127,119,221,0.07)';
+    ctx.fill();
+    ctx.strokeStyle = dark ? 'rgba(127,119,221,0.4)' : 'rgba(127,119,221,0.35)';
+    ctx.setLineDash([6,4]);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // label
+    ctx.font = '11px "Anthropic Sans",sans-serif';
+    ctx.fillStyle = dark ? 'rgba(180,170,240,0.6)' : 'rgba(83,74,183,0.55)';
+    ctx.fillText('Konvexe Hülle', hull[0].x+6, hull[0].y-8);
+  }
+
+  // Draw control polygon
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i=1; i<pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.25)' : 'rgba(0,0,0,0.18)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5,4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw full Bézier curve
+  ctx.beginPath();
+  for (let i=0; i<=200; i++) {
+    const tt = i/200;
+    const { point } = deCasteljau(pts, tt);
+    i===0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y);
+  }
+  ctx.strokeStyle = dark ? '#7B9FD4' : '#185FA5';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // de Casteljau intermediate points/lines
+  const { point, layers } = deCasteljau(pts, t);
+  if (showSteps) {
+    for (let j=1; j<layers.length; j++) {
+      const layer = layers[j];
+      const col = COLORS[j % COLORS.length];
+      ctx.beginPath();
+      ctx.moveTo(layers[j-1][0].x, layers[j-1][0].y); // connect from prev
+      // draw connecting lines between intermediate pts
+      for (let i=0; i<layer.length; i++) {
+        ctx.beginPath();
+        ctx.moveTo(layers[j-1][i].x, layers[j-1][i].y);
+        ctx.lineTo(layers[j-1][i+1].x, layers[j-1][i+1].y);
+        ctx.strokeStyle = col + (dark ? 'cc' : '99');
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+      // draw intermediate points
+      for (const p of layer) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, j === layers.length-1 ? 0 : 5, 0, Math.PI*2);
+        ctx.fillStyle = col;
+        ctx.fill();
+      }
+    }
+  }
+
+  // Draw the curve point at t*
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, 7, 0, Math.PI*2);
+  ctx.fillStyle = '#E85D24';
+  ctx.fill();
+  ctx.strokeStyle = dark ? '#fff' : '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // label
+  ctx.font = '500 12px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = '#E85D24';
+  ctx.fillText(`b(t*=${t.toFixed(2)})`, point.x + 10, point.y - 8);
+
+  // Draw control points
+  for (let i=0; i<pts.length; i++) {
+    const p = pts[i];
+    const col = COLORS[i % COLORS.length];
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, PT_R, 0, Math.PI*2);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = dark ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.8)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // label
+    ctx.font = '500 12px "Anthropic Sans",sans-serif';
+    ctx.fillStyle = dark ? '#e0e0d0' : '#222';
+    ctx.fillText(`b${i}`, p.x + 12, p.y - 6);
+  }
+
+  // t* marker on parameter axis
+  const axY = H - 14, axX0 = 30, axX1 = W - 30;
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.2)' : 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(axX0, axY); ctx.lineTo(axX1, axY); ctx.stroke();
+  const txPos = axX0 + t*(axX1-axX0);
+  ctx.beginPath();
+  ctx.arc(txPos, axY, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#E85D24';
+  ctx.fill();
+  ctx.font = '11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = dark ? 'rgba(200,200,200,0.45)' : 'rgba(0,0,0,0.35)';
+  ctx.fillText('0', axX0-4, axY+11);
+  ctx.fillText('1', axX1-2, axY+11);
+  ctx.fillText('t', (axX0+axX1)/2, axY+11);
+}
+
+// Drag logic
+let dragging = null;
+function getPos(e) {
+  const r = cv.getBoundingClientRect();
+  const sc = cv.width / r.width;
+  const touch = e.touches ? e.touches[0] : e;
+  return { x: (touch.clientX - r.left)*sc, y: (touch.clientY - r.top)*sc };
+}
+function findPt(pos) {
+  for (let i=0; i<pts.length; i++) {
+    const dx = pts[i].x - pos.x, dy = pts[i].y - pos.y;
+    if (Math.sqrt(dx*dx+dy*dy) < PT_R*2) return i;
+  }
+  return null;
+}
+cv.addEventListener('mousedown', e => { dragging = findPt(getPos(e)); });
+cv.addEventListener('touchstart', e => { e.preventDefault(); dragging = findPt(getPos(e)); }, {passive:false});
+cv.addEventListener('mousemove', e => {
+  if (dragging === null) return;
+  const p = getPos(e);
+  pts[dragging].x = Math.max(10, Math.min(W-10, p.x));
+  pts[dragging].y = Math.max(10, Math.min(H-20, p.y));
+  draw();
+});
+cv.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (dragging === null) return;
+  const p = getPos(e);
+  pts[dragging].x = Math.max(10, Math.min(W-10, p.x));
+  pts[dragging].y = Math.max(10, Math.min(H-20, p.y));
+  draw();
+}, {passive:false});
+cv.addEventListener('mouseup', () => dragging = null);
+cv.addEventListener('touchend', () => dragging = null);
+
+resetPts();
+draw();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+</script>

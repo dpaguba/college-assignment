@@ -1,0 +1,249 @@
+
+<style>
+  #sl3 { font-size:13px; color:var(--color-text-primary); }
+  #slc3 { display:block; width:100%; border:0.5px solid var(--color-border-tertiary); border-radius:8px; cursor:default; touch-action:none; }
+  .s3-btn { padding:6px 14px; border-radius:6px; border:0.5px solid var(--color-border-secondary); background:transparent; color:var(--color-text-primary); cursor:pointer; font-size:13px; }
+  .s3-btn:hover { background:var(--color-background-secondary); }
+  .s3-btn:disabled { opacity:0.35; cursor:default; }
+  .s3-info { background:var(--color-background-secondary); border-radius:8px; padding:10px 14px; font-size:13px; line-height:1.8; margin-top:8px; }
+  .s3-info b { font-weight:500; color:var(--color-text-primary); }
+</style>
+<div id="sl3">
+  <canvas id="slc3" width="640" height="440"></canvas>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px;">
+    <button class="s3-btn" id="s3-prev" disabled>← Назад</button>
+    <button class="s3-btn" id="s3-next">Следующая строка →</button>
+    <button class="s3-btn" id="s3-all">Все сразу</button>
+    <button class="s3-btn" id="s3-reset">Сброс шагов</button>
+    <span style="font-size:12px;color:var(--color-text-tertiary)" id="s3-lbl"></span>
+  </div>
+  <div class="s3-info" id="s3-info">
+    <b>Перетаскивай вершины</b> мышью. Полигон — замкнутый контур A→B→C→D→E→F→A. Нажми "Следующая строка" чтобы запустить Scan-Line.
+  </div>
+</div>
+<script>
+(function(){
+  const cv = document.getElementById('slc3');
+  const ctx = cv.getContext('2d');
+  const W=640, H=440, PAD=44;
+  const GMIN=0, GMAX=16;
+  const PW=W-PAD*2, PH=H-PAD*2;
+
+  let verts = [
+    {x:2,  y:2,  name:'A'},
+    {x:8,  y:1,  name:'B'},
+    {x:14, y:5,  name:'C'},
+    {x:14, y:11, name:'D'},
+    {x:8,  y:13, name:'E'},
+    {x:2,  y:10, name:'F'},
+  ];
+
+  function tc(px,py){ return [PAD+(px-GMIN)/(GMAX-GMIN)*PW, PAD+(GMAX-py)/(GMAX-GMIN)*PH]; }
+  function fc(cx,cy){ return [(cx-PAD)/PW*(GMAX-GMIN)+GMIN, GMAX-(cy-PAD)/PH*(GMAX-GMIN)]; }
+
+  function getEdges(){
+    const out=[];
+    for(let i=0;i<verts.length;i++){
+      out.push({a:verts[i], b:verts[(i+1)%verts.length]});
+    }
+    return out;
+  }
+
+  function intersectX(e,y){
+    const {a,b}=e;
+    if(Math.abs(b.y-a.y)<1e-9) return null;
+    if(y>Math.max(a.y,b.y)||y<Math.min(a.y,b.y)) return null;
+    return a.x+(b.x-a.x)*(y-a.y)/(b.y-a.y);
+  }
+
+  function getYRange(){
+    const ys=verts.map(v=>v.y);
+    return {ymax:Math.max(...ys), ymin:Math.min(...ys)};
+  }
+
+  function getSegments(y){
+    const xs=[];
+    getEdges().forEach(e=>{
+      const x=intersectX(e,y);
+      if(x!==null) xs.push(x);
+    });
+    xs.sort((a,b)=>a-b);
+    const uniq=[];
+    xs.forEach(x=>{if(!uniq.length||Math.abs(x-uniq[uniq.length-1])>0.05) uniq.push(x);});
+    return uniq;
+  }
+
+  let steps=[], curStep=0, viewIdx=0, filled=[];
+  let snapshots=[];
+  let dragging=null;
+
+  function buildHistory(){
+    const {ymax,ymin}=getYRange();
+    steps=[];
+    for(let y=Math.floor(ymax);y>=Math.ceil(ymin);y--) steps.push(y);
+    curStep=0; viewIdx=0; filled=[];
+    snapshots=[{filled:[],y:null,segs:[],info:'<b>Перетаскивай вершины</b> мышью. Полигон — замкнутый контур A→B→C→D→E→F→A.<br>Нажми "Следующая строка" чтобы запустить Scan-Line сверху вниз.'}];
+  }
+
+  function doStep(){
+    if(curStep>=steps.length) return null;
+    const y=steps[curStep];
+    const segs=getSegments(y);
+    const newFilled=[...filled];
+    let info='';
+    if(segs.length<2){
+      info=`<b>y = ${y}:</b> weniger als 2 Schnittpunkte → keine Pixel gefärbt.`;
+    } else {
+      const pairs=[];
+      for(let i=0;i+1<segs.length;i+=2){
+        const x0=Math.ceil(segs[i]), x1=Math.floor(segs[i+1]);
+        if(x0<=x1){ newFilled.push({y,x0,x1}); pairs.push(`x ∈ [${x0}..${x1}]`); }
+      }
+      info=`<b>y = ${y}:</b> Schnittpunkte x = ${segs.map(x=>Math.round(x*10)/10).join(', ')} → gefärbt: ${pairs.join(' | ')||'–'}`;
+    }
+    filled=newFilled;
+    curStep++;
+    return {y,segs,info};
+  }
+
+  function stepFwd(){
+    const r=doStep();
+    if(!r) return;
+    snapshots.push({filled:[...filled],y:r.y,segs:r.segs,info:r.info});
+    viewIdx=snapshots.length-1;
+    draw(); updateUI();
+  }
+
+  function draw(){
+    const dark=matchMedia('(prefers-color-scheme: dark)').matches;
+    const s=snapshots[viewIdx]||snapshots[0];
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle=dark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)'; ctx.lineWidth=0.5;
+    for(let x=GMIN;x<=GMAX;x+=2){const[cx]=tc(x,0);ctx.beginPath();ctx.moveTo(cx,PAD);ctx.lineTo(cx,H-PAD*0.5);ctx.stroke();}
+    for(let y=GMIN;y<=GMAX;y+=2){const[,cy]=tc(0,y);ctx.beginPath();ctx.moveTo(PAD,cy);ctx.lineTo(W-PAD*0.3,cy);ctx.stroke();}
+    ctx.fillStyle=dark?'#888780':'#888780'; ctx.font='11px sans-serif';
+    ctx.textAlign='center';
+    for(let x=GMIN;x<=GMAX;x+=2){const[cx]=tc(x,0);ctx.fillText(x,cx,H-PAD*0.5+14);}
+    ctx.textAlign='right';
+    for(let y=GMIN;y<=GMAX;y+=2){const[,cy]=tc(0,y);ctx.fillText(y,PAD-6,cy+4);}
+
+    // filled pixels
+    const cellSz=PW/(GMAX-GMIN);
+    s.filled.forEach(f=>{
+      for(let px=f.x0;px<=f.x1;px++){
+        const[pcx,pcy]=tc(px+0.5,f.y);
+        ctx.fillStyle=dark?'rgba(55,138,221,0.2)':'rgba(55,138,221,0.14)';
+        ctx.fillRect(pcx-cellSz/2,pcy-cellSz/2,cellSz,cellSz);
+        ctx.beginPath();ctx.arc(pcx,pcy,Math.min(cellSz*0.28,4.5),0,Math.PI*2);
+        ctx.fillStyle='#378ADD';ctx.fill();
+      }
+    });
+
+    // polygon outline
+    ctx.strokeStyle=dark?'#c2c0b6':'#2C2C2A'; ctx.lineWidth=2; ctx.setLineDash([]);
+    ctx.beginPath();
+    verts.forEach((v,i)=>{
+      const[vx,vy]=tc(v.x,v.y);
+      i===0?ctx.moveTo(vx,vy):ctx.lineTo(vx,vy);
+    });
+    ctx.closePath(); ctx.stroke();
+
+    // edge labels (midpoints)
+    ctx.font='11px sans-serif';
+    getEdges().forEach(e=>{
+      const mx=(e.a.x+e.b.x)/2, my=(e.a.y+e.b.y)/2;
+      const[lx,ly]=tc(mx,my);
+      const na=e.a.name, nb=e.b.name;
+      ctx.fillStyle=dark?'rgba(194,192,182,0.6)':'rgba(60,60,58,0.5)';
+      ctx.textAlign='center';
+      ctx.fillText(na+nb,lx,ly);
+    });
+
+    // scan line
+    if(s.y!==null){
+      const[,sy]=tc(0,s.y);
+      ctx.strokeStyle='#E24B4A'; ctx.lineWidth=2; ctx.setLineDash([7,4]);
+      ctx.beginPath();ctx.moveTo(PAD,sy);ctx.lineTo(W-PAD*0.3,sy);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#E24B4A'; ctx.font='500 12px sans-serif'; ctx.textAlign='left';
+      ctx.fillText('y='+s.y, W-PAD*0.3+4, sy+4);
+      s.segs.forEach(sx=>{
+        const[scx,scy]=tc(sx,s.y);
+        ctx.beginPath();ctx.arc(scx,scy,6,0,Math.PI*2);
+        ctx.fillStyle='#E24B4A'; ctx.globalAlpha=0.85; ctx.fill(); ctx.globalAlpha=1;
+        ctx.strokeStyle=dark?'#111':'#fff'; ctx.lineWidth=1.5; ctx.stroke();
+      });
+    }
+
+    // vertices
+    verts.forEach((v,i)=>{
+      const[vx,vy]=tc(v.x,v.y);
+      const isD=dragging===i;
+      ctx.beginPath();ctx.arc(vx,vy,isD?10:7,0,Math.PI*2);
+      ctx.fillStyle=isD?'#E24B4A':'#378ADD'; ctx.fill();
+      ctx.strokeStyle=dark?'#111':'#fff'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle=dark?'#fff':'#000'; ctx.font='500 13px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(v.name,vx,vy-12);
+    });
+  }
+
+  function updateUI(){
+    const {ymax,ymin}=getYRange();
+    document.getElementById('s3-lbl').textContent=
+      viewIdx===0?`Bereich: y ${Math.floor(ymax)} → ${Math.ceil(ymin)}`:`Шаг ${viewIdx}/${steps.length} | y=${snapshots[viewIdx].y||''}`;
+    document.getElementById('s3-prev').disabled=viewIdx===0;
+    document.getElementById('s3-next').disabled=curStep>=steps.length;
+    document.getElementById('s3-info').innerHTML=snapshots[viewIdx].info;
+  }
+
+  function getPos(e){
+    const r=cv.getBoundingClientRect();
+    return fc((e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H);
+  }
+
+  function findNear(wx,wy){
+    let best=null,bd=1e9;
+    verts.forEach((v,i)=>{const d=(v.x-wx)**2+(v.y-wy)**2;if(d<bd){bd=d;best=i;}});
+    const[cx,cy]=tc(verts[best].x,verts[best].y);
+    const[tx,ty]=tc(wx,wy);
+    return Math.sqrt((cx-tx)**2+(cy-ty)**2)<20?best:null;
+  }
+
+  cv.addEventListener('mousedown',e=>{
+    const[wx,wy]=getPos(e); const i=findNear(wx,wy);
+    if(i!==null){dragging=i;cv.style.cursor='grabbing';}
+  });
+  cv.addEventListener('mousemove',e=>{
+    if(dragging===null){
+      const[wx,wy]=getPos(e);
+      cv.style.cursor=findNear(wx,wy)!==null?'grab':'default';
+      return;
+    }
+    const[wx,wy]=getPos(e);
+    verts[dragging].x=Math.max(GMIN,Math.min(GMAX,Math.round(wx*2)/2));
+    verts[dragging].y=Math.max(GMIN,Math.min(GMAX,Math.round(wy*2)/2));
+    buildHistory(); draw(); updateUI();
+  });
+  cv.addEventListener('mouseup',()=>{dragging=null;cv.style.cursor='default';});
+  cv.addEventListener('mouseleave',()=>{dragging=null;});
+
+  cv.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];const[wx,wy]=getPos(t);dragging=findNear(wx,wy);},{passive:false});
+  cv.addEventListener('touchmove',e=>{
+    e.preventDefault();if(dragging===null)return;
+    const[wx,wy]=getPos(e.touches[0]);
+    verts[dragging].x=Math.max(GMIN,Math.min(GMAX,Math.round(wx*2)/2));
+    verts[dragging].y=Math.max(GMIN,Math.min(GMAX,Math.round(wy*2)/2));
+    buildHistory();draw();updateUI();
+  },{passive:false});
+  cv.addEventListener('touchend',()=>{dragging=null;});
+
+  document.getElementById('s3-next').onclick=()=>stepFwd();
+  document.getElementById('s3-prev').onclick=()=>{if(viewIdx>0){viewIdx--;draw();updateUI();}};
+  document.getElementById('s3-all').onclick=()=>{while(curStep<steps.length)stepFwd();};
+  document.getElementById('s3-reset').onclick=()=>{buildHistory();draw();updateUI();};
+
+  buildHistory(); draw(); updateUI();
+})();
+</script>

@@ -1,0 +1,283 @@
+
+<style>
+  canvas{display:block;border-radius:8px;touch-action:none;}
+  .tab-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+  .tab{padding:5px 13px;border-radius:6px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;font-size:12px;font-family:var(--font-sans);transition:all .15s;}
+  .tab.on{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info);}
+  .ctrl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-secondary);margin:3px 0;}
+  .ctrl label{min-width:100px;}
+  .ctrl input[type=range]{flex:1;}
+  .ctrl span{min-width:36px;text-align:right;font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--color-text-primary);}
+  #schema{font-size:11px;font-family:var(--font-mono);background:var(--color-background-secondary);border-radius:8px;padding:10px 14px;margin-top:6px;overflow-x:auto;line-height:1.9;color:var(--color-text-primary);}
+  #info{font-size:12px;line-height:1.75;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:8px;padding:10px 14px;margin-top:6px;}
+  #info strong{color:var(--color-text-primary);font-weight:500;}
+</style>
+
+<div class="tab-row">
+  <button class="tab on" onclick="setMode(0)">Unterteilung + Schema</button>
+  <button class="tab"    onclick="setMode(1)">Konvexe Hüllen</button>
+  <button class="tab"    onclick="setMode(2)">Iterierte Unterteilung</button>
+</div>
+
+<canvas id="cv" height="310"></canvas>
+
+<div style="padding:4px 2px 0;display:flex;gap:10px;flex-wrap:wrap;">
+  <div class="ctrl" style="flex:1;min-width:140px;" id="tRow">
+    <label>t* =</label>
+    <input type="range" id="tS" min="5" max="95" value="40" oninput="go()">
+    <span id="tL">0.40</span>
+  </div>
+  <div class="ctrl" style="flex:1;min-width:140px;" id="iterRow" style="display:none">
+    <label>Tiefe =</label>
+    <input type="range" id="iterS" min="0" max="5" value="2" step="1" oninput="go()">
+    <span id="iterL">2</span>
+  </div>
+</div>
+
+<div id="schema"></div>
+<div id="info"></div>
+
+<script>
+const cv=document.getElementById('cv');
+cv.width=cv.parentElement.offsetWidth||640;
+const W=cv.width, H=cv.height;
+const ctx=cv.getContext('2d');
+
+let mode=0, drag=null;
+// cubic control points
+let pts=[
+  {x:W*.10,y:H*.70},{x:W*.28,y:H*.12},{x:W*.70,y:H*.88},{x:W*.90,y:H*.22}
+];
+
+function binom(n,k){if(k<0||k>n)return 0;if(k===0||k===n)return 1;let r=1;for(let i=0;i<k;i++)r=r*(n-i)/(i+1);return Math.round(r);}
+function B(n,i,t){return binom(n,i)*Math.pow(t,i)*Math.pow(1-t,n-i);}
+function bezier(ps,t){let x=0,y=0,n=ps.length-1;for(let i=0;i<=n;i++){const w=B(n,i,t);x+=ps[i].x*w;y+=ps[i].y*w;}return{x,y};}
+function isDark(){return matchMedia('(prefers-color-scheme:dark)').matches;}
+
+// Full de Casteljau schema returning all layers
+function casteljau(ps,t){
+  const layers=[ps.map(p=>({x:p.x,y:p.y}))];
+  let cur=layers[0];
+  while(cur.length>1){
+    const nxt=cur.slice(0,-1).map((_,i)=>({x:(1-t)*cur[i].x+t*cur[i+1].x,y:(1-t)*cur[i].y+t*cur[i+1].y}));
+    layers.push(nxt);cur=nxt;
+  }
+  return layers;
+}
+
+// Extract left and right sub-segments from layers
+function subdivide(ps,t){
+  const layers=casteljau(ps,t);
+  const n=ps.length-1;
+  const left=layers.map(l=>l[0]);                           // b_0^j for j=0..n
+  const right=layers.map((l,j)=>l[l.length-1]).reverse();  // b_{n-j}^j reversed
+  return{left,right,layers};
+}
+
+// Draw a curve given control points
+function drawCurve(ps,col,lw,dash=[]){
+  ctx.beginPath();ctx.setLineDash(dash);
+  for(let i=0;i<=300;i++){const p=bezier(ps,i/300);i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);}
+  ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke();ctx.setLineDash([]);
+}
+function drawPoly(ps,col,lw,dash=[]){
+  ctx.beginPath();ctx.setLineDash(dash);
+  ps.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke();ctx.setLineDash([]);
+}
+function dot(x,y,r,fill,stroke){
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+function lbl(txt,x,y,col,align='left'){
+  ctx.font='500 11px "Anthropic Sans",sans-serif';ctx.fillStyle=col;ctx.textAlign=align;ctx.fillText(txt,x,y);
+}
+
+function convexHull(ps){
+  const p=[...ps].sort((a,b)=>a.x-b.x||a.y-b.y);
+  const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);
+  const lo=[],up=[];
+  for(const q of p){while(lo.length>=2&&cross(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q);}
+  for(const q of [...p].reverse()){while(up.length>=2&&cross(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q);}
+  up.pop();lo.pop();return lo.concat(up);
+}
+function drawHull(ps,fillCol,strokeCol){
+  const h=convexHull(ps);
+  ctx.beginPath();h.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();
+  ctx.fillStyle=fillCol;ctx.fill();ctx.strokeStyle=strokeCol;ctx.lineWidth=1.2;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
+}
+
+// ── MODE 0: Subdivision + de Casteljau schema ─────────────────────────────
+function m0(){
+  const t=+document.getElementById('tS').value/100;
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+  const{left,right,layers}=subdivide(pts,t);
+
+  // original curve (dimmed)
+  drawCurve(pts,dark?'rgba(160,170,200,0.3)':'rgba(0,0,180,0.15)',2,[6,3]);
+
+  // de Casteljau construction lines
+  const n=pts.length-1;
+  for(let j=1;j<layers.length;j++){
+    const prev=layers[j-1],cur=layers[j];
+    const alpha=0.5+j*0.1;
+    for(let i=0;i<cur.length;i++){
+      ctx.beginPath();
+      ctx.moveTo(prev[i].x,prev[i].y);ctx.lineTo(prev[i+1].x,prev[i+1].y);
+      ctx.strokeStyle=dark?`rgba(180,180,180,${alpha*0.5})`:`rgba(120,120,120,${alpha*0.4})`;
+      ctx.lineWidth=0.8;ctx.stroke();
+    }
+    for(const p of cur){
+      dot(p.x,p.y,3,dark?'rgba(200,200,200,0.6)':'rgba(80,80,80,0.5)');
+    }
+  }
+
+  // left segment (blue)
+  drawCurve(left,'#378ADD',2.8);
+  drawPoly(left,dark?'rgba(55,138,221,0.5)':'rgba(55,138,221,0.35)',1,[4,3]);
+
+  // right segment (green)
+  drawCurve(right,'#1D9E75',2.8);
+  drawPoly(right,dark?'rgba(29,158,117,0.5)':'rgba(29,158,117,0.35)',1,[4,3]);
+
+  // highlight left-edge pts (the b_0^j)
+  left.forEach((p,j)=>{
+    dot(p.x,p.y,j===0||j===n?7:5,'#378ADD','#fff');
+    lbl(`b₀^${j}`,p.x-14,p.y-6,dark?'#6BB8F0':'#185FA5','left');
+  });
+  // highlight right-edge pts
+  right.forEach((p,j)=>{
+    if(j===0)return; // already marked as split pt
+    dot(p.x,p.y,j===n?7:5,'#1D9E75','#fff');
+  });
+
+  // split point
+  const sp=bezier(pts,t);
+  dot(sp.x,sp.y,8,'#E85D24','#fff');
+  lbl(`b(t*=${t.toFixed(2)}) = b₀^${n}`,sp.x+10,sp.y-10,'#E85D24');
+
+  // original ctrl pts
+  pts.forEach((p,i)=>{
+    dot(p.x,p.y,6,dark?'rgba(200,200,200,0.4)':'rgba(100,100,100,0.35)');
+    lbl(`b${i}⁰`,p.x+8,p.y+14,dark?'rgba(200,200,200,0.5)':'rgba(80,80,80,0.4)');
+  });
+
+  lbl('Linkes Segment (blau)',W*.22,H-8,'#378ADD','center');
+  lbl('Rechtes Segment (grün)',W*.72,H-8,'#1D9E75','center');
+
+  // Build schema text
+  const fmt=(p)=>`(${p.x.toFixed(0)},${p.y.toFixed(0)})`;
+  const LCOLS=['#378ADD','#1D9E75','#E85D24','#7F77DD'];
+  let html='<span style="color:var(--color-text-secondary)">de-Casteljau-Dreiecksschema bei t* = '+t.toFixed(2)+':</span><br><br>';
+  html+='<span style="color:var(--color-text-secondary)">j=0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j=1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j=2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j=3</span><br>';
+  for(let i=0;i<=n;i++){
+    let row='';
+    for(let j=0;j<=n-i;j++){
+      const p=layers[j][i];
+      const isLeft=i===0;
+      const isRight=j===n-i;
+      const col=isLeft?'#378ADD':isRight?'#1D9E75':'var(--color-text-secondary)';
+      const marker=isLeft?' ◀':''; 
+      const marker2=isRight?' ▶':'';
+      row+=`<span style="color:${col}">${fmt(p)}${marker}${marker2}</span>  `;
+    }
+    html+=row+'<br>';
+  }
+  html+='<br><span style="color:#378ADD">◀ Linkes Segment: erste Spalte</span>  |  <span style="color:#1D9E75">▶ Rechtes Segment: Haupt-Diagonale</span>';
+  document.getElementById('schema').innerHTML=html;
+  document.getElementById('info').innerHTML=`<strong>Satz:</strong> Der Punkt b(t*) teilt das Segment in zwei Bézier-Segmente <strong>gleichen Grades</strong>. Die Kontrollpunkte des linken Segments sind die <span style="color:#378ADD">erste Spalte (b₀^j)</span> des Dreiecksschemas. Die Kontrollpunkte des rechten Segments sind die <span style="color:#1D9E75">letzte Diagonale (b_{n−j}^j)</span>. Zusammen ergeben beide Segmente exakt die ursprüngliche Kurve.`;
+}
+
+// ── MODE 1: Konvexe Hüllen ────────────────────────────────────────────────
+function m1(){
+  const t=+document.getElementById('tS').value/100;
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+  const{left,right}=subdivide(pts,t);
+
+  // Original hull
+  drawHull(pts, dark?'rgba(127,119,221,0.06)':'rgba(127,119,221,0.05)', dark?'rgba(127,119,221,0.4)':'rgba(83,74,183,0.35)');
+
+  // Left hull (blue fill)
+  drawHull(left, dark?'rgba(55,138,221,0.15)':'rgba(55,138,221,0.12)', dark?'rgba(55,138,221,0.7)':'rgba(24,95,165,0.6)');
+  // Right hull (green fill)
+  drawHull(right, dark?'rgba(29,158,117,0.15)':'rgba(29,158,117,0.12)', dark?'rgba(29,158,117,0.7)':'rgba(15,110,86,0.6)');
+
+  drawCurve(pts,dark?'rgba(140,170,220,0.8)':'rgba(24,95,165,0.6)',2.5);
+  drawCurve(left,'#378ADD',2);
+  drawCurve(right,'#1D9E75',2);
+
+  pts.forEach((p,i)=>{dot(p.x,p.y,6,dark?'rgba(200,200,200,0.4)':'rgba(100,100,100,0.35)');});
+  left.forEach((p,j)=>{if(j>0&&j<left.length-1)dot(p.x,p.y,4,'#378ADD','#fff');});
+  right.forEach((p,j)=>{if(j>0&&j<right.length-1)dot(p.x,p.y,4,'#1D9E75','#fff');});
+
+  lbl('Original-Hülle (violett, groß)',W/2,16,'#7F77DD','center');
+  lbl('Zwei kleinere Hüllen (blau + grün)',W/2,30,dark?'rgba(200,200,200,0.6)':'rgba(60,60,60,0.55)','center');
+
+  document.getElementById('schema').innerHTML='';
+  document.getElementById('info').innerHTML=`<strong>Bemerkung 1 — Bessere Approximation:</strong> Die violett-gestrichelte Fläche ist die konvexe Hülle der ursprünglichen 4 Kontrollpunkte. Nach der Unterteilung bei t*=${t.toFixed(2)} entstehen zwei <strong>kleinere</strong> konvexe Hüllen (blau und grün), die die Kurve enger einschließen. Je öfter man unterteilt, desto präziser werden die Hüllen als Kurven-Approximation — das ist die Grundlage aller Schnittpunkt-Algorithmen.`;
+}
+
+// ── MODE 2: Iterierte Unterteilung ────────────────────────────────────────
+function m2(){
+  const depth=+document.getElementById('iterS').value;
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+
+  // draw original curve (reference)
+  drawCurve(pts,dark?'rgba(160,160,200,0.25)':'rgba(0,0,180,0.12)',2,[6,4]);
+
+  // Recursively subdivide at t=0.5
+  function subdivideAll(ps,d){
+    if(d===0){
+      // draw this polygon segment
+      drawPoly(ps,dark?`rgba(55,138,221,0.7)`:`rgba(24,95,165,0.6)`,1);
+      // draw hull
+      const h=convexHull(ps);
+      ctx.beginPath();h.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();
+      ctx.fillStyle=dark?'rgba(55,138,221,0.07)':'rgba(55,138,221,0.06)';ctx.fill();
+      return;
+    }
+    const{left,right}=subdivide(ps,0.5);
+    subdivideAll(left,d-1);
+    subdivideAll(right,d-1);
+  }
+  subdivideAll(pts,depth);
+
+  // draw the original control points
+  pts.forEach((p,i)=>{dot(p.x,p.y,6,dark?'rgba(232,93,36,0.5)':'rgba(153,60,29,0.5)');});
+
+  const numSegs=Math.pow(2,depth);
+  document.getElementById('schema').innerHTML='';
+  document.getElementById('info').innerHTML=`<strong>Bemerkung 2 — Konvergenz gegen die Kurve:</strong> Bei Tiefe ${depth} entstehen <strong>${numSegs} Teilsegmente</strong> durch iterierte Halbierung (t*=0.5). Die blauen Polygone approximieren die Kurve immer besser. Im Grenzübergang (Tiefe → ∞) <strong>konvergiert der Polygonzug gegen die exakte Bézier-Kurve</strong>. Das ist die Grundlage aller Rasterisierungs-Algorithmen: unterteile, bis die Segmente so kurz sind, dass man sie als Geraden zeichnen kann.`;
+}
+
+// ── dispatch ─────────────────────────────────────────────────────────────
+function go(){
+  const t=+document.getElementById('tS').value/100;
+  const d=+document.getElementById('iterS').value;
+  document.getElementById('tL').textContent=t.toFixed(2);
+  document.getElementById('iterL').textContent=d;
+  document.getElementById('tRow').style.display=mode===2?'none':'flex';
+  document.getElementById('iterRow').style.display=mode===2?'flex':'none';
+  [m0,m1,m2][mode]();
+}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',i===m));
+  go();
+}
+
+// ── drag ─────────────────────────────────────────────────────────────────
+const R=16;
+function gp(e){const r=cv.getBoundingClientRect(),sc=cv.width/r.width,s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sc,y:(s.clientY-r.top)*sc};}
+cv.addEventListener('mousedown',e=>{const p=gp(e);drag=pts.findIndex(q=>Math.hypot(q.x-p.x,q.y-p.y)<R);if(drag>=0)cv.style.cursor='grabbing';});
+cv.addEventListener('touchstart',e=>{e.preventDefault();const p=gp(e);drag=pts.findIndex(q=>Math.hypot(q.x-p.x,q.y-p.y)<R);},{passive:false});
+function mv(e){if(drag===null||drag<0)return;const p=gp(e);pts[drag].x=Math.max(8,Math.min(W-8,p.x));pts[drag].y=Math.max(8,Math.min(H-16,p.y));go();}
+cv.addEventListener('mousemove',mv);cv.addEventListener('touchmove',e=>{e.preventDefault();mv(e);},{passive:false});
+cv.addEventListener('mouseup',()=>{drag=null;cv.style.cursor='default';});
+cv.addEventListener('touchend',()=>drag=null);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',go);
+go();
+</script>

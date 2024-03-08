@@ -1,0 +1,191 @@
+
+<style>
+  .row { display:flex; align-items:center; gap:10px; margin:5px 0; font-size:13px; color:var(--color-text-secondary); }
+  .row label { min-width:130px; font-family:var(--font-mono); font-size:12px; color:var(--color-text-primary); }
+  .row input[type=range] { flex:1; }
+  .row span { min-width:44px; text-align:right; font-family:var(--font-mono); font-size:12px; color:var(--color-text-primary); }
+  .deg-btn { padding:4px 14px; border-radius:6px; border:1px solid var(--color-border-secondary); background:var(--color-background-secondary); color:var(--color-text-secondary); cursor:pointer; font-size:12px; transition:background .15s; }
+  .deg-btn.active { background:var(--color-background-info); color:var(--color-text-info); border-color:var(--color-border-info); }
+  canvas { display:block; width:100%; border-radius:8px; }
+</style>
+
+<canvas id="cv" height="240"></canvas>
+
+<div style="padding:6px 4px 0">
+  <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+    <span style="font-size:12px;color:var(--color-text-secondary);margin-right:4px">Grad n =</span>
+    <button class="deg-btn active" id="b1" onclick="setDeg(1)">1 (linear)</button>
+    <button class="deg-btn" id="b2" onclick="setDeg(2)">2 (quadratisch)</button>
+    <button class="deg-btn" id="b3" onclick="setDeg(3)">3 (kubisch)</button>
+  </div>
+
+  <div id="sliders"></div>
+
+  <div style="margin-top:8px;padding:8px;border-radius:8px;background:var(--color-background-secondary);font-family:var(--font-mono);font-size:12px;color:var(--color-text-secondary)" id="formula"></div>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const W = cv.offsetWidth || 640;
+cv.width = W;
+const H = 240;
+const ctx = cv.getContext('2d');
+
+let deg = 1;
+let coeffs = { 1:[0.5,0.4], 2:[0.5,0.4,-0.6], 3:[0.5,0.4,-0.6,0.3] };
+
+function setDeg(d) {
+  deg = d;
+  [1,2,3].forEach(i => {
+    document.getElementById('b'+i).classList.toggle('active', i===d);
+  });
+  buildSliders();
+  draw();
+}
+
+function buildSliders() {
+  const names = ['a₀ (Startpunkt)', 'a₁ (Richtung)', 'a₂ (Krümmung)', 'a₃ (S-Form)'];
+  const c = coeffs[deg];
+  let html = '';
+  for (let i = 0; i <= deg; i++) {
+    const val = (c[i] * 100).toFixed(0);
+    html += `<div class="row">
+      <label>${names[i]}</label>
+      <input type="range" min="-100" max="100" value="${val}" oninput="updateCoeff(${i}, this.value/100); draw()">
+      <span id="cv${i}">${c[i].toFixed(2)}</span>
+    </div>`;
+  }
+  document.getElementById('sliders').innerHTML = html;
+  updateFormula();
+}
+
+function updateCoeff(i, v) {
+  coeffs[deg][i] = v;
+  document.getElementById('cv'+i).textContent = v.toFixed(2);
+  updateFormula();
+}
+
+function poly(t) {
+  const c = coeffs[deg];
+  let y = 0;
+  for (let i = 0; i < c.length; i++) y += c[i] * Math.pow(t, i);
+  return y;
+}
+
+function updateFormula() {
+  const c = coeffs[deg];
+  const terms = ['a₀', 'a₁·t', 'a₂·t²', 'a₃·t³'];
+  const vals = c.map((v,i) => `${v>=0?'+':'-'}${Math.abs(v).toFixed(2)}${i>0?'·t'+(i>1?i:''):''}` );
+  let f = `p(t) = ${c[0].toFixed(2)}`;
+  for (let i=1; i<=deg; i++) {
+    const s = c[i] >= 0 ? ' + ' : ' - ';
+    f += s + Math.abs(c[i]).toFixed(2) + '·t' + (i>1?i:'');
+  }
+  document.getElementById('formula').textContent = f + '     mit t ∈ [0, 1]';
+}
+
+function isDark() { return window.matchMedia('(prefers-color-scheme: dark)').matches; }
+
+function draw() {
+  const dark = isDark();
+  ctx.clearRect(0, 0, W, H);
+
+  const padL = 50, padR = 20, padT = 20, padB = 40;
+  const gW = W - padL - padR;
+  const gH = H - padT - padB;
+
+  // Axes
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.2)' : 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 0.5;
+  // grid
+  for (let i = 0; i <= 4; i++) {
+    const x = padL + (i/4)*gW;
+    ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT+gH); ctx.stroke();
+    const y = padT + (i/4)*gH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+gW, y); ctx.stroke();
+  }
+
+  // axis lines
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.5)' : 'rgba(0,0,0,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, padT+gH); ctx.lineTo(padL+gW, padT+gH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+gH); ctx.stroke();
+
+  // axis labels
+  ctx.font = '11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = dark ? 'rgba(200,200,200,0.5)' : 'rgba(60,60,60,0.5)';
+  ctx.textAlign = 'center';
+  ['0','0.25','0.5','0.75','1'].forEach((l,i) => ctx.fillText(l, padL+(i/4)*gW, H-8));
+  ctx.fillText('t', padL+gW-4, H-8);
+  ctx.textAlign = 'right';
+  ctx.fillText('p(t)', padL-4, padT+10);
+
+  // midline
+  const midY = padT + gH/2;
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.1)' : 'rgba(0,0,0,0.08)';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(padL+gW, midY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Compute curve
+  const steps = 200;
+  const pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const y = poly(t);
+    const px = padL + t * gW;
+    const py = midY - y * (gH * 0.42);
+    pts.push([px, py]);
+  }
+
+  // Gradient stroke by t value
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const tt = i / pts.length;
+    ctx.beginPath();
+    ctx.moveTo(pts[i][0], pts[i][1]);
+    ctx.lineTo(pts[i+1][0], pts[i+1][1]);
+    // Color: from blue (t=0) to orange (t=1)
+    const r = Math.round(24 + tt * (232-24));
+    const g = Math.round(138 + tt * (93-138));
+    const b = Math.round(221 + tt * (36-221));
+    ctx.strokeStyle = `rgb(${r},${g},${b})`;
+    ctx.stroke();
+  }
+
+  // Start point
+  ctx.beginPath();
+  ctx.arc(pts[0][0], pts[0][1], 5, 0, Math.PI*2);
+  ctx.fillStyle = '#188ADD';
+  ctx.fill();
+  ctx.font = '500 11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = '#188ADD';
+  ctx.textAlign = 'left';
+  ctx.fillText('t = 0', pts[0][0]+8, pts[0][1]-6);
+
+  // End point
+  const ep = pts[pts.length-1];
+  ctx.beginPath();
+  ctx.arc(ep[0], ep[1], 5, 0, Math.PI*2);
+  ctx.fillStyle = '#E85D24';
+  ctx.fill();
+  ctx.fillStyle = '#E85D24';
+  ctx.textAlign = 'right';
+  ctx.fillText('t = 1', ep[0]-8, ep[1]-6);
+
+  // Degree label
+  ctx.font = '500 12px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = dark ? 'rgba(200,200,200,0.4)' : 'rgba(60,60,60,0.35)';
+  ctx.textAlign = 'right';
+  ctx.fillText(`Grad n = ${deg}   |   ${deg+1} Koeffizienten`, W-padR, padT+14);
+}
+
+buildSliders();
+draw();
+window.addEventListener('resize', () => {
+  cv.width = cv.offsetWidth;
+  draw();
+});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+</script>

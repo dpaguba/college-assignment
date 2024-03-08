@@ -1,0 +1,279 @@
+
+<style>
+  body { margin:0; }
+  canvas { display:block; border-radius:8px; touch-action:none; cursor:default; }
+  .btn { padding:5px 16px; border-radius:6px; border:1px solid var(--color-border-secondary); background:var(--color-background-secondary); color:var(--color-text-primary); cursor:pointer; font-size:12px; font-family:var(--font-sans); transition:background .15s; }
+  .btn:hover { background:var(--color-background-tertiary); }
+  .btn.active { background:var(--color-background-info); color:var(--color-text-info); border-color:var(--color-border-info); }
+  .ctrl { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--color-text-secondary); }
+  .ctrl label { min-width:120px; }
+  .ctrl input[type=range] { flex:1; }
+  .ctrl span { min-width:36px; text-align:right; font-family:var(--font-mono); font-size:12px; color:var(--color-text-primary); font-weight:500; }
+  #table { font-size:12px; font-family:var(--font-mono); border-collapse:collapse; width:100%; margin-top:4px; }
+  #table td, #table th { padding:4px 10px; text-align:center; border:1px solid var(--color-border-tertiary); }
+  #table th { background:var(--color-background-secondary); color:var(--color-text-secondary); font-weight:500; }
+  #table td.active-cell { background:var(--color-background-info); color:var(--color-text-info); font-weight:500; }
+  #table td.done-cell { background:var(--color-background-secondary); color:var(--color-text-secondary); }
+</style>
+
+<canvas id="cv"></canvas>
+
+<div style="padding:8px 4px 4px; display:flex; flex-direction:column; gap:7px;">
+
+  <div class="ctrl">
+    <label>Parameter t*</label>
+    <input type="range" id="tSlider" min="0" max="100" value="50" oninput="onT()">
+    <span id="tLabel">0.50</span>
+  </div>
+
+  <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+    <span style="font-size:12px; color:var(--color-text-secondary);">Iteration j =</span>
+    <button class="btn active" id="jb0" onclick="setJ(0)">0 — Start</button>
+    <button class="btn" id="jb1" onclick="setJ(1)">1</button>
+    <button class="btn" id="jb2" onclick="setJ(2)">2</button>
+    <button class="btn" id="jb3" onclick="setJ(3)">3 — Ergebnis</button>
+    <button class="btn" id="jbAll" onclick="setJ(-1)">Alle</button>
+  </div>
+
+  <div style="font-size:11px; color:var(--color-text-secondary); line-height:1.5;">
+    Kontrollpunkte ziehen · t* verschieben · Iteration wählen
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table id="table"><tbody id="tbody"></tbody></table>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+cv.width  = cv.parentElement.offsetWidth || 640;
+cv.height = 300;
+const W = cv.width, H = cv.height;
+const ctx = cv.getContext('2d');
+
+// ── Default cubic control points ──────────────────────────────────────────
+let pts = [
+  { x: W*0.12, y: H*0.72 },
+  { x: W*0.35, y: H*0.12 },
+  { x: W*0.65, y: H*0.88 },
+  { x: W*0.88, y: H*0.22 },
+];
+
+// Layer colors: j=0 blue, j=1 teal, j=2 coral, j=3 amber (result = red dot)
+const LC = ['#378ADD','#1D9E75','#E85D24','#EF9F27'];
+const PC = ['#378ADD','#1D9E75','#E85D24','#7F77DD'];
+
+let tStar = 0.5;
+let showJ  = -1; // -1 = all
+
+function isDark() { return matchMedia('(prefers-color-scheme:dark)').matches; }
+
+// ── de Casteljau: returns all layers ──────────────────────────────────────
+function casteljau(pts, t) {
+  const layers = [pts.map(p => ({x:p.x, y:p.y}))];
+  let cur = layers[0];
+  while (cur.length > 1) {
+    const nxt = cur.slice(0,-1).map((_,i) => ({
+      x: (1-t)*cur[i].x + t*cur[i+1].x,
+      y: (1-t)*cur[i].y + t*cur[i+1].y
+    }));
+    layers.push(nxt);
+    cur = nxt;
+  }
+  return layers;
+}
+
+// ── Draw ──────────────────────────────────────────────────────────────────
+function draw() {
+  const dark = isDark();
+  ctx.clearRect(0,0,W,H);
+  const n   = pts.length - 1;
+  const layers = casteljau(pts, tStar);
+
+  // Full Bézier curve (always visible, thin background)
+  ctx.beginPath();
+  for (let i=0; i<=300; i++) {
+    const tt = i/300;
+    const l  = casteljau(pts, tt);
+    const p  = l[l.length-1][0];
+    i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y);
+  }
+  ctx.strokeStyle = dark ? 'rgba(140,170,220,0.55)' : 'rgba(24,95,165,0.45)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Control polygon (j=0 lines, dashed)
+  ctx.setLineDash([5,4]);
+  ctx.beginPath();
+  pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.2)' : 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Determine which layers to show
+  const maxJ = showJ === -1 ? n : showJ;
+
+  // Draw intermediate connecting lines + points layer by layer
+  for (let j = 1; j <= maxJ; j++) {
+    const prev  = layers[j-1];
+    const cur   = layers[j];
+    const col   = LC[j-1];
+    const alpha = showJ === -1 ? (j < maxJ ? 0.55 : 1.0) : 1.0;
+
+    // Lines from prev to cur interpolation (the "construction" lines)
+    for (let i=0; i<cur.length; i++) {
+      ctx.beginPath();
+      ctx.moveTo(prev[i].x, prev[i].y);
+      ctx.lineTo(prev[i+1].x, prev[i+1].y);
+      ctx.strokeStyle = col + Math.round(alpha*255).toString(16).padStart(2,'0');
+      ctx.lineWidth = j === maxJ ? 2.0 : 1.2;
+      ctx.stroke();
+    }
+    // Intermediate points
+    for (const p of cur) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, j===maxJ ? 6 : 4, 0, Math.PI*2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Control points (j=0) — always on top
+  for (let i=0; i<pts.length; i++) {
+    const p   = pts[i];
+    const col = PC[i % PC.length];
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 9, 0, Math.PI*2);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = dark ? 'rgba(255,255,255,0.6)' : '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.font = '500 12px "Anthropic Sans",sans-serif';
+    ctx.fillStyle = dark ? '#ddd' : '#222';
+    ctx.fillText(`b${i}⁰`, p.x+11, p.y-6);
+  }
+
+  // Final result point
+  const result = layers[n][0];
+  ctx.beginPath();
+  ctx.arc(result.x, result.y, 8, 0, Math.PI*2);
+  ctx.fillStyle = '#E85D24';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.font = '500 12px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = '#E85D24';
+  ctx.fillText(`b(t*=${tStar.toFixed(2)})`, result.x+11, result.y-8);
+
+  // t* axis
+  const ax0=30, ax1=W-30, axY=H-12;
+  ctx.strokeStyle = dark ? 'rgba(200,200,200,0.18)' : 'rgba(0,0,0,0.12)';
+  ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(ax0,axY); ctx.lineTo(ax1,axY); ctx.stroke();
+  const txP = ax0 + tStar*(ax1-ax0);
+  ctx.beginPath(); ctx.arc(txP, axY, 4, 0, Math.PI*2);
+  ctx.fillStyle='#E85D24'; ctx.fill();
+  ctx.font='11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle = dark ? 'rgba(200,200,200,0.4)' : 'rgba(0,0,0,0.3)';
+  ctx.fillText('0',ax0-3,axY+10); ctx.fillText('1',ax1-3,axY+10); ctx.fillText('t',( ax0+ax1)/2,axY+10);
+
+  buildTable(layers);
+}
+
+// ── Table: Dreiecksschema ──────────────────────────────────────────────────
+function fmt(v) { return v.toFixed(3); }
+function buildTable(layers) {
+  const n = layers[0].length - 1;
+  const t = tStar;
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  // Header
+  const hrow = document.createElement('tr');
+  hrow.innerHTML = `<th>Index i</th>`;
+  for (let j=0; j<=n; j++) {
+    hrow.innerHTML += `<th style="color:${LC[j]||'var(--color-text-secondary)'}">j = ${j}</th>`;
+  }
+  tbody.appendChild(hrow);
+
+  // Rows: one per starting index i
+  for (let i=0; i<=n; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:var(--color-text-secondary)">${i}</td>`;
+    for (let j=0; j<=n; j++) {
+      if (i + j <= n) {
+        const p = layers[j][i];
+        const maxJ = showJ === -1 ? n : showJ;
+        const isResult = (j === n && i === 0);
+        const isActive = (j === maxJ);
+        const cls = isResult ? 'active-cell' : isActive ? 'active-cell' : j < maxJ ? 'done-cell' : '';
+        tr.innerHTML += `<td class="${cls}">(${fmt(p.x)}, ${fmt(p.y)})</td>`;
+      } else {
+        tr.innerHTML += `<td style="color:var(--color-border-tertiary)">—</td>`;
+      }
+    }
+    tbody.appendChild(tr);
+  }
+
+  // Formula row
+  const frow = document.createElement('tr');
+  frow.innerHTML = `<td colspan="${n+2}" style="text-align:left; color:var(--color-text-secondary); font-size:11px; padding:6px 10px;">
+    Formel: b<sub>i</sub><sup>j</sup>(t) = (1−t)·b<sub>i</sub><sup>j−1</sup> + t·b<sub>i+1</sub><sup>j−1</sup> &nbsp;|&nbsp; t* = ${t.toFixed(2)}, (1−t*) = ${(1-t).toFixed(2)}
+  </td>`;
+  tbody.appendChild(frow);
+}
+
+// ── Controls ───────────────────────────────────────────────────────────────
+function onT() {
+  tStar = +document.getElementById('tSlider').value / 100;
+  document.getElementById('tLabel').textContent = tStar.toFixed(2);
+  draw();
+}
+function setJ(j) {
+  showJ = j;
+  [-1,0,1,2,3].forEach(x => {
+    const id = x===-1 ? 'jbAll' : `jb${x}`;
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', x===j);
+  });
+  draw();
+}
+
+// ── Drag ───────────────────────────────────────────────────────────────────
+let drag = null;
+const R = 14;
+function pos(e) {
+  const r = cv.getBoundingClientRect(), sc = cv.width/r.width;
+  const s = e.touches ? e.touches[0] : e;
+  return { x:(s.clientX-r.left)*sc, y:(s.clientY-r.top)*sc };
+}
+cv.addEventListener('mousedown', e => {
+  const p = pos(e);
+  drag = pts.findIndex(q => Math.hypot(q.x-p.x,q.y-p.y) < R);
+  if (drag >= 0) cv.style.cursor='grabbing';
+});
+cv.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const p = pos(e);
+  drag = pts.findIndex(q => Math.hypot(q.x-p.x,q.y-p.y) < R);
+}, {passive:false});
+function move(e) {
+  if (drag === null || drag < 0) return;
+  const p = pos(e);
+  pts[drag].x = Math.max(8, Math.min(W-8, p.x));
+  pts[drag].y = Math.max(8, Math.min(H-16, p.y));
+  draw();
+}
+cv.addEventListener('mousemove', e => { move(e); if(drag<0) cv.style.cursor='default'; });
+cv.addEventListener('touchmove', e => { e.preventDefault(); move(e); }, {passive:false});
+cv.addEventListener('mouseup', () => { drag=null; cv.style.cursor='default'; });
+cv.addEventListener('touchend', () => drag=null);
+
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change', draw);
+draw();
+</script>

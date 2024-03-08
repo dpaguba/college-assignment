@@ -1,0 +1,322 @@
+
+<style>
+  canvas{display:block;border-radius:8px;touch-action:none;}
+  .tab-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+  .tab{padding:5px 13px;border-radius:6px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;font-size:12px;font-family:var(--font-sans);transition:all .15s;}
+  .tab.on{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info);}
+  .ctrl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-secondary);margin:3px 0;}
+  .ctrl label{min-width:110px;}
+  .ctrl input[type=range]{flex:1;}
+  .ctrl span{min-width:36px;text-align:right;font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--color-text-primary);}
+  #info{font-size:12px;line-height:1.75;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:8px;padding:10px 14px;margin-top:6px;}
+  #info strong{color:var(--color-text-primary);font-weight:500;}
+</style>
+
+<div class="tab-row">
+  <button class="tab on"  onclick="setMode(0)">1 · Endpunkte &amp; Tangenten</button>
+  <button class="tab"     onclick="setMode(1)">2 · Konvexe Hülle</button>
+  <button class="tab"     onclick="setMode(2)">3 · Einfluss b_i</button>
+  <button class="tab"     onclick="setMode(3)">4 · Beschr. Schwankung</button>
+  <button class="tab"     onclick="setMode(4)">5 · Unterteilung</button>
+</div>
+
+<canvas id="cv" height="320"></canvas>
+
+<div style="padding:4px 2px 0;display:flex;gap:10px;flex-wrap:wrap;">
+  <div class="ctrl" style="flex:1;min-width:160px;">
+    <label>t* =</label>
+    <input type="range" id="tS" min="0" max="100" value="50" oninput="go()">
+    <span id="tL">0.50</span>
+  </div>
+  <div class="ctrl" style="flex:1;min-width:140px;">
+    <label>Drag b_i</label>
+    <span style="font-size:11px;color:var(--color-text-secondary);">Kontrollpunkte ziehen</span>
+  </div>
+</div>
+<div id="info"></div>
+
+<script>
+const cv=document.getElementById('cv');
+cv.width=cv.parentElement.offsetWidth||640;
+const W=cv.width, H=cv.height;
+const ctx=cv.getContext('2d');
+
+const COLS=['#378ADD','#1D9E75','#E85D24','#7F77DD'];
+let mode=0, drag=null;
+let pts=[
+  {x:W*.10,y:H*.72},{x:W*.32,y:H*.12},{x:W*.68,y:H*.88},{x:W*.90,y:H*.22}
+];
+
+function binom(n,k){if(k<0||k>n)return 0;if(k===0||k===n)return 1;let r=1;for(let i=0;i<k;i++)r=r*(n-i)/(i+1);return Math.round(r);}
+function B(n,i,t){return binom(n,i)*Math.pow(t,i)*Math.pow(1-t,n-i);}
+function bezier(pts,t){let x=0,y=0,n=pts.length-1;for(let i=0;i<=n;i++){const w=B(n,i,t);x+=pts[i].x*w;y+=pts[i].y*w;}return{x,y};}
+function casteljau(pts,t){const layers=[pts.map(p=>({x:p.x,y:p.y}))];let cur=layers[0];while(cur.length>1){const nxt=cur.slice(0,-1).map((_,i)=>({x:(1-t)*cur[i].x+t*cur[i+1].x,y:(1-t)*cur[i].y+t*cur[i+1].y}));layers.push(nxt);cur=nxt;}return layers;}
+function isDark(){return matchMedia('(prefers-color-scheme:dark)').matches;}
+
+// ── helpers ───────────────────────────────────────────────────────────────
+function drawCurve(p, col, lw, dash=[]){
+  ctx.beginPath();ctx.setLineDash(dash);
+  for(let i=0;i<=300;i++){const pp=bezier(p,i/300);i===0?ctx.moveTo(pp.x,pp.y):ctx.lineTo(pp.x,pp.y);}
+  ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke();ctx.setLineDash([]);
+}
+function drawPolygon(p, col, dash=[]){
+  ctx.beginPath();ctx.setLineDash(dash);
+  p.forEach((q,i)=>i===0?ctx.moveTo(q.x,q.y):ctx.lineTo(q.x,q.y));
+  ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.stroke();ctx.setLineDash([]);
+}
+function dot(x,y,r,fill,stroke){
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle=fill;ctx.fill();
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+function label(txt,x,y,col,align='left'){
+  ctx.font='500 11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle=col;ctx.textAlign=align;ctx.fillText(txt,x,y);
+}
+function convexHull(ps){
+  const p=[...ps].sort((a,b)=>a.x-b.x||a.y-b.y);
+  const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);
+  const lower=[],upper=[];
+  for(const q of p){while(lower.length>=2&&cross(lower[lower.length-2],lower[lower.length-1],q)<=0)lower.pop();lower.push(q);}
+  for(const q of [...p].reverse()){while(upper.length>=2&&cross(upper[upper.length-2],upper[upper.length-1],q)<=0)upper.pop();upper.push(q);}
+  upper.pop();lower.pop();return lower.concat(upper);
+}
+
+// ── draw control points (always) ─────────────────────────────────────────
+function drawCtrlPts(){
+  const dark=isDark();
+  drawPolygon(pts, dark?'rgba(200,200,200,0.2)':'rgba(0,0,0,0.15)', [5,4]);
+  pts.forEach((p,i)=>{
+    dot(p.x,p.y,8,COLS[i],dark?'rgba(255,255,255,0.5)':'#fff');
+    label(`b${i}`,p.x+11,p.y-5,dark?'#ddd':'#333');
+  });
+}
+
+// ─── MODE 0: Endpunkte & Tangenten ───────────────────────────────────────
+function m0(){
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+  drawCurve(pts, dark?'rgba(140,170,220,0.7)':'rgba(24,95,165,0.65)', 2.8);
+
+  // tangent at start: b0 -> b1
+  const tlen=60;
+  const dx0=pts[1].x-pts[0].x, dy0=pts[1].y-pts[0].y, d0=Math.sqrt(dx0*dx0+dy0*dy0);
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  ctx.lineTo(pts[0].x+dx0/d0*tlen, pts[0].y+dy0/d0*tlen);
+  ctx.strokeStyle='#E85D24';ctx.lineWidth=2.5;ctx.stroke();
+  label('Tangente bei t=0',pts[0].x+dx0/d0*tlen+6,pts[0].y+dy0/d0*tlen,dark?'#f5a07a':'#993C1D');
+
+  // tangent at end: bn-1 -> bn
+  const n=pts.length-1;
+  const dx1=pts[n].x-pts[n-1].x, dy1=pts[n].y-pts[n-1].y, d1=Math.sqrt(dx1*dx1+dy1*dy1);
+  ctx.beginPath();ctx.moveTo(pts[n].x,pts[n].y);
+  ctx.lineTo(pts[n].x-dx1/d1*tlen, pts[n].y-dy1/d1*tlen);
+  ctx.strokeStyle='#7F77DD';ctx.lineWidth=2.5;ctx.stroke();
+  label('Tangente bei t=1',pts[n].x-dx1/d1*tlen-6,pts[n].y-dy1/d1*tlen,dark?'#c5c0f0':'#534AB7','right');
+
+  drawCtrlPts();
+  // start/end big dots
+  dot(pts[0].x,pts[0].y,6,'#378ADD','#fff');
+  dot(pts[n].x,pts[n].y,6,'#7F77DD','#fff');
+  label('b(0) = b₀  ✓',pts[0].x-14,pts[0].y+20,'#378ADD','center');
+  label('b(1) = bₙ  ✓',pts[n].x+14,pts[n].y+20,'#7F77DD','center');
+}
+
+// ─── MODE 1: Konvexe Hülle ───────────────────────────────────────────────
+function m1(){
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+  const hull=convexHull(pts);
+  ctx.beginPath();hull.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.closePath();
+  ctx.fillStyle=dark?'rgba(127,119,221,0.10)':'rgba(127,119,221,0.08)';ctx.fill();
+  ctx.strokeStyle=dark?'rgba(127,119,221,0.5)':'rgba(83,74,183,0.45)';
+  ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+  ctx.font='11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle=dark?'rgba(180,170,240,0.7)':'rgba(83,74,183,0.6)';
+  ctx.textAlign='center';
+  ctx.fillText('Konvexe Hülle', hull[0].x+8, hull[0].y-10);
+
+  drawCurve(pts, dark?'rgba(140,170,220,0.8)':'rgba(24,95,165,0.7)', 2.8);
+  drawCtrlPts();
+
+  // annotation: curve stays inside
+  const mid=bezier(pts,0.5);
+  dot(mid.x,mid.y,5,'#1D9E75','#fff');
+  label('Kurve bleibt',mid.x+8,mid.y-4,dark?'#7ec8a8':'#085041');
+  label('immer innen!',mid.x+8,mid.y+10,dark?'#7ec8a8':'#085041');
+}
+
+// ─── MODE 2: Einfluss bi ─────────────────────────────────────────────────
+function m2(){
+  const t=+document.getElementById('tS').value/100;
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+  const n=pts.length-1;
+  drawCurve(pts, dark?'rgba(140,170,220,0.5)':'rgba(24,95,165,0.4)', 2);
+
+  // draw weighted lines from each ctrl pt to curve point
+  const cp=bezier(pts,t);
+  for(let i=0;i<=n;i++){
+    const w=B(n,i,t);
+    if(w<0.003)continue;
+    ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(cp.x,cp.y);
+    ctx.strokeStyle=COLS[i]+Math.round(w*220+20).toString(16).padStart(2,'0');
+    ctx.lineWidth=w*6+0.5;ctx.stroke();
+    const midx=(pts[i].x+cp.x)/2, midy=(pts[i].y+cp.y)/2;
+    ctx.font='500 10px "Anthropic Sans",sans-serif';
+    ctx.fillStyle=COLS[i];ctx.textAlign='center';
+    ctx.fillText(`${(w*100).toFixed(0)}%`,midx,midy-4);
+  }
+
+  drawCtrlPts();
+  dot(cp.x,cp.y,7,'#E85D24','#fff');
+  label(`b(${t.toFixed(2)})`,cp.x+10,cp.y-8,'#E85D24');
+
+  // max influence labels
+  for(let i=0;i<=n;i++){
+    ctx.font='10px "Anthropic Sans",sans-serif';
+    ctx.fillStyle=COLS[i]+'aa';ctx.textAlign='center';
+    ctx.fillText(`max bei t=${(i/n).toFixed(2)}`,pts[i].x,pts[i].y+22);
+  }
+}
+
+// ─── MODE 3: Beschränkte Schwankung ──────────────────────────────────────
+function m3(){
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+
+  // draw a test line
+  const lx0=W*0.05, ly0=H*0.55, lx1=W*0.95, ly1=H*0.45;
+  ctx.beginPath();ctx.moveTo(lx0,ly0);ctx.lineTo(lx1,ly1);
+  ctx.strokeStyle=dark?'rgba(239,159,39,0.7)':'rgba(186,117,23,0.65)';
+  ctx.lineWidth=1.5;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([]);
+  label('Test-Gerade',lx0+4,ly0-6,dark?'#EF9F27':'#854F0B');
+
+  // count intersections with polygon
+  let polyX=0;
+  for(let i=0;i<pts.length-1;i++){
+    const p1=pts[i],p2=pts[i+1];
+    const dxS=lx1-lx0, dyS=ly1-ly0;
+    const dxE=p2.x-p1.x, dyE=p2.y-p1.y;
+    const denom=dxS*dyE-dyS*dxE;
+    if(Math.abs(denom)<1e-9)continue;
+    const t1=((p1.x-lx0)*dyE-(p1.y-ly0)*dxE)/denom;
+    const t2=((p1.x-lx0)*dyS-(p1.y-ly0)*dxS)/denom;
+    if(t1>=0&&t1<=1&&t2>=0&&t2<=1){
+      polyX++;
+      const ix=lx0+t1*dxS, iy=ly0+t1*dyS;
+      dot(ix,iy,5,'#EF9F27',dark?'#222':'#fff');
+    }
+  }
+
+  // count intersections with curve (approx)
+  let curveX=0, prevSide=null;
+  for(let i=0;i<=400;i++){
+    const pp=bezier(pts,i/400);
+    const side=((lx1-lx0)*(pp.y-ly0)-(ly1-ly0)*(pp.x-lx0))>0;
+    if(prevSide!==null&&side!==prevSide){curveX++;
+      dot(pp.x,pp.y,4,'#D85A30',dark?'#222':'#fff');
+    }
+    prevSide=side;
+  }
+
+  drawCurve(pts, dark?'rgba(140,170,220,0.8)':'rgba(24,95,165,0.7)', 2.8);
+  drawPolygon(pts,dark?'rgba(200,200,200,0.3)':'rgba(0,0,0,0.2)',[5,4]);
+  drawCtrlPts();
+
+  ctx.font='500 12px "Anthropic Sans",sans-serif';
+  ctx.textAlign='left';
+  ctx.fillStyle=dark?'rgba(239,159,39,0.9)':'#854F0B';
+  ctx.fillText(`Polygon-Schnittpunkte: ${polyX}`, W*0.05, H-36);
+  ctx.fillStyle=dark?'rgba(216,90,48,0.9)':'#993C1D';
+  ctx.fillText(`Kurven-Schnittpunkte: ${curveX} ≤ ${polyX}`, W*0.05, H-18);
+}
+
+// ─── MODE 4: Unterteilung ────────────────────────────────────────────────
+function m4(){
+  const t=+document.getElementById('tS').value/100;
+  const dark=isDark();
+  ctx.clearRect(0,0,W,H);
+  const n=pts.length-1;
+  const layers=casteljau(pts,t);
+
+  // left sub-segment ctrl points: b_0^0, b_0^1, ..., b_0^n
+  const leftPts=layers.map(l=>l[0]);
+  // right sub-segment ctrl points: b_0^n, b_1^{n-1}, ..., b_n^0
+  const rightPts=layers.map((l,j)=>l[l.length-1]).reverse();
+  // fix: right sub pts = layers[n][0], layers[n-1][last], ...
+  const right2=[];
+  for(let j=n;j>=0;j--) right2.push(layers[j][layers[j].length-1]);
+
+  drawCurve(leftPts, dark?'#6BB8F0':'#185FA5', 3);
+  drawCurve(right2, dark?'#7ec8a8':'#0F6E56', 3);
+
+  // draw left ctrl polygon
+  drawPolygon(leftPts, dark?'rgba(107,184,240,0.5)':'rgba(24,95,165,0.4)',[4,3]);
+  drawPolygon(right2, dark?'rgba(126,200,168,0.5)':'rgba(15,110,86,0.4)',[4,3]);
+
+  // original ctrl points dimmed
+  drawPolygon(pts, dark?'rgba(200,200,200,0.15)':'rgba(0,0,0,0.1)', [5,4]);
+  pts.forEach((p,i)=>{
+    dot(p.x,p.y,6,COLS[i]+'66');
+    label(`b${i}⁰`,p.x+9,p.y-3,COLS[i]+'88');
+  });
+
+  // left sub ctrl pts
+  leftPts.forEach((p,j)=>{
+    dot(p.x,p.y,5,dark?'#6BB8F0':'#185FA5','#fff');
+    label(`b₀^${j}`,p.x-12,p.y-6,dark?'#6BB8F0':'#185FA5','left');
+  });
+  // right sub ctrl pts
+  right2.forEach((p,j)=>{
+    dot(p.x,p.y,5,dark?'#7ec8a8':'#0F6E56','#fff');
+  });
+
+  // split point
+  const sp=bezier(pts,t);
+  dot(sp.x,sp.y,8,'#E85D24','#fff');
+  label(`b(t*=${t.toFixed(2)})`,sp.x+10,sp.y-10,'#E85D24');
+
+  ctx.font='11px "Anthropic Sans",sans-serif';
+  ctx.fillStyle=dark?'#6BB8F0':'#185FA5'; ctx.textAlign='center';
+  ctx.fillText('Linkes Segment', W*0.25, H-12);
+  ctx.fillStyle=dark?'#7ec8a8':'#0F6E56';
+  ctx.fillText('Rechtes Segment', W*0.75, H-12);
+}
+
+// ─── dispatch ─────────────────────────────────────────────────────────────
+const MODES=[m0,m1,m2,m3,m4];
+const INFOS=[
+  `<strong>Endpunkte & Tangenten:</strong> Die Kurve startet <strong>exakt</strong> bei b₀ und endet <strong>exakt</strong> bei bₙ. Die orangene Linie zeigt die Tangente am Startpunkt — sie verläuft parallel zu b₀→b₁. Die violette zeigt die Tangente am Endpunkt, parallel zu bₙ₋₁→bₙ. Alle anderen Punkte b₁,...,bₙ₋₁ werden nur approximiert, nicht interpoliert.`,
+  `<strong>Konvexe-Hülle-Eigenschaft:</strong> Die gestrichelte violette Fläche ist die konvexe Hülle der Kontrollpunkte. Die blaue Kurve verlässt diese Hülle <strong>niemals</strong> — egal wie du die Punkte verschiebst. Das folgt direkt daraus, dass die Bernstein-Polynome nicht-negativ sind und sich zu 1 summieren (= Konvexkombination).`,
+  `<strong>Einfluss von b_i:</strong> Die Liniendicke von jedem Kontrollpunkt zur Kurve zeigt das Gewicht B_i^n(t*). Bewege t* mit dem Slider — du siehst, wie die Gewichte sich verschieben. Jeder Punkt b_i hat seinen stärksten Einfluss genau bei t = i/n.`,
+  `<strong>Beschränkte Schwankung:</strong> Die gelbe Gerade schneidet das Kontrollpolygon (gelbe Punkte) und die Kurve (orangene Punkte). Die Kurve schneidet die Gerade <strong>nie öfter</strong> als das Polygon. Verschiebe die Kontrollpunkte — diese Eigenschaft gilt immer. Sie garantiert, dass die Kurve „glatter" ist als ihr Gerüst.`,
+  `<strong>Unterteilung:</strong> Der Punkt b(t*) teilt das Segment in zwei Bézier-Segmente gleichen Grades. Die Kontrollpunkte des linken (blau) und rechten (grün) Teilsegments sind die Randpunkte des de-Casteljau-Dreiecksschemas. Bewege t* — die Form der Gesamtkurve ändert sich nicht, nur die Teilung verschiebt sich.`
+];
+
+function go(){
+  const t=+document.getElementById('tS').value/100;
+  document.getElementById('tL').textContent=t.toFixed(2);
+  MODES[mode]();
+  document.getElementById('info').innerHTML=INFOS[mode];
+}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',i===m));
+  go();
+}
+
+// drag
+const R=16;
+function getP(e){const r=cv.getBoundingClientRect(),sc=cv.width/r.width,s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sc,y:(s.clientY-r.top)*sc};}
+cv.addEventListener('mousedown',e=>{const p=getP(e);drag=pts.findIndex(q=>Math.hypot(q.x-p.x,q.y-p.y)<R);if(drag>=0)cv.style.cursor='grabbing';});
+cv.addEventListener('touchstart',e=>{e.preventDefault();const p=getP(e);drag=pts.findIndex(q=>Math.hypot(q.x-p.x,q.y-p.y)<R);},{passive:false});
+function mv(e){if(drag===null||drag<0)return;const p=getP(e);pts[drag].x=Math.max(8,Math.min(W-8,p.x));pts[drag].y=Math.max(8,Math.min(H-16,p.y));go();}
+cv.addEventListener('mousemove',e=>{mv(e);if(drag<0)cv.style.cursor='default';});
+cv.addEventListener('touchmove',e=>{e.preventDefault();mv(e);},{passive:false});
+cv.addEventListener('mouseup',()=>{drag=null;cv.style.cursor='default';});
+cv.addEventListener('touchend',()=>drag=null);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',go);
+go();
+</script>

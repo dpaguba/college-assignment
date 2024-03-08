@@ -1,0 +1,284 @@
+
+<style>
+  #mc2 { font-size: 13px; color: var(--color-text-primary); }
+  #mc2 canvas { display:block; width:100%; border:0.5px solid var(--color-border-tertiary); border-radius:8px; }
+  .mc2-btn { padding:6px 16px; border-radius:6px; border:0.5px solid var(--color-border-secondary); background:transparent; color:var(--color-text-primary); cursor:pointer; font-size:13px; }
+  .mc2-btn:hover { background:var(--color-background-secondary); }
+  .mc2-btn:disabled { opacity:0.35; cursor:default; }
+  .algo-box { background:var(--color-background-secondary); border-radius:8px; padding:12px 14px; font-size:13px; line-height:1.7; }
+  .algo-box b { color:var(--color-text-primary); font-weight:500; }
+  .algo-box .hi { background:var(--color-background-warning); color:var(--color-text-warning); border-radius:4px; padding:0 4px; font-weight:500; }
+  .list-box { border:0.5px solid var(--color-border-tertiary); border-radius:6px; padding:8px 12px; font-size:12px; font-family:var(--font-mono); margin-top:8px; line-height:1.8; }
+</style>
+
+<div id="mc2">
+  <canvas id="c2" width="640" height="420"></canvas>
+
+  <div style="display:flex;align-items:center;gap:10px;margin:10px 0 8px;">
+    <button class="mc2-btn" id="b2-prev" disabled>← Назад</button>
+    <button class="mc2-btn" id="b2-next">Следующий шаг →</button>
+    <button class="mc2-btn" id="b2-reset">Сброс</button>
+    <span style="font-size:12px;color:var(--color-text-tertiary)" id="b2-lbl">Шаг 0 / 3</span>
+  </div>
+
+  <div class="algo-box" id="algo-desc"></div>
+  <div class="list-box" id="list-desc"></div>
+</div>
+
+<script>
+(function(){
+  const CV = document.getElementById('c2');
+  const ctx = CV.getContext('2d');
+  const W=640, H=420, PAD=38, PLOT_W=W-PAD*2, PLOT_H=H-PAD*2;
+  const MAX=12;
+
+  // 14 точек в пространстве 0..12
+  const PTS = [
+    {x:1,  y:9 },
+    {x:2,  y:2 },
+    {x:3,  y:7 },
+    {x:4,  y:10},
+    {x:5,  y:4 },
+    {x:6,  y:11},
+    {x:7,  y:6 },
+    {x:8,  y:1 },
+    {x:9,  y:8 },
+    {x:10, y:3 },
+    {x:10, y:10},
+    {x:11, y:5 },
+    {x:11, y:11},
+    {x:12, y:7 }
+  ];
+
+  function tc(px,py){ return [PAD+px/MAX*PLOT_W, H-PAD-py/MAX*PLOT_H]; }
+
+  const COLS  = ['#378ADD','#1D9E75','#D85A30','#7F77DD'];
+  const FILLS = ['rgba(55,138,221,0.08)','rgba(29,158,117,0.08)','rgba(216,90,48,0.08)','rgba(127,119,221,0.08)'];
+
+  // Утилиты
+  function ptsInBox(b){ return PTS.map((_,i)=>i).filter(i=>PTS[i].x>=b.x0&&PTS[i].x<=b.x1&&PTS[i].y>=b.y0&&PTS[i].y<=b.y1); }
+  function xRange(ids){ return [Math.min(...ids.map(i=>PTS[i].x)), Math.max(...ids.map(i=>PTS[i].x))]; }
+  function yRange(ids){ return [Math.min(...ids.map(i=>PTS[i].y)), Math.max(...ids.map(i=>PTS[i].y))]; }
+  function median(vals){ const s=[...vals].sort((a,b)=>a-b); const m=Math.floor(s.length/2); return s.length%2===0?(s[m-1]+s[m])/2:s[m]; }
+  function centroid(ids){ return {x:ids.reduce((a,i)=>a+PTS[i].x,0)/ids.length, y:ids.reduce((a,i)=>a+PTS[i].y,0)/ids.length}; }
+  function fmt(n){ return Math.round(n*10)/10; }
+
+  // ---- Предвычисляем все шаги строго по алгоритму ----
+  // Шаг 0: инициализация — один хюллквадер всех точек
+  const allIds = PTS.map((_,i)=>i);
+  const [ax0,ax1] = xRange(allIds);
+  const [ay0,ay1] = yRange(allIds);
+
+  // Список квадеров: [{x0,x1,y0,y1,ids}]
+  // k=4, значит делаем 3 разреза
+
+  // Разрез 1: берём единственный квадер (14 точек)
+  // длиннейшая ось X: 1..12=11, Y: 1..11=10 → X
+  // медиана по X = median([1,2,3,4,5,6,7,8,9,10,10,11,11,12]) = (7+8)/2 = 7.5
+  const med1 = median(allIds.map(i=>PTS[i].x)); // 7.5
+  const L1ids = allIds.filter(i=>PTS[i].x<=med1);
+  const R1ids = allIds.filter(i=>PTS[i].x>med1);
+  const [lx0,lx1]=xRange(L1ids); const [ly0,ly1]=yRange(L1ids);
+  const [rx0,rx1]=xRange(R1ids); const [ry0,ry1]=yRange(R1ids);
+
+  // Разрез 2: R1 (7 точек) > L1 (7 точек) → берём R1 (или первый при равенстве — L1)
+  // R1: x=8..12, y=1..11 → ось Y: 10, ось X: 4 → Y
+  // median Y в R1: ids=[7,8,9,10,11,12,13] → y=[1,8,3,10,5,11,7] → sorted=[1,3,5,7,8,10,11] → median=7
+  const med2 = median(R1ids.map(i=>PTS[i].y));
+  const RU=R1ids.filter(i=>PTS[i].y>med2);
+  const RD=R1ids.filter(i=>PTS[i].y<=med2);
+  const [rux0,rux1]=xRange(RU); const [ruy0,ruy1]=yRange(RU);
+  const [rdx0,rdx1]=xRange(RD); const [rdy0,rdy1]=yRange(RD);
+
+  // Разрез 3: L1 (7 точек) = RU (3) = RD (4) → берём L1 (самый первый с макс кол-вом = 7)
+  // L1: x=1..7, y=2..11 → ось Y: 9, ось X: 6 → Y
+  // ids=[0,1,2,3,4,5,6] → y=[9,2,7,10,4,11,6] → sorted=[2,4,6,7,9,10,11] → median=7
+  const med3 = median(L1ids.map(i=>PTS[i].y));
+  const LU=L1ids.filter(i=>PTS[i].y>med3);
+  const LD=L1ids.filter(i=>PTS[i].y<=med3);
+  const [lux0,lux1]=xRange(LU); const [luy0,luy1]=yRange(LU);
+  const [ldx0,ldx1]=xRange(LD); const [ldy0,ldy1]=yRange(LD);
+
+  const STEPS = [
+    {
+      boxes: [{x0:ax0,x1:ax1,y0:ay0,y1:ay1,ids:allIds,ci:0}],
+      cut: null,
+      active: 0,
+      desc: `
+        <b>Шаг 1. Инициализация.</b><br>
+        Алгоритм (пункт 1): <span class="hi">«Инициализируй список с хюллквадером всех цветов»</span><br><br>
+        Находим хюллквадер (bounding box) всех 14 точек:<br>
+        X: от ${ax0} до ${ax1} &nbsp;|&nbsp; Y: от ${ay0} до ${ay1}<br>
+        Список содержит <b>1 квадер</b> из 14 точек. Цель: k=4.
+      `,
+      list: `Список квадеров (1 шт, нужно 4):\n  Box A  [x: ${ax0}..${ax1}, y: ${ay0}..${ay1}]  →  14 точек  ← наибольший`
+    },
+    {
+      boxes: [
+        {x0:lx0,x1:lx1,y0:ly0,y1:ly1,ids:L1ids,ci:0},
+        {x0:rx0,x1:rx1,y0:ry0,y1:ry1,ids:R1ids,ci:1},
+      ],
+      cut: {axis:'x', val:med1, y0:ay0, y1:ay1},
+      active: -1,
+      desc: `
+        <b>Шаг 2а. Итерация 1.</b><br>
+        Пункт 2: <span class="hi">«Удали квадер с наибольшим числом точек»</span> → Box A (14 точек).<br>
+        <span class="hi">«Разрежь его по медиане длиннейшей оси»</span><br><br>
+        Длина осей хюллквадера: X = ${ax1-ax0}, Y = ${ay1-ay0} → длиннее <b>X</b>.<br>
+        Сортируем X-координаты: [${allIds.map(i=>PTS[i].x).sort((a,b)=>a-b).join(', ')}]<br>
+        Медиана = <b>${fmt(med1)}</b> → вертикальный разрез.<br><br>
+        <span class="hi">«Добавь хюллквадеры двух половин»</span><br>
+        Левая: ${L1ids.length} точек &nbsp;|&nbsp; Правая: ${R1ids.length} точек.
+      `,
+      list: `Список квадеров (2 шт, нужно 4):\n  Box L  [x: ${lx0}..${lx1}, y: ${ly0}..${ly1}]  →  ${L1ids.length} точек  ← наибольший\n  Box R  [x: ${rx0}..${rx1}, y: ${ry0}..${ry1}]  →  ${R1ids.length} точек`
+    },
+    {
+      boxes: [
+        {x0:lx0,x1:lx1,y0:ly0,y1:ly1,ids:L1ids,ci:0},
+        {x0:rux0,x1:rux1,y0:ruy0,y1:ruy1,ids:RU,ci:1},
+        {x0:rdx0,x1:rdx1,y0:rdy0,y1:rdy1,ids:RD,ci:2},
+      ],
+      cut: {axis:'y', val:med2, x0:rx0, x1:rx1},
+      active: -1,
+      desc: `
+        <b>Шаг 2б. Итерация 2.</b><br>
+        Пункт 2: <span class="hi">«Удали квадер с наибольшим числом точек»</span> → Box R (${R1ids.length} точек).<br>
+        <span class="hi">«Разрежь его по медиане длиннейшей оси»</span><br><br>
+        Хюллквадер Box R: X = ${rx1-rx0}, Y = ${ry1-ry0} → длиннее <b>Y</b>.<br>
+        Сортируем Y-координаты Box R: [${R1ids.map(i=>PTS[i].y).sort((a,b)=>a-b).join(', ')}]<br>
+        Медиана = <b>${fmt(med2)}</b> → горизонтальный разрез.<br><br>
+        <span class="hi">«Добавь хюллквадеры двух половин»</span><br>
+        Верх: ${RU.length} точек &nbsp;|&nbsp; Низ: ${RD.length} точек.
+      `,
+      list: `Список квадеров (3 шт, нужно 4):\n  Box L   [x: ${lx0}..${lx1}, y: ${ly0}..${ly1}]  →  ${L1ids.length} точек  ← наибольший\n  Box RU  [x: ${rux0}..${rux1}, y: ${ruy0}..${ruy1}]  →  ${RU.length} точек\n  Box RD  [x: ${rdx0}..${rdx1}, y: ${rdy0}..${rdy1}]  →  ${RD.length} точек`
+    },
+    {
+      boxes: [
+        {x0:lux0,x1:lux1,y0:luy0,y1:luy1,ids:LU,ci:0},
+        {x0:ldx0,x1:ldx1,y0:ldy0,y1:ldy1,ids:LD,ci:3},
+        {x0:rux0,x1:rux1,y0:ruy0,y1:ruy1,ids:RU,ci:1},
+        {x0:rdx0,x1:rdx1,y0:rdy0,y1:rdy1,ids:RD,ci:2},
+      ],
+      cut: {axis:'y', val:med3, x0:lx0, x1:lx1},
+      active: -1,
+      showCentroid: true,
+      desc: `
+        <b>Шаг 2в. Итерация 3.</b><br>
+        Пункт 2: <span class="hi">«Удали квадер с наибольшим числом точек»</span> → Box L (${L1ids.length} точек).<br>
+        <span class="hi">«Разрежь его по медиане длиннейшей оси»</span><br><br>
+        Хюллквадер Box L: X = ${lx1-lx0}, Y = ${ly1-ly0} → длиннее <b>Y</b>.<br>
+        Сортируем Y-координаты Box L: [${L1ids.map(i=>PTS[i].y).sort((a,b)=>a-b).join(', ')}]<br>
+        Медиана = <b>${fmt(med3)}</b> → горизонтальный разрез.<br><br>
+        Список теперь содержит <b>4 квадера = k</b> → цикл завершён.<br>
+        Пункт 3: <span class="hi">«Добавь взвешенное среднее каждого квадера в таблицу»</span><br>
+        Крестики на графике = центроиды (итоговые цвета).
+      `,
+      list: `Список квадеров (4 шт = k → СТОП):\n  Box LU  [x: ${lux0}..${lux1}, y: ${luy0}..${luy1}]  →  ${LU.length} точек  → центроид (${fmt(centroid(LU).x)}, ${fmt(centroid(LU).y)})\n  Box LD  [x: ${ldx0}..${ldx1}, y: ${ldy0}..${ldy1}]  →  ${LD.length} точек  → центроид (${fmt(centroid(LD).x)}, ${fmt(centroid(LD).y)})\n  Box RU  [x: ${rux0}..${rux1}, y: ${ruy0}..${ruy1}]  →  ${RU.length} точек  → центроид (${fmt(centroid(RU).x)}, ${fmt(centroid(RU).y)})\n  Box RD  [x: ${rdx0}..${rdx1}, y: ${rdy0}..${rdy1}]  →  ${RD.length} точек  → центроид (${fmt(centroid(RD).x)}, ${fmt(centroid(RD).y)})`
+    }
+  ];
+
+  let cur = 0;
+
+  function draw(s){
+    ctx.clearRect(0,0,W,H);
+    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    const tc2 = dark?'#c2c0b6':'#3d3d3a';
+    const gc  = dark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)';
+    const ac  = dark?'rgba(255,255,255,0.18)':'rgba(0,0,0,0.18)';
+
+    // Grid
+    ctx.strokeStyle=gc; ctx.lineWidth=0.5;
+    for(let i=0;i<=MAX;i++){
+      const [cx]=tc(i,0); const [,cy]=tc(0,i);
+      ctx.beginPath();ctx.moveTo(cx,PAD);ctx.lineTo(cx,H-PAD);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(PAD,cy);ctx.lineTo(W-PAD,cy);ctx.stroke();
+    }
+    ctx.strokeStyle=ac; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(PAD,H-PAD);ctx.lineTo(W-PAD,H-PAD);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(PAD,PAD);ctx.lineTo(PAD,H-PAD);ctx.stroke();
+
+    ctx.fillStyle=tc2; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    for(let i=0;i<=MAX;i+=2){
+      const [cx]=tc(i,0); ctx.fillText(i,cx,H-PAD+14);
+    }
+    ctx.textAlign='right';
+    for(let i=0;i<=MAX;i+=2){
+      const [,cy]=tc(0,i); ctx.fillText(i,PAD-5,cy+4);
+    }
+
+    // Boxes
+    s.boxes.forEach(b=>{
+      const [x1,y1]=tc(b.x0,b.y1); const [x2,y2]=tc(b.x1,b.y0);
+      ctx.fillStyle=FILLS[b.ci%FILLS.length];
+      ctx.fillRect(x1,y1,x2-x1,y2-y1);
+      ctx.strokeStyle=COLS[b.ci%COLS.length];
+      ctx.lineWidth=1.5; ctx.setLineDash([]);
+      ctx.strokeRect(x1,y1,x2-x1,y2-y1);
+      ctx.fillStyle=COLS[b.ci%COLS.length];
+      ctx.font='500 11px sans-serif'; ctx.textAlign='left';
+      ctx.fillText(b.ids.length+' т.', x1+5, y1+14);
+    });
+
+    // Cut line
+    if(s.cut){
+      ctx.setLineDash([6,4]); ctx.lineWidth=2; ctx.strokeStyle='#E24B4A';
+      if(s.cut.axis==='x'){
+        const [cx]=tc(s.cut.val,0);
+        const [,cy0]=tc(0,s.cut.y1); const [,cy1]=tc(0,s.cut.y0);
+        ctx.beginPath();ctx.moveTo(cx,cy0);ctx.lineTo(cx,cy1);ctx.stroke();
+        ctx.setLineDash([]); ctx.fillStyle='#E24B4A';
+        ctx.font='500 12px sans-serif'; ctx.textAlign='center';
+        ctx.fillText('медиана X='+fmt(s.cut.val), cx, PAD-8);
+      } else {
+        const [,cy]=tc(0,s.cut.val);
+        const [cx0]=tc(s.cut.x0,0); const [cx1]=tc(s.cut.x1,0);
+        ctx.beginPath();ctx.moveTo(cx0,cy);ctx.lineTo(cx1,cy);ctx.stroke();
+        ctx.setLineDash([]); ctx.fillStyle='#E24B4A';
+        ctx.font='500 12px sans-serif'; ctx.textAlign='right';
+        ctx.fillText('медиана Y='+fmt(s.cut.val), cx1, cy-6);
+      }
+    }
+    ctx.setLineDash([]);
+
+    // Points
+    PTS.forEach((p,i)=>{
+      const box=s.boxes.find(b=>b.ids.includes(i));
+      const col=box?COLS[box.ci%COLS.length]:'#888';
+      const [cx,cy]=tc(p.x,p.y);
+      ctx.beginPath(); ctx.arc(cx,cy,5,0,Math.PI*2);
+      ctx.fillStyle=col; ctx.fill();
+      ctx.strokeStyle=dark?'#111':'#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    });
+
+    // Centroids
+    if(s.showCentroid){
+      s.boxes.forEach(b=>{
+        if(!b.ids.length) return;
+        const c=centroid(b.ids);
+        const [cx,cy]=tc(c.x,c.y);
+        ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2);
+        ctx.fillStyle=COLS[b.ci%COLS.length]; ctx.globalAlpha=0.2; ctx.fill();
+        ctx.globalAlpha=1;
+        ctx.strokeStyle=COLS[b.ci%COLS.length]; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx-7,cy); ctx.lineTo(cx+7,cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx,cy-7); ctx.lineTo(cx,cy+7); ctx.stroke();
+      });
+    }
+  }
+
+  function update(){
+    draw(STEPS[cur]);
+    document.getElementById('algo-desc').innerHTML = STEPS[cur].desc;
+    document.getElementById('list-desc').textContent = STEPS[cur].list;
+    document.getElementById('b2-lbl').textContent = 'Шаг '+(cur+1)+' / '+STEPS.length;
+    document.getElementById('b2-prev').disabled = cur===0;
+    document.getElementById('b2-next').disabled = cur===STEPS.length-1;
+  }
+
+  document.getElementById('b2-next').onclick=()=>{if(cur<STEPS.length-1){cur++;update();}};
+  document.getElementById('b2-prev').onclick=()=>{if(cur>0){cur--;update();}};
+  document.getElementById('b2-reset').onclick=()=>{cur=0;update();};
+  update();
+})();
+</script>

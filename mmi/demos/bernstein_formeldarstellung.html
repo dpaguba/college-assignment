@@ -1,0 +1,269 @@
+
+<style>
+  canvas { display:block; border-radius:8px; }
+  .ctrl { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--color-text-secondary); margin:4px 0; }
+  .ctrl label { min-width:120px; }
+  .ctrl input[type=range] { flex:1; }
+  .ctrl span { min-width:40px; text-align:right; font-family:var(--font-mono); font-size:12px; color:var(--color-text-primary); font-weight:500; }
+  #formula-box { background:var(--color-background-secondary); border-radius:8px; padding:10px 14px; font-size:12px; font-family:var(--font-mono); line-height:1.9; margin-top:4px; color:var(--color-text-primary); }
+</style>
+
+<!-- TOP: Bernstein polynomial graph -->
+<canvas id="cv1" height="180"></canvas>
+
+<!-- BOTTOM: Bézier curve with weight visualization -->
+<canvas id="cv2" height="200" style="margin-top:6px;"></canvas>
+
+<div style="padding:6px 4px 2px;">
+  <div class="ctrl">
+    <label>Parameter t*</label>
+    <input type="range" id="tSlider" min="0" max="100" value="40" oninput="update()">
+    <span id="tLabel">0.40</span>
+  </div>
+  <div class="ctrl">
+    <label>Grad n</label>
+    <input type="range" id="nSlider" min="2" max="5" value="3" step="1" oninput="update()">
+    <span id="nLabel">3</span>
+  </div>
+  <div id="formula-box"></div>
+</div>
+
+<script>
+const cv1 = document.getElementById('cv1');
+const cv2 = document.getElementById('cv2');
+cv1.width = cv2.width = cv1.parentElement.offsetWidth || 640;
+const W = cv1.width;
+const ctx1 = cv1.getContext('2d');
+const ctx2 = cv2.getContext('2d');
+
+// Color per index i
+const COLS = ['#378ADD','#1D9E75','#E85D24','#7F77DD','#EF9F27','#D4537E'];
+
+function binom(n, k) {
+  if (k < 0 || k > n) return 0;
+  if (k === 0 || k === n) return 1;
+  let r = 1;
+  for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1);
+  return Math.round(r);
+}
+
+function bernstein(n, i, t) {
+  return binom(n, i) * Math.pow(t, i) * Math.pow(1 - t, n - i);
+}
+
+function isDark() { return matchMedia('(prefers-color-scheme:dark)').matches; }
+
+// Default control points for n=2..5
+function defaultPts(n) {
+  const margin = 60, H = cv2.height - 30;
+  const spread = (W - 2*margin) / n;
+  const ys = [H*0.65, H*0.15, H*0.75, H*0.2, H*0.7, H*0.25];
+  return Array.from({length: n+1}, (_,i) => ({
+    x: margin + i*spread,
+    y: ys[i % ys.length]
+  }));
+}
+
+function drawBernstein(t, n) {
+  const H = cv1.height;
+  const dark = isDark();
+  const pad = { l:44, r:16, t:22, b:30 };
+  const gW = W - pad.l - pad.r, gH = H - pad.t - pad.b;
+  ctx1.clearRect(0, 0, W, H);
+
+  // Axes
+  ctx1.strokeStyle = dark ? 'rgba(200,200,200,0.15)' : 'rgba(0,0,0,0.1)';
+  ctx1.lineWidth = 0.5;
+  for (let k = 0; k <= 4; k++) {
+    const x = pad.l + (k/4)*gW;
+    ctx1.beginPath(); ctx1.moveTo(x, pad.t); ctx1.lineTo(x, pad.t+gH); ctx1.stroke();
+  }
+  for (let k = 0; k <= 4; k++) {
+    const y = pad.t + (k/4)*gH;
+    ctx1.beginPath(); ctx1.moveTo(pad.l, y); ctx1.lineTo(pad.l+gW, y); ctx1.stroke();
+  }
+  // Axis lines
+  ctx1.strokeStyle = dark ? 'rgba(200,200,200,0.4)' : 'rgba(0,0,0,0.3)';
+  ctx1.lineWidth = 1;
+  ctx1.beginPath(); ctx1.moveTo(pad.l, pad.t+gH); ctx1.lineTo(pad.l+gW, pad.t+gH); ctx1.stroke();
+  ctx1.beginPath(); ctx1.moveTo(pad.l, pad.t); ctx1.lineTo(pad.l, pad.t+gH); ctx1.stroke();
+
+  // Y labels
+  ctx1.font = '10px "Anthropic Sans",sans-serif';
+  ctx1.fillStyle = dark ? 'rgba(200,200,200,0.45)' : 'rgba(0,0,0,0.35)';
+  ctx1.textAlign = 'right';
+  ['1.0','0.75','0.5','0.25','0'].forEach((l,k) => ctx1.fillText(l, pad.l-4, pad.t + k/4*gH + 4));
+  ctx1.textAlign = 'center';
+  ['0','0.25','0.5','0.75','1'].forEach((l,k) => ctx1.fillText(l, pad.l + k/4*gW, pad.t+gH+14));
+  ctx1.fillText('t', pad.l+gW, pad.t+gH+14);
+
+  // Title
+  ctx1.font = '500 12px "Anthropic Sans",sans-serif';
+  ctx1.fillStyle = dark ? 'rgba(200,200,200,0.55)' : 'rgba(0,0,0,0.4)';
+  ctx1.textAlign = 'left';
+  ctx1.fillText(`Bernstein-Polynome B_i^${n}(t)  —  Partition der 1: alle summieren sich zu 1`, pad.l+4, pad.t+13);
+
+  // Plot each Bernstein polynomial
+  const steps = 250;
+  for (let i = 0; i <= n; i++) {
+    ctx1.beginPath();
+    for (let s = 0; s <= steps; s++) {
+      const tt = s/steps;
+      const y_val = bernstein(n, i, tt);
+      const px = pad.l + tt*gW;
+      const py = pad.t + gH - y_val*gH;
+      s===0 ? ctx1.moveTo(px,py) : ctx1.lineTo(px,py);
+    }
+    ctx1.strokeStyle = COLS[i];
+    ctx1.lineWidth = 2;
+    ctx1.stroke();
+
+    // Label at maximum (t = i/n)
+    const tMax = i/n;
+    const yMax = bernstein(n, i, tMax);
+    const lx = pad.l + tMax*gW;
+    const ly = pad.t + gH - yMax*gH - 6;
+    ctx1.font = '500 11px "Anthropic Sans",sans-serif';
+    ctx1.fillStyle = COLS[i];
+    ctx1.textAlign = 'center';
+    ctx1.fillText(`B${i}`, lx, ly);
+  }
+
+  // Vertical line at t*
+  const tx = pad.l + t*gW;
+  ctx1.strokeStyle = dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
+  ctx1.setLineDash([4,3]);
+  ctx1.lineWidth = 1;
+  ctx1.beginPath(); ctx1.moveTo(tx, pad.t); ctx1.lineTo(tx, pad.t+gH); ctx1.stroke();
+  ctx1.setLineDash([]);
+
+  // Dots on each curve at t*
+  for (let i = 0; i <= n; i++) {
+    const w = bernstein(n, i, t);
+    const py = pad.t + gH - w*gH;
+    ctx1.beginPath();
+    ctx1.arc(tx, py, 4, 0, Math.PI*2);
+    ctx1.fillStyle = COLS[i];
+    ctx1.fill();
+    // weight label
+    ctx1.font = '10px "Anthropic Sans",sans-serif';
+    ctx1.fillStyle = COLS[i];
+    ctx1.textAlign = 'left';
+    ctx1.fillText(w.toFixed(2), tx+5, py+3);
+  }
+}
+
+function drawBezier(t, n) {
+  const H = cv2.height;
+  const dark = isDark();
+  ctx2.clearRect(0, 0, W, H);
+
+  const pts = defaultPts(n);
+
+  // Full Bézier curve
+  ctx2.beginPath();
+  for (let s=0; s<=300; s++) {
+    const tt = s/300;
+    // evaluate via Bernstein sum
+    let bx=0, by=0;
+    for (let i=0; i<=n; i++) {
+      const w = bernstein(n,i,tt);
+      bx += pts[i].x * w;
+      by += pts[i].y * w;
+    }
+    s===0 ? ctx2.moveTo(bx,by) : ctx2.lineTo(bx,by);
+  }
+  ctx2.strokeStyle = dark ? 'rgba(140,170,220,0.55)' : 'rgba(24,95,165,0.45)';
+  ctx2.lineWidth = 2.5;
+  ctx2.stroke();
+
+  // Control polygon
+  ctx2.setLineDash([4,4]);
+  ctx2.beginPath();
+  pts.forEach((p,i) => i===0 ? ctx2.moveTo(p.x,p.y) : ctx2.lineTo(p.x,p.y));
+  ctx2.strokeStyle = dark ? 'rgba(200,200,200,0.2)' : 'rgba(0,0,0,0.15)';
+  ctx2.lineWidth = 1;
+  ctx2.stroke();
+  ctx2.setLineDash([]);
+
+  // Compute weights at t* and resulting point
+  const weights = Array.from({length:n+1}, (_,i) => bernstein(n,i,t));
+  let bx=0, by=0;
+  for (let i=0; i<=n; i++) { bx += pts[i].x*weights[i]; by += pts[i].y*weights[i]; }
+
+  // Draw weighted "pull" lines from each control point to result
+  for (let i=0; i<=n; i++) {
+    const w = weights[i];
+    if (w < 0.005) continue;
+    ctx2.beginPath();
+    ctx2.moveTo(pts[i].x, pts[i].y);
+    ctx2.lineTo(bx, by);
+    ctx2.strokeStyle = COLS[i] + Math.round(w * 200 + 30).toString(16).padStart(2,'0');
+    ctx2.lineWidth = w * 5 + 0.5;
+    ctx2.stroke();
+  }
+
+  // Control points
+  for (let i=0; i<=n; i++) {
+    const w = weights[i];
+    ctx2.beginPath();
+    ctx2.arc(pts[i].x, pts[i].y, 8, 0, Math.PI*2);
+    ctx2.fillStyle = COLS[i];
+    ctx2.fill();
+    ctx2.strokeStyle = dark ? 'rgba(255,255,255,0.5)' : '#fff';
+    ctx2.lineWidth = 2;
+    ctx2.stroke();
+    ctx2.font = '500 11px "Anthropic Sans",sans-serif';
+    ctx2.fillStyle = dark ? '#ddd' : '#222';
+    ctx2.textAlign = 'left';
+    ctx2.fillText(`b${i}  ×${w.toFixed(2)}`, pts[i].x+11, pts[i].y-5);
+  }
+
+  // Result point
+  ctx2.beginPath();
+  ctx2.arc(bx, by, 7, 0, Math.PI*2);
+  ctx2.fillStyle = '#E85D24';
+  ctx2.fill();
+  ctx2.strokeStyle = '#fff';
+  ctx2.lineWidth = 2.5;
+  ctx2.stroke();
+  ctx2.font = '500 11px "Anthropic Sans",sans-serif';
+  ctx2.fillStyle = '#E85D24';
+  ctx2.textAlign = 'left';
+  ctx2.fillText(`b(${t.toFixed(2)}) = Σ bᵢ · Bᵢⁿ(t)`, bx+10, by-8);
+}
+
+function buildFormula(t, n) {
+  const weights = Array.from({length:n+1}, (_,i) => bernstein(n,i,t));
+  const binoms = Array.from({length:n+1}, (_,i) => binom(n,i));
+  let lines = [];
+  lines.push(`b(t) = Σᵢ₌₀ⁿ bᵢ · Bᵢⁿ(t)   mit t* = ${t.toFixed(2)}, n = ${n}`);
+  lines.push('');
+  lines.push('Bᵢⁿ(t) = C(n,i) · tⁱ · (1−t)ⁿ⁻ⁱ');
+  lines.push('');
+  for (let i=0; i<=n; i++) {
+    const ti = Math.pow(t,i).toFixed(3);
+    const oti = Math.pow(1-t, n-i).toFixed(3);
+    const w = weights[i].toFixed(4);
+    lines.push(`  B${i}^${n}(t) = C(${n},${i}) · t^${i} · (1-t)^${n-i} = ${binoms[i]} · ${ti} · ${oti} = ${w}`);
+  }
+  lines.push('');
+  lines.push(`  Summe: ${weights.reduce((a,b)=>a+b,0).toFixed(4)}  ← immer = 1  (Partition der 1)`);
+  document.getElementById('formula-box').innerHTML = lines.map(l =>
+    l.startsWith('  B') ? `<span style="color:${COLS[parseInt(l[3])||0]}">${l}</span>` : l
+  ).join('<br>');
+}
+
+function update() {
+  const t = +document.getElementById('tSlider').value/100;
+  const n = +document.getElementById('nSlider').value;
+  document.getElementById('tLabel').textContent = t.toFixed(2);
+  document.getElementById('nLabel').textContent = n;
+  drawBernstein(t, n);
+  drawBezier(t, n);
+  buildFormula(t, n);
+}
+
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change', update);
+update();
+</script>

@@ -1,0 +1,149 @@
+
+<style>
+  .ctrl { display:flex; align-items:center; gap:10px; margin:6px 0; font-size:13px; color:var(--color-text-secondary); }
+  .ctrl label { min-width:160px; }
+  .ctrl input[type=range] { flex:1; }
+  .ctrl span { min-width:36px; text-align:right; color:var(--color-text-primary); font-weight:500; }
+  .section-label { font-size:12px; font-weight:500; color:var(--color-text-secondary); margin:10px 0 4px; text-transform:uppercase; letter-spacing:.05em; }
+  canvas { border-radius:8px; background:transparent; display:block; margin:0 auto; }
+</style>
+
+<canvas id="c" width="640" height="320"></canvas>
+
+<div style="padding:0 8px 4px">
+  <div class="section-label">Parameter festhalten — Kurve auf Fläche zeigen</div>
+  <div class="ctrl">
+    <label>u-Linien (φ festhalten)</label>
+    <input type="range" id="uLines" min="3" max="16" value="8" oninput="draw()">
+    <span id="uVal">8</span>
+  </div>
+  <div class="ctrl">
+    <label>v-Linien (θ festhalten)</label>
+    <input type="range" id="vLines" min="3" max="24" value="16" oninput="draw()">
+    <span id="vVal">16</span>
+  </div>
+  <div class="ctrl">
+    <label>Hervorgehobene u-Linie</label>
+    <input type="range" id="uSel" min="0" max="7" value="3" step="1" oninput="draw()">
+    <span id="uSelVal">u*=3</span>
+  </div>
+  <div class="ctrl">
+    <label>Rotation</label>
+    <input type="range" id="rot" min="0" max="360" value="30" oninput="draw()">
+    <span id="rotVal">30°</span>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const W = 640, H = 320;
+
+function project(x, y, z, rotY, rotX) {
+  const cy = Math.cos(rotY), sy = Math.sin(rotY);
+  const cx = Math.cos(rotX), sx = Math.sin(rotX);
+  const x2 = x*cy - z*sy;
+  const z2 = x*sy + z*cy;
+  const y2 = y*cx - z2*sx;
+  const z3 = y*sx + z2*cx;
+  const fov = 300;
+  const scale = fov / (fov + z3 + 2.5);
+  return [W/2 + x2 * scale * 110, H/2 - y2 * scale * 110, scale];
+}
+
+function isDark() {
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function draw() {
+  const uCount = +document.getElementById('uLines').value;
+  const vCount = +document.getElementById('vLines').value;
+  const uSelIdx = +document.getElementById('uSel').value;
+  const rotDeg = +document.getElementById('rot').value;
+  document.getElementById('uVal').textContent = uCount;
+  document.getElementById('vVal').textContent = vCount;
+  document.getElementById('uSelVal').textContent = 'u*=' + uSelIdx;
+  document.getElementById('rotVal').textContent = rotDeg + '°';
+  document.getElementById('uSel').max = uCount - 1;
+
+  const rotY = rotDeg * Math.PI / 180;
+  const rotX = 0.35;
+  const dark = isDark();
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Sphere f(u,v) = (sin(u)*cos(v), sin(u)*sin(v), cos(u))
+  // u = phi in [0, pi], v = theta in [0, 2pi]
+
+  function sphere(u, v) {
+    return [Math.sin(u) * Math.cos(v), Math.sin(u) * Math.sin(v), Math.cos(u)];
+  }
+
+  const steps = 60;
+
+  // Draw v-lines (fix v, vary u) — meridians
+  for (let vi = 0; vi < vCount; vi++) {
+    const v = (vi / vCount) * 2 * Math.PI;
+    ctx.beginPath();
+    for (let i = 0; i <= steps; i++) {
+      const u = (i / steps) * Math.PI;
+      const [x,y,z] = sphere(u, v);
+      const [px,py,s] = project(x,y,z,rotY,rotX);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = dark ? 'rgba(120,160,220,0.25)' : 'rgba(56,120,210,0.18)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  // Draw u-lines (fix u, vary v) — parallels
+  for (let ui = 0; ui < uCount; ui++) {
+    const u = ((ui + 1) / (uCount + 1)) * Math.PI;
+    const isHighlighted = ui === uSelIdx;
+    ctx.beginPath();
+    for (let i = 0; i <= steps; i++) {
+      const v = (i / steps) * 2 * Math.PI;
+      const [x,y,z] = sphere(u, v);
+      const [px,py,s] = project(x,y,z,rotY,rotX);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    if (isHighlighted) {
+      ctx.strokeStyle = '#E85D24';
+      ctx.lineWidth = 3;
+    } else {
+      ctx.strokeStyle = dark ? 'rgba(160,220,160,0.3)' : 'rgba(40,140,80,0.22)';
+      ctx.lineWidth = 0.8;
+    }
+    ctx.stroke();
+  }
+
+  // Draw highlighted curve label
+  const uH = ((uSelIdx + 1) / (uCount + 1)) * Math.PI;
+  const [hx,hy,hs] = project(Math.sin(uH)*Math.cos(0), Math.sin(uH)*Math.sin(0), Math.cos(uH), rotY, rotX);
+
+  // Legend
+  ctx.font = '500 13px "Anthropic Sans", sans-serif';
+  ctx.fillStyle = '#378ADD';
+  ctx.fillRect(18, 14, 14, 3);
+  ctx.fillStyle = dark ? '#9fc8f0' : '#185FA5';
+  ctx.fillText('v = const  →  Meridiane (Kurven)', 38, 20);
+
+  ctx.fillStyle = '#3B8BD4';
+  ctx.fillRect(18, 34, 14, 3);
+  ctx.fillStyle = dark ? '#a8dba8' : '#3B6D11';
+  ctx.fillText('u = const  →  Breitenkreise (Kurven)', 38, 40);
+
+  ctx.fillStyle = '#E85D24';
+  ctx.fillRect(18, 54, 14, 3);
+  ctx.fillStyle = dark ? '#f5a07a' : '#993C1D';
+  ctx.fillText('u = u*  →  hervorgehobene Kurve f(u*, v)', 38, 60);
+
+  // Axis labels
+  ctx.font = '400 11px "Anthropic Sans", sans-serif';
+  ctx.fillStyle = dark ? 'rgba(200,200,200,0.5)' : 'rgba(60,60,60,0.45)';
+  ctx.fillText('Parameterdarstellung der Kugel: f(u,v) = (sin u · cos v,  sin u · sin v,  cos u)', W/2 - 195, H - 8);
+}
+
+draw();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+</script>
