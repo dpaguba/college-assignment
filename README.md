@@ -34,7 +34,19 @@ In this section, you can find a list of courses I've taken and the corresponding
    - Assignments:
      - Assignment 1 - [📄 Client-Server-App](/rvs-practice/client-server-app/)
 
-4. **Rechnernetze und Verteilte Systeme**
+5. **Webtechnologien**
   - Folder: [📁 web-tech](/web-tech/)
   - Assignments:
     - Assignment 1 - [📄 To-Do App](/web-tech/ng-todo-app/)
+    - Assignment 2 - [📄 To-Do App](/web-tech/ng-todo-app-v2/)
+
+6. **MNP**
+  - Folder: [📁 mnp](/mnp/)
+  - Assignments:
+    - Assignment 1 - [📄 ](/mnp/)
+    - Assignment 2 - [📄 ](/mnp/)
+
+6. **MNP**
+  - Folder: [📁 mnp](/fachprojekt/)
+  - Fachprojekt:
+    - Document Analysis 1 - [📄 ](/fachprojekt/document-analysis/)
