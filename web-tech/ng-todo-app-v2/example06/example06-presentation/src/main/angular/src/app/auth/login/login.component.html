@@ -1,0 +1,16 @@
+<div class="alert alert-danger alert-dismissible" *ngIf="errorMessage != null">
+  {{errorMessage}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="errorMessage = null"></button>
+</div>
+
+<form (submit)="login($event)">
+  <div class="mb-3">
+    <label class="form-label">Username</label>
+    <input name="username" type="text" class="form-control" [(ngModel)]="username" required placeholder="Enter your username">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Password</label>
+    <input name="password" type="password" class="form-control" [(ngModel)]="password" required placeholder="Enter your password">
+  </div>
+  <button class="btn w-100 btn-outline-primary" [disabled]="!canLogin">Login</button>
+</form>
