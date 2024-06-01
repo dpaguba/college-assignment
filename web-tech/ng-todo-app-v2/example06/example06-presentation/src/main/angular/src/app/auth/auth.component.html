@@ -1,0 +1,38 @@
+<div *ngIf="!isLoggedIn">
+
+  <div>
+    <h4 class="title">Login</h4>
+    <div class="card">
+      <div class="card-body">
+        <wt2-login [authService]="authService" (loggedIn)="load(); emitLoggedIn()"></wt2-login>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div *ngIf="isLoggedIn">
+
+  <div class="row">
+    <div class="col-12 text-right mb-4">
+      <div>
+        <small>Logged in as <b>{{getUsername}}</b></small>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <div class="col-4">
+      <h4 class="title">Create Todo</h4>
+      <wt2-create-todo [getUsername]="getUsername" (created)="load()"></wt2-create-todo>
+    </div>
+
+    <div class="col-8">
+      <h4 class="title">All Todo</h4>
+      <wt2-todo-list (updated)="load()" [isAuthenticated]="true" [todos]="todos"></wt2-todo-list>
+    </div>
+
+  </div>
+</div>
