@@ -1,0 +1,39 @@
+<div class="alert alert-info" *ngIf="todos.length == 0">
+  No news available
+</div>
+
+
+<div *ngIf="todos.length > 0">
+  <div *ngFor="let todo of reversedTodos; let i = index"
+       class="todo-tile"
+       (click)="onSelect(todo);"
+       [class.selected]="todo === selectedTodo">
+
+    <div class="d-flex">
+
+      <div class="badge">
+        <div>{{todo.publishedOn.toLocaleDateString()}}</div>
+        <div>{{todo.publishedOn.toLocaleTimeString()}}</div>
+      </div>
+
+      <div class="tile-content" *ngIf="todo !== selectedTodo">
+        <div *ngIf="todo.isPrivate">
+          <span class="badge rounded-pill bg-light text-secondary">Private todo</span>
+        </div>
+        <div><b>{{todo.headline}}</b></div>
+        <div [innerHTML]="getTrustedHtml(todo.content)" *ngIf="allowHtmlContent"></div>
+        <div *ngIf="!allowHtmlContent">
+          {{todo.content}}
+        </div>
+      </div>
+
+      <wt2-news-details
+        *ngIf="todo === selectedTodo"
+        [todo]="todo"
+        (updated)="emitUpdated()"
+      ></wt2-news-details>
+    </div>
+
+
+  </div>
+</div>
