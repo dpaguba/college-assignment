@@ -1,0 +1,38 @@
+<div class="alert alert-info" *ngIf="todo == null">
+  Nothing to see here.
+</div>
+
+<div *ngIf="todo !== null">
+  <div *ngIf="todo.isPrivate">
+    <span class="badge rounded-pill bg-light text-secondary">Private todo</span>
+  </div>
+  <div>
+    <span class="tile-title">Author: </span>
+    <span>{{todo.author ?? "Anonymous"}}</span>
+  </div>
+  <div>
+    <span class="tile-title">Headline: </span>
+    <span *ngIf="!editMode">{{todo.headline}}</span>
+    <span *ngIf="editMode"><input [(ngModel)]="headline" type="text"/></span>
+  </div>
+  <div>
+    <span class="tile-title">Content: </span>
+    <span *ngIf="!editMode">
+      <span [innerHTML]="getTrustedHtml(todo.content)" *ngIf="allowHtmlContent"></span>
+      <span *ngIf="!allowHtmlContent">
+        {{todo.content}}
+      </span>
+    </span>
+    <span *ngIf="editMode"><input [(ngModel)]="content" type="text"/></span>
+  </div>
+</div>
+
+<div *ngIf="!editMode" style="margin-top: 8px;">
+  <button type="button" (click)="editMode = true; resetInputValue();" style="margin-right: 5px;">✏️ Edit</button>
+  <button type="button" (click)="deleteItem()">🗑️ Delete</button>
+</div>
+
+<div *ngIf="editMode" style="margin-top: 8px;">
+  <button type="button" (click)="editMode = false; resetInputValue();" style="margin-right: 5px;">Cancel</button>
+  <button type="button" (click)="editMode = false; saveItem();">✔ Save</button>
+</div>
