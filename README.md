@@ -27,6 +27,8 @@ In this section, you can find a list of courses I've taken and the corresponding
    - Assignments:
      - Assignment 1 - [📄 Game Swim](/sopra/swim/)
      - Assignment 2 - [📄 Game Ingenious](/sopra/ingenious/)
+     -    Demo: ![Ingenious](https://github.com/user-attachments/assets/80464667-5923-43a3-9aed-788ea53e74d5)
+
      - Assignment 3 - [📄 Game Sagani](/sopra/sagani/)
 
 4. **Rechnernetze und Verteilte Systeme**
