@@ -1,0 +1,228 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{url}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{datetime}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\setlength{\columnsep}{25pt}
+
+\newdateformat{germandate}{\THEDAY.\THEMONTH.\THEYEAR}
+
+\title{\textbf{Selbstüberwachtes Training für die Datierung von Dokumentbildern}}
+\author{Dmytro Pahuba\\
+\texttt{dmytro.pahuba@tu-dortmund.de}}
+\date{\germandate\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{\centering Zusammenfassung}
+
+In dieser Arbeit wird die Anwendung selbstüberwachter Lernverfahren für die automatisierte Datierung historischer Dokumentenbilder untersucht. Während traditionelle überwachte Methoden durch begrenzte annotierte Datensätze eingeschränkt sind, ermöglicht selbstüberwachtes Vortraining die Nutzung großer Mengen nicht-annotierter historischer Manuskripte. Die Arbeit untersucht selbstüberwachte Lernverfahren für die zeitliche Einordnung von Dokumenten, mit Fokus auf das AttMask-Framework von \citet{christlein2024} als primären Ansatz durch Transfer Learning von Writer Identification zu Document Dating.
+
+\begin{multicols}{2}
+
+\section{Motivation}
+
+Die automatische Datierung von historischen Dokumenten hat in der Geschichtsforschung eine hohe Relevanz. Traditionelle Ansätze basieren auf überwachten Lernverfahren, die große Mengen bereits datierter Dokumente zum Lernen benötigen. Oft sind die gelabelten Daten für historische Dokumente nur begrenzt verfügbar, weil die manuelle Datierng durch Experten zeitaufwändig und kostspielig ist. Die Experten benötigen jahrelange Ausbildung, um Schriftstile zeitlich einzuordnen, und selbst dann variieren Einschät-zungen oft um 50-100 Jahre \citep{schomaker2007}. Gleichzeitig wächst die Anzahl digitalisierter Dokumentensammlungen exponentiell, während die manuelle Expertise begrenzt bleibt. Der KERTAS-Datensatz umfasst etwa 2000 arabische Manuskripte \citep{hassaine2013}, die Medieval Paleographic Scale etwa 1000 Dokumente aus dem Zeitraum 1300-1550 \citep{university2019}. Für Deep Learning sind das problematisch kleine Zahlen. Selbstüberwachtes Lernen könnte diese Limitation umgehen. Archive enthalten Millionen nicht-annotierter Dokumente, die für SSL-Training genutzt werden könnten. Das AttMask-Framework von \citet{christlein2024} erreichte 83.1\% mAP auf Historical-WI und 95.0\% mAP auf HisIR19 Datensätzen für Writer Retrieval. Diese Erfolge legen nahe, dass SSL-basierte Repräsentationen auch für temporale Charakteristika von Dokumenten relevant sein könnten.
+
+\section{Verwandte Arbeiten}
+
+\subsection{Traditionelle Dokumentdatierung}
+
+Frühe Arbeiten konzentrierten sich auf handcrafted Features wie Strich- und Konturanalyse \citep{kleber2013}. \citet{he2014} verwendeten Gabor-Filter und Texturmerkmale für chinesische Dokumente, erreichten aber nur moderate Genauigkeit. \citet{ghosh2016} kombinierten multiple Merkmalsextraktoren mit Support Vector Machines für Manuskripte des 9.-18. Jahrhunderts.
+
+\subsection{Deep Learning Ansätze}
+
+\citet{wahlberg2016} waren Pioniere beim Einsatz von CNNs für historische Dokumentdatierung und erreichten auf schwedischen Urkunden Mean Absolute Errors von 18.9 Jahren. \citet{mohammed2020} entwickelten hierarchische Feature-Fusion-Methoden und erreichten 22 Jahren MAE auf ICDAR-Datensätzen. Aktuelle Ansätze nutzen Vision Transformers \citep{dosovitskiy2021}. Das DiT-System \citep{li2022} erreichte 92.69\% Accuracy bei Dokumentklassifikation durch Masked Image Modeling auf 42 Millionen unlabeled Dokumenten. Allerdings konzentriert sich DiT auf moderne Dokumente, nicht historische Manuskripte.
+
+\subsection{Writer Identification und SSL}
+
+Die Schreibererkennung hat erhebliche Fortschritte gemacht \citep{christlein2017}. \citet{christlein2024} erreichten mit selbstüberwachten Vision Transformers bahnbrechende Ergebnisse: 83.1 Prozente mAP auf Historical-WI und 95.0 Prozente mAP auf HisIR19 Datensätzen. Diese Erfolge sind relevant, da Schreibstil und Zeitepoche korrelieren.
+
+\subsection{Selbstüberwachtes Lernen für Dokumente}
+
+SSL-Methoden haben in Computer Vision durchschlagenden Erfolg gezeigt. DINO lernt semantische Repräsentationen ohne Labels, Masked Autoencoders rekonstruieren verdeckte Bildteile. Für Dokumente zeigt SelfDocSeg \citep{kumar2023} vielversprechende Ansätze für Dokumentsegmentierung. Die Forschungslücke liegt in der Anwendung dieser modernen SSL-Techniken speziell für historische Dokumentdatierung. Bisherige Arbeiten nutzen entweder überwachtes Lernen mit kleinen Datensätzen oder SSL für andere Aufgaben.
+
+\section{Methodik}
+
+\subsection{Datenaufbereitung}
+
+Die Arbeit nutzt den CLAMM ICDAR-2017-Datensatz \citep{clamm2017} mit 6,540+ Bildern aus 1,100 Jahren (500-1600 CE) und 12 paläographischen Schriftklassen. Zusätzlich wird der CATMuS Medieval-Datensatz eingesetzt. Vorverarbeitung umfasst Normalisierung auf 256$\times$256 Pixel, Graustufenkonvertierung und Augmen-tierung durch Rotation, Skalierung und Rauscheinführung. Kritisch ist die tem-porale Aufteilung der Datensätze zur Vermeidung von Informationsleckage. 
+
+\subsection{SSL-Architektur}
+
+Das System nutzt AttMask von \citet{christlein2024}, das DINO Self-Distillation mit attention-guided Masking kombiniert. Der Teacher identifiziert wichtige Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die kritische Frage bleibt, ob Writer-ID-Features überhaupt für Document Dating geeignet sind. Das Framework lernt individuelle Schreibereigenschaften, während Dating temporale Stilentwicklungen erfassen muss.
+
+\subsection{Transfer Learning Ansatz}
+
+Das vortrainierte WID-Small Modell wird für Dating adaptiert. Der Ansatz erfolgt in drei Stufen:
+
+\begin{enumerate}
+\item \textbf{Lineare Evaluation:} Die gelernten Features werden mit einem linearen Klassifikator evaluiert
+\item \textbf{k-NN Evaluation:} k-Nearest-Neighbor (k=20) ohne Hyperparameter-Tuning
+\item \textbf{Fine-tuning:} Das Modell wird für Writer-ID zu Dating Transfer fine-getunet
+\end{enumerate}
+
+Das Modell lernt zunächst, gleiche Schreiber zu gruppieren. Diese Fähigkeit wird dann für temporale Gruppierung adaptiert, da Schreibstil und Zeitepoche korrelieren. Multi-Task Learning optimiert gleichzeitig Writer ID und Dating Loss.
+
+\subsection{Baseline}
+
+Als Baseline dient ein überwachtes ResNet-50-basiertes System \citep{he2016} mit Regression-Head für Jahresvorhersage. Der Loss kombiniert L1-Loss für Genauigkeit mit Ranking-Loss für ordinale Beziehungen:
+
+\begin{equation}
+\mathcal{L} = \mathcal{L}_{L1} + \lambda \mathcal{L}_{ranking}
+\end{equation}
+
+\subsection{Evaluation}
+
+Hauptmetrik ist Mean Absolute Error (MAE) in Jahren:
+\begin{equation}
+MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+\end{equation}
+
+Zusätzliche Metriken umfassen Root Mean Square Error (RMSE) und Accuracy@k (Vorhersage innerhalb $k$ Jahre). Validierung erfolgt durch temporale Kreuzvalidierung zur Vermeidung von Data Leckage.
+
+\section{Experimente}
+
+\subsection{Datensätze}
+
+\begin{itemize}
+\item \textbf{CLAMM ICDAR-2017:} 6,540+ Bilder, 1,100 Jahre Zeitspanne, 12 Schriftklassen
+\item \textbf{CATMuS Medieval:} Mittelalterliche Handschriften mit konsistenten Annotationen
+\end{itemize}
+
+\subsection{SSL-Pretraining}
+
+Vision Transformer wird auf kombinierten unlabeled Daten für 100 Epochen vortrainiert. VLAD-Aggregation mit 100 Clustern aggregiert Foreground-Patches zu globalen Dokumentrepräsentationen. Temperatur-Scheduling von 0.04 zu 0.07 im DINO-Framework.
+
+\subsection{Transfer Learning Pipeline}
+
+\begin{enumerate}
+\item SSL-Pretraining auf unlabeled Dokumentenbildern
+\item Lineare Evaluation der extrahierten Features
+\item k-NN Evaluation ohne Hyperparameter-Tuning
+\item Fine-tuning für Writer-ID zu Dating Transfer
+\item Vergleich mit überwachter ResNet-50 Baseline
+\end{enumerate}
+
+\subsection{Ablationsstudien}
+
+\begin{itemize}
+\item Einfluss verschiedener Masking-Ratios (40-75\%)
+\item VLAD-Clusterzahl (50, 100, 200)
+\item Foreground-Threshold für Patch-Selektion
+\item Vergleich flat encoding vs. hierarchische Ansätze
+\item Augmentierungsstrategien: geometrische vs. morphologische Transformationen
+\end{itemize}
+
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Caron et~al.(2021)]{caron2021}
+Caron, M., Touvron, H., Misra, I., J{\'e}gou, H., Mairal, J., Bojanowski, P., and Joulin, A. (2021).
+\newblock Emerging properties in self-supervised vision transformers.
+\newblock In \textit{Proceedings of the IEEE/CVF International Conference on Computer Vision}, pages 9650--9660.
+
+\bibitem[Christlein et~al.(2017)]{christlein2017}
+Christlein, V., Kleber, F., Fiel, S., Maier, A., and Angelopoulou, E. (2017).
+\newblock Writer identification using GMM supervectors and exemplar-SVMs.
+\newblock \textit{Pattern Recognition}, 63:258--267.
+
+\bibitem[Christlein et~al.(2024)]{christlein2024}
+Christlein, V., Raven, T., Matei, A., and Fink, G.~A. (2024).
+\newblock Self-supervised vision transformers for writer retrieval.
+\newblock \textit{ArXiv preprint arXiv:2409.00751}.
+
+\bibitem[CLAMM(2017)]{clamm2017}
+CLAMM (2017).
+\newblock Classification of medieval handwritings in latin script.
+\newblock \url{https://clamm.irht.cnrs.fr/icdar-2017/}.
+
+\bibitem[Dosovitskiy et~al.(2021)]{dosovitskiy2021}
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., et~al. (2021).
+\newblock An image is worth 16x16 words: Transformers for image recognition at scale.
+\newblock In \textit{International Conference on Learning Representations}.
+
+\bibitem[Ghosh et~al.(2016)]{ghosh2016}
+Ghosh, S., Valveny, E., and Bagdanov, A.~D. (2016).
+\newblock Image-based historical manuscript dating using contour and stroke fragments.
+\newblock \textit{Pattern Recognition}, 58:29--42.
+
+\bibitem[Hassaïne et~al.(2013)]{hassaine2013}
+Hassaïne, A., Al~Maadeed, S., Aljaam, J., and Jaoua, A. (2013).
+\newblock KERTAS: dataset for automatic dating of ancient Arabic manuscripts.
+\newblock \textit{International Journal on Document Analysis and Recognition}, 16(3):283--290.
+
+\bibitem[He et~al.(2014)]{he2014}
+He, S., Wiering, M., and Schomaker, L. (2014).
+\newblock Towards style-based dating of historical documents.
+\newblock In \textit{International Conference on Frontiers in Handwriting Recognition}, pages 265--270.
+
+\bibitem[He et~al.(2016)]{he2016}
+He, K., Zhang, X., Ren, S., and Sun, J. (2016).
+\newblock Deep residual learning for image recognition.
+\newblock In \textit{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition}, pages 770--778.
+
+\bibitem[He et~al.(2022)]{he2022}
+He, K., Chen, X., Xie, S., Li, Y., Dollár, P., and Girshick, R. (2022).
+\newblock Masked autoencoders are scalable vision learners.
+\newblock In \textit{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition}, pages 16000--16009.
+
+\bibitem[Kleber et~al.(2013)]{kleber2013}
+Kleber, F., Fiel, S., Diem, M., and Sablatnig, R. (2013).
+\newblock CVL-Database: An off-line database for writer retrieval, writer identification and word spotting.
+\newblock In \textit{International Conference on Document Analysis and Recognition}, pages 560--564.
+
+\bibitem[Kumar et~al.(2023)]{kumar2023}
+Kumar, A., Chandra, S., Bhattacharya, A., and Jawahar, C.~V. (2023).
+\newblock SelfDocSeg: A self-supervised vision-based approach towards document segmentation.
+\newblock In \textit{International Conference on Document Analysis and Recognition}, pages 387--402.
+
+\bibitem[Li et~al.(2022)]{li2022}
+Li, J., Xu, Y., Lv, T., Cui, L., Zhang, C., and Wei, F. (2022).
+\newblock DiT: Self-supervised pre-training for document image transformer.
+\newblock In \textit{Proceedings of the AAAI Conference on Artificial Intelligence}, volume~36, pages 1530--1537.
+
+\bibitem[Mohammed et~al.(2020)]{mohammed2020}
+Mohammed, H., Märgner, V., and Fink, G.~A. (2020).
+\newblock Deep learning-based approach for historical manuscript dating.
+\newblock In \textit{International Conference on Pattern Recognition}, pages 7346--7353.
+
+\bibitem[Schomaker et~al.(2007)]{schomaker2007}
+Schomaker, L., Franke, K., and Bulacu, M. (2007).
+\newblock Automatic writer identification using connected-component contours and edge-based features of uppercase western script.
+\newblock \textit{IEEE Transactions on Pattern Analysis and Machine Intelligence}, 29(5):787--798.
+
+\bibitem[University of Groningen(2019)]{university2019}
+University of Groningen (2019).
+\newblock MPS - Medieval Paleographic Scale.
+\newblock Research Portal, doi:10.34894/NJRXVW.
+
+\bibitem[Wahlberg et~al.(2016)]{wahlberg2016}
+Wahlberg, F., Mårtensson, L., and Brun, A. (2016).
+\newblock Historical manuscript production date estimation using deep convolutional neural networks.
+\newblock In \textit{International Conference on Frontiers in Handwriting Recognition}, pages 205--210.
+
+\end{thebibliography}
+
+\end{multicols}
+
+
+
+\end{document}
