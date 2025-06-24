@@ -15,6 +15,17 @@ In this section, you can find a list of courses I've taken and the corresponding
      - Assignment 3 - [📄 Simple currency convertor](/bs-practice/currency-convertor/)
 
 2. **Daten Algorithmen und Strukturen 2**
+  - Folder: [📁 dap2](/dap2/)
+  - Assigments:
+    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 ]()
+
+3. **Daten Algorithmen und Strukturen 2 Praktikum**
    - Folder: [📁 dap2-practice](/dap2-practice/)
    - Assignments:
      - Assignment 1 - [📄 Binary calculator](/dap2-practice/binary-calculator/)
@@ -22,7 +33,7 @@ In this section, you can find a list of courses I've taken and the corresponding
      - Assignment 3 - [📄 Coin Change](/dap2-practice/coin-change/)
      - Assignment 4 - [📄 Eratosthenes](/dap2-practice/eratosthenes/)
 
-3. **Software Praktikum**
+4. **Software Praktikum**
    - Folder: [📁 sopra](/sopra/)
    - Assignments:
      - Assignment 1 - [📄 Game Swim](/sopra/swim/)
@@ -31,24 +42,24 @@ In this section, you can find a list of courses I've taken and the corresponding
 
      - Assignment 3 - [📄 Game Sagani](/sopra/sagani/)
 
-4. **Rechnernetze und Verteilte Systeme**
+5. **Rechnernetze und Verteilte Systeme**
    - Folder: [📁 rvs-pactice](/rvs-pactice/)
    - Assignments:
      - Assignment 1 - [📄 Client-Server-App](/rvs-practice/client-server-app/)
 
-5. **Webtechnologien**
+6. **Webtechnologien**
   - Folder: [📁 web-tech](/web-tech/)
   - Assignments:
     - Assignment 1 - [📄 To-Do App](/web-tech/ng-todo-app/)
     - Assignment 2 - [📄 To-Do App](/web-tech/ng-todo-app-v2/)
 
-6. **MNP**
+7. **MNP**
   - Folder: [📁 mnp](/mnp/)
   - Assignments:
     - Assignment 1 - [📄 ](/mnp/)
     - Assignment 2 - [📄 ](/mnp/)
 
-6. **MNP**
+8. **MNP**
   - Folder: [📁 mnp](/fachprojekt/)
   - Fachprojekt:
     - Document Analysis 1 - [📄 ](/fachprojekt/document-analysis/)
