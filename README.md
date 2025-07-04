@@ -17,8 +17,8 @@ In this section, you can find a list of courses I've taken and the corresponding
 2. **Daten Algorithmen und Strukturen 2**
   - Folder: [📁 dap2](/dap2/)
   - Assigments:
-    - Assignment 1 -[📄 ]()
-    - Assignment 1 -[📄 ]()
+    - Assignment 1 -[📄 Insertion Sort](/dap2/InsertionSort/)
+    - Assignment 1 -[📄 Linear Search](/dap2/LinearSearch/)
     - Assignment 1 -[📄 ]()
     - Assignment 1 -[📄 ]()
     - Assignment 1 -[📄 ]()
