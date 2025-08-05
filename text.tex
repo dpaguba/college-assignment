@@ -84,14 +84,6 @@ Beide Strategien werden durch Feature Evaluation ohne task-spezifisches Training
 
 Diese Evaluationen messen die inhärente Güte der vortrainierten Features für Dating ohne weitere Anpassung. Anschließend erfolgt Fine-tuning des gesamten Modells mit kombiniertem Writer-ID und Dating Loss bei Multi-Task Learning.
 
-\subsection{Baseline}
-
-Als Baseline dient ein überwachtes ResNet-50-basiertes System \cite{he2016} mit Regression-Head für Jahresvorhersage. Der Loss kombiniert L1-Loss für Genauigkeit mit Ranking-Loss für ordinale Beziehungen:
-
-\begin{equation}
-\mathcal{L} = \mathcal{L}_{L1} + \lambda \mathcal{L}_{ranking}
-\end{equation}
-
 \subsection{Evaluation}
 
 Hauptmetrik ist Mean Absolute Error (MAE) in Jahren:
