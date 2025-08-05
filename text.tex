@@ -65,7 +65,7 @@ Die Arbeit nutzt den CLAMM ICDAR-2017-Datensatz \cite{clamm2017} mit 6,540+ Bild
 
 \subsection{SSL-Architektur}
 
-Das System nutzt das AttMask-Framework von Raven et al. \cite{raven2024}, das DINO Self-Distillation mit attention-guided Masking kombiniert. Der Teacher identifiziert wichtige Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die kritische Frage bleibt, ob Writer-ID-Features überhaupt für Document Dating geeignet sind. Das Framework lernt individuelle Schreibereigenschaften, während Dating temporale Stilentwicklungen erfassen muss.
+Das System nutzt das AttMask-Framework, das DINO Self-Distillation mit attention-guided Masking kombiniert. Der Teacher identifiziert wichtige Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die SSL-basierten Features sind zunächst task-agnostisch und lernen allgemeine visuelle Muster in Dokumenten. Erst durch nachgelagertes Training auf Writer Identification werden diese generischen Repräsentationen zu schreiberspezifischen Features spezialisiert. Die zentrale Forschungsfrage ist, ob diese spezialisierten Writer-ID-Features auf Document Dating übertragbar sind, oder ob der Transfer bereits auf der Ebene der generischen SSL-Features erfolgen sollte.
 
 \subsection{Transfer Learning Ansatz}
 
