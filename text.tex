@@ -69,15 +69,20 @@ Das System nutzt das AttMask-Framework, das DINO Self-Distillation mit attention
 
 \subsection{Transfer Learning Ansatz}
 
-Das vortrainierte WID-Small Modell wird für Dating adaptiert. Der Ansatz erfolgt in drei Stufen:
+Die Arbeit untersucht zwei Transfer Learning Strategien für die Nutzung selbstüberwachter Repräsentationen:
+
+\textbf{Strategie 1 - Domain-spezifisches SSL:} AttMask wird direkt auf den Dating-Datensätzen (CLAMM, CATMuS) vortrainiert und anschließend für Dating fine-getunet. Dies nutzt die SSL-Architektur ohne vorherige Task-Spezialisierung.
+
+\textbf{Strategie 2 - Task-Transfer:} Das auf ICDAR2017 Writer-ID vortrainierte Modell wird für Dating adaptiert. Dies testet die Übertragbarkeit bereits spezialisierter Writer-ID-Features auf temporale Klassifikation.
+
+Beide Strategien werden durch Feature Evaluation ohne task-spezifisches Training bewertet:
 
 \begin{enumerate}
-\item \textbf{Lineare Evaluation:} Die gelernten Features werden mit einem linearen Klassifikator evaluiert
-\item \textbf{k-NN Evaluation:} k-Nearest-Neighbor (k=20) ohne Hyperparameter-Tuning
-\item \textbf{Fine-tuning:} Das Modell wird für Writer-ID zu Dating Transfer fine-getunet
+\item \textbf{Lineare Evaluation:} Ein linearer Klassifikator auf gefrorenen Features evaluiert die Repräsentationsqualität direkt
+\item \textbf{k-NN Evaluation:} k-Nearest-Neighbor Klassifikation mit auf Validierungsdaten optimiertem k testet die Clusterbildung der Features
 \end{enumerate}
 
-Das Modell lernt zunächst, gleiche Schreiber zu gruppieren. Diese Fähigkeit wird dann für temporale Gruppierung adaptiert, da Schreibstil und Zeitepoche korrelieren. Multi-Task Learning optimiert gleichzeitig Writer ID und Dating Loss.
+Diese Evaluationen messen die inhärente Güte der vortrainierten Features für Dating ohne weitere Anpassung. Anschließend erfolgt Fine-tuning des gesamten Modells mit kombiniertem Writer-ID und Dating Loss bei Multi-Task Learning.
 
 \subsection{Baseline}
 
