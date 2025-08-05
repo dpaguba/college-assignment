@@ -105,7 +105,7 @@ Zusätzliche Metriken umfassen Root Mean Square Error (RMSE) und Accuracy@k (Vor
 
 \subsection{SSL-Pretraining}
 
-Vision Transformer wird auf kombinierten unlabeled Daten für 100 Epochen vortrainiert. VLAD-Aggregation mit 100 Clustern aggregiert Foreground-Patches zu globalen Dokumentrepräsentationen. Temperatur-Scheduling von 0.04 zu 0.07 im DINO-Framework.
+Vision Transformer wird mittels AttMask-Framework auf unlabeled historischen Dokumenten vortrainiert. Das SSL-Training lernt generische visuelle Repräsentationen ohne task-spezifische Labels. Die Hyperparameter werden experimentell für jeden Datensatz optimiert.
 
 \subsection{Transfer Learning Pipeline}
 
