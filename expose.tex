@@ -1,0 +1,136 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{datetime}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\setlength{\columnsep}{25pt}
+
+\newdateformat{germandate}{\THEDAY.\THEMONTH.\THEYEAR}
+
+\title{\textbf{Selbstüberwachtes Training für die Datierung von Dokumentbildern}}
+\author{Dmytro Pahuba\\
+\texttt{dmytro.pahuba@tu-dortmund.de}}
+\date{\germandate\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{\centering Zusammenfassung}
+
+In dieser Arbeit wird die Anwendung selbstüberwachter Lernverfahren für die automatisierte Datierung historischer Dokumentenbilder untersucht. Während traditionelle überwachte Methoden durch begrenzte annotierte Datensätze eingeschränkt sind, ermöglicht selbstüberwachtes Vortraining die Nutzung großer Mengen nicht-annotierter historischer Manuskripte. Die Arbeit untersucht Transfer Learning von Writer Identification zu Document Dating unter Verwendung des AttMask-Frameworks \cite{raven2024self}, das von Raven et al. für selbstüberwachte Writer Retrieval entwickelt wurde.
+
+\begin{multicols}{2}
+
+\section{Motivation}
+
+Die automatische Datierung von historischen Dokumenten hat in der Geschichtsforschung eine hohe Relevanz. Traditionelle Ansätze basieren auf überwachten Lernverfahren, die große Mengen bereits datierter Dokumente zum Lernen benötigen. Oft sind die gelabelten Daten für historische Dokumente nur begrenzt verfügbar, weil die manuelle Datierng durch Experten zeitaufwändig und kostspielig ist. Die Experten benötigen jahrelange Ausbildung, um Schriftstile zeitlich einzuordnen, und selbst dann variieren Einschätzungen oft um 50-100 Jahre \cite{schomaker2004automatic}. Gleichzeitig wächst die Anzahl digitalisierter Dokumentensammlungen, während die manuelle Expertise begrenzt bleibt. Der KERTAS-Datensatz umfasst etwa 2000 arabische Manuskripte \cite{adam2018kertas}, die Medieval Paleographic Scale etwa 1000 Dokumente aus dem Zeitraum 1300-1550. Für Deep Learning sind das problematisch kleine Zahlen. Selbstüberwachtes Lernen könnte diese Limitation umgehen. Archive enthalten große Mengen nicht-annotierter Dokumente, die für SSL-Training genutzt werden könnten. Im Writer Retrieval haben sich selbstüberwachte Methoden als robust erwiesen und liefern state-of-the-art Ergebnisse auf historischen Dokumentensammlungen. Raven et al. \cite{raven2024self} erreichten mit dem AttMask-Framework 83.1\% mAP auf Historical-WI und 95.0\% mAP auf HisIR19 Datensätzen. Da Schreibstile historisch gewachsen sind und sich über Zeiträume entwickeln, könnte Transfer Learning von Writer Identification zu Document Dating vielversprechend sein, auch wenn die konzeptionelle Übertragbarkeit der Features noch zu validieren ist.
+
+\section{Verwandte Arbeiten}
+
+\subsection{Traditionelle Dokumentdatierung}
+
+Frühe Arbeiten konzentrierten sich auf handcrafted Features wie Strich- und Konturanalyse \cite{kleber2013cvl}. \cite{he2014towards} verwendeten Gabor-Filter und Texturmerkmale für chinesische Dokumente, erreichten aber nur moderate Genauigkeit. \cite{he2016image} kombinierten multiple Merkmalsextraktoren mit Support Vector Machines für Manuskripte des 9.-18. Jahrhunderts.
+
+\subsection{Deep Learning Ansätze}
+
+\cite{wahlberg2016historical} waren Pioniere beim Einsatz von CNNs für historische Dokumentdatierung und erreichten auf schwedischen Urkunden Mean Absolute Errors von 18.9 Jahren. \cite{hamid2019deep} entwickelten hierarchische Feature-Fusion-Methoden und erreichten 22 Jahren Mean Absolute Error (MAE) auf ICDAR-Datensätzen. Aktuelle Ansätze nutzen Vision Transformers \cite{dosovitskiy2020image}. Das DiT-System \cite{li2022dit} erreichte 92.69\% Accuracy bei Dokumentklassifikation durch Masked Image Modeling auf 42 Millionen unlabeled Dokumenten. Allerdings konzentriert sich DiT auf moderne Dokumente, nicht historische Manuskripte.
+
+\subsection{Writer Identification und SSL}
+
+Die Schreibererkennung hat erhebliche Fortschritte gemacht \cite{christlein2017writer}. Raven et al. erreichten mit selbstüberwachten Vision Transformers 83.1 Prozente mAP auf Historical-WI und 95.0 Prozente mAP auf HisIR19 Datensätzen.
+
+\subsection{Selbstüberwachtes Lernen für Dokumente}
+
+SSL-Methoden haben in Computer Vision durchschlagenden Erfolg gezeigt. DINO lernt semantische Repräsentationen ohne Labels, Masked Autoencoders rekonstruieren verdeckte Bildteile. Für Dokumente zeigt SelfDocSeg \cite{maity2023selfdocseg} vielversprechende Ansätze für Dokumentsegmentierung. Die Forschungslücke liegt in der Anwendung dieser modernen SSL-Techniken speziell für historische Dokumentdatierung. Bisherige Arbeiten nutzen entweder überwachtes Lernen mit kleinen Datensätzen oder SSL für andere Aufgaben.
+
+\section{Methodik}
+
+\subsection{Datenaufbereitung}
+
+Die Arbeit nutzt den CLAMM ICDAR-2017-Datensatz \cite{cloppet2017icdar2017} mit 6,540+ Bildern aus 1,100 Jahren (500-1600 CE) und 12 paläographischen Schriftklassen. Zusätzlich wird der CATMuS Medieval-Datensatz eingesetzt. Vorverarbeitung umfasst Normalisierung auf 256$\times$256 Pixel, Graustufenkonvertierung und Augmen-tierung durch Rotation, Skalierung und Rauscheinführung. Kritisch ist die tem-porale Aufteilung der Datensätze zur Vermeidung von Informationsleckage. 
+
+\subsection{SSL-Architektur}
+
+Das System nutzt das AttMask-Framework, das DINO Self-Distillation mit attention-guided Masking kombiniert. Der Teacher identifiziert wichtige Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die SSL-basierten Features sind zunächst task-agnostisch und lernen allgemeine visuelle Muster in Dokumenten. Erst durch nachgelagertes Training auf Writer Identification werden diese generischen Repräsentationen zu schreiberspezifischen Features spezialisiert. Die zentrale Forschungsfrage ist, ob diese spezialisierten Writer-ID-Features auf Document Dating übertragbar sind, oder ob der Transfer bereits auf der Ebene der generischen SSL-Features erfolgen sollte.
+
+\subsection{Transfer Learning Ansatz}
+
+Die Arbeit untersucht zwei Transfer Learning Strategien für die Nutzung selbstüberwachter Repräsentationen:
+
+\textbf{Strategie 1 - Domain-spezifisches SSL:} AttMask wird direkt auf den Dating-Datensätzen (CLAMM, CATMuS) vortrainiert und anschließend für Dating fine-getunet. Dies nutzt die SSL-Architektur ohne vorherige Task-Spezialisierung.
+
+\textbf{Strategie 2 - Task-Transfer:} Das auf ICDAR2017 Writer-ID vortrainierte Modell wird für Dating adaptiert. Dies testet die Übertragbarkeit bereits spezialisierter Writer-ID-Features auf temporale Klassifikation.
+
+Beide Strategien werden durch Feature Evaluation ohne task-spezifisches Training bewertet:
+
+\begin{enumerate}
+\item \textbf{Lineare Evaluation:} Ein linearer Klassifikator auf gefrorenen Features evaluiert die Repräsentationsqualität direkt
+\item \textbf{k-NN Evaluation:} k-Nearest-Neighbor Klassifikation mit auf Validierungsdaten optimiertem k testet die Clusterbildung der Features
+\end{enumerate}
+
+Diese Evaluationen messen die inhärente Güte der vortrainierten Features für Dating ohne weitere Anpassung. Anschließend erfolgt Fine-tuning des gesamten Modells mit kombiniertem Writer-ID und Dating Loss bei Multi-Task Learning.
+
+\subsection{Evaluation}
+
+Hauptmetrik ist Mean Absolute Error (MAE) in Jahren
+% \begin{equation}
+% MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+% \end{equation}
+
+Zusätzliche Metriken umfassen Root Mean Square Error (RMSE) und Accuracy@k (Vorhersage innerhalb $k$ Jahre). Validierung erfolgt durch temporale Kreuzvalidierung zur Vermeidung von Data Leckage.
+
+\section{Experimente}
+
+\subsection{Datensätze}
+
+\begin{itemize}
+\item \textbf{CLAMM ICDAR-2017:} 6,540+ Bilder, 1,100 Jahre Zeitspanne (500-1600 CE), 12 paläographische Schriftklassen
+\item \textbf{CATMuS Medieval \cite{clerice2024catmus}:} 200+ Manuskripte und Inkunabeln in 10 Sprachen, 160,000+ Textzeilen, 5 Millionen Zeichen, 8.-16. Jahrhundert mit reichen Metadaten (Jahrhundert, Sprache, Genre, Schrift)
+\item \textbf{ICDAR-2021 HDC \cite{seuret2021icdar}:} Competition-Datensatz für historische Dokumentklassifikation mit Dating-Task, beste Systeme erreichten 22 Jahre Mean Absolute Error
+\end{itemize}
+
+\subsection{SSL-Pretraining}
+
+Vision Transformer wird mittels AttMask-Framework auf unlabeled historischen Dokumenten vortrainiert. Das SSL-Training lernt generische visuelle Repräsentationen ohne task-spezifische Labels. Die Hyperparameter werden experimentell für jeden Datensatz optimiert.
+
+\subsection{Transfer Learning Pipeline}
+
+\begin{enumerate}
+\item SSL-Pretraining auf unlabeled Dokumentenbildern
+\item Lineare Evaluation der extrahierten Features
+\item k-NN Evaluation ohne Hyperparameter-Tuning
+\item Fine-tuning für Writer-ID zu Dating Transfer
+\item Vergleich mit überwachter ResNet-50 Baseline
+\end{enumerate}
+
+\subsection{Ablationsstudien}
+
+\begin{itemize}
+\item Einfluss verschiedener Masking-Ratios (40-75\%)
+\item VLAD-Clusterzahl (50, 100, 200)
+\item Foreground-Threshold für Patch-Selektion
+\item Vergleich flat encoding vs. hierarchische Ansätze
+\item Augmentierungsstrategien: geometrische vs. morphologische Transformationen
+\end{itemize}
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{multicols}
+
+\end{document}
