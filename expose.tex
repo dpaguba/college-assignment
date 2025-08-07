@@ -57,37 +57,19 @@ Raven et al. \cite{raven2024self} demonstrierten erfolgreiche SSL-Anwendung für
 
 \subsection{Datenaufbereitung}
 
-Die Arbeit nutzt den CLAMM ICDAR-2017-Datensatz \cite{cloppet2017icdar2017} mit 6,540+ Bildern aus 1,100 Jahren (500-1600 CE) und 12 paläographischen Schriftklassen. Zusätzlich wird der CATMuS Medieval-Datensatz eingesetzt. Vorverarbeitung umfasst Normalisierung auf 256$\times$256 Pixel, Graustufenkonvertierung und Augmen-tierung durch Rotation, Skalierung und Rauscheinführung. Kritisch ist die tem-porale Aufteilung der Datensätze zur Vermeidung von Informationsleckage. 
+Die Arbeit nutzt den CLAMM ICDAR-2017-Datensatz \cite{cloppet2017icdar2017} mit 3,540 Trainings- und 2,000 Testbildern aus dem 5.-16. Jahrhundert sowie 15 Datumsklassen. Zusätzlich wird der CATMuS Medieval-Datensatz \cite{clerice2024catmus} eingesetzt. Vorverarbeitung umfasst Normalisierung auf 224×224 Pixel entsprechend ViT-Standards, Graustufenkonvertierung und Augmentierung durch Skalierung und zufälliges Zuschneiden. Rotation wird vermieden, da sie Schriftstile verfälschen könnte. Kritisch ist die temporale Aufteilung nach Schreibern zur Vermeidung von Informationsleckage, da Modelle sonst individuelle Schreiber statt Periodenstile lernen würden.
 
 \subsection{SSL-Architektur}
 
-Das System nutzt das AttMask-Framework, das DINO Self-Distillation mit attention-guided Masking kombiniert. Der Teacher identifiziert wichtige Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die SSL-basierten Features sind zunächst task-agnostisch und lernen allgemeine visuelle Muster in Dokumenten. Erst durch nachgelagertes Training auf Writer Identification werden diese generischen Repräsentationen zu schreiberspezifischen Features spezialisiert. Die zentrale Forschungsfrage ist, ob diese spezialisierten Writer-ID-Features auf Document Dating übertragbar sind, oder ob der Transfer bereits auf der Ebene der generischen SSL-Features erfolgen sollte.
+Das System nutzt vortrainierte AttMask-Features von Raven et al. \cite{raven2024self}, die DINO Self-Distillation mit attention-guided Masking kombinieren. Der Teacher identifiziert salienteste Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die SSL-Features sind bereits nach dem Pretraining für Writer Retrieval optimiert und benötigen kein zusätzliches Training.
 
 \subsection{Transfer Learning Ansatz}
 
-Die Arbeit untersucht zwei Transfer Learning Strategien für die Nutzung selbstüberwachter Repräsentationen:
-
-\textbf{Strategie 1 - Domain-spezifisches SSL:} AttMask wird direkt auf den Dating-Datensätzen (CLAMM, CATMuS) vortrainiert und anschließend für Dating fine-getunet. Dies nutzt die SSL-Architektur ohne vorherige Task-Spezialisierung.
-
-\textbf{Strategie 2 - Task-Transfer:} Das auf ICDAR2017 Writer-ID vortrainierte Modell wird für Dating adaptiert. Dies testet die Übertragbarkeit bereits spezialisierter Writer-ID-Features auf temporale Klassifikation.
-
-Beide Strategien werden durch Feature Evaluation ohne task-spezifisches Training bewertet:
-
-\begin{enumerate}
-\item \textbf{Lineare Evaluation:} Ein linearer Klassifikator auf gefrorenen Features evaluiert die Repräsentationsqualität direkt
-\item \textbf{k-NN Evaluation:} k-Nearest-Neighbor Klassifikation mit auf Validierungsdaten optimiertem k testet die Clusterbildung der Features
-\end{enumerate}
-
-Diese Evaluationen messen die inhärente Güte der vortrainierten Features für Dating ohne weitere Anpassung. Anschließend erfolgt Fine-tuning des gesamten Modells mit kombiniertem Writer-ID und Dating Loss bei Multi-Task Learning.
+Die Arbeit testet die Übertragbarkeit vortrainierter AttMask-Features von Raven et al. \cite{raven2024self} auf Document Dating. Das auf Writer Retrieval spezialisierte Modell wird direkt für Dating-Klassifikation eingesetzt. Die vortrainierten Features werden durch lineare Evaluation und k-NN Klassifikation bewertet, um ihre inhärente Qualität für Dating ohne weiteres Training zu messen. Anschließend wird das Modell durch Fine-tuning an die Dating-Aufgabe angepasst.
 
 \subsection{Evaluation}
 
-Hauptmetrik ist Mean Absolute Error (MAE) in Jahren
-% \begin{equation}
-% MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
-% \end{equation}
-
-Zusätzliche Metriken umfassen Root Mean Square Error (RMSE) und Accuracy@k (Vorhersage innerhalb $k$ Jahre). Validierung erfolgt durch temporale Kreuzvalidierung zur Vermeidung von Data Leckage.
+Hauptmetrik ist Mean Absolute Error (MAE) in Jahren. Zusätzliche Metriken umfassen Root Mean Square Error (RMSE) und Accuracy@25 (Vorhersage innerhalb 25 Jahre, dem paläographischen Standardfehlerbereich). Die Validierung erfolgt durch chronologische Aufteilung: Training auf Dokumenten vor 1400, Test auf Dokumenten nach 1400, um temporale Generalisierung zu messen und Informationsleckage zu vermeiden.
 
 \section{Experimente}
 
