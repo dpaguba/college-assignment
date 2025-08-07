@@ -67,43 +67,20 @@ Das System nutzt vortrainierte AttMask-Features von Raven et al. \cite{raven2024
 
 Die Arbeit testet die Übertragbarkeit vortrainierter AttMask-Features von Raven et al. \cite{raven2024self} auf Document Dating. Das auf Writer Retrieval spezialisierte Modell wird direkt für Dating-Klassifikation eingesetzt. Die vortrainierten Features werden durch lineare Evaluation und k-NN Klassifikation bewertet, um ihre inhärente Qualität für Dating ohne weiteres Training zu messen. Anschließend wird das Modell durch Fine-tuning an die Dating-Aufgabe angepasst.
 
-\subsection{Evaluation}
-
-Hauptmetrik ist Mean Absolute Error (MAE) in Jahren. Zusätzliche Metriken umfassen Root Mean Square Error (RMSE) und Accuracy@25 (Vorhersage innerhalb 25 Jahre, dem paläographischen Standardfehlerbereich). Die Validierung erfolgt durch chronologische Aufteilung: Training auf Dokumenten vor 1400, Test auf Dokumenten nach 1400, um temporale Generalisierung zu messen und Informationsleckage zu vermeiden.
-
 \section{Experimente}
 
-\subsection{Datensätze}
+\subsection{Datensatz}
 
-\begin{itemize}
-\item \textbf{CLAMM ICDAR-2017:} 6,540+ Bilder, 1,100 Jahre Zeitspanne (500-1600 CE), 12 paläographische Schriftklassen
-\item \textbf{CATMuS Medieval \cite{clerice2024catmus}:} 200+ Manuskripte und Inkunabeln in 10 Sprachen, 160,000+ Textzeilen, 5 Millionen Zeichen, 8.-16. Jahrhundert mit reichen Metadaten (Jahrhundert, Sprache, Genre, Schrift)
-\item \textbf{ICDAR-2021 HDC \cite{seuret2021icdar}:} Competition-Datensatz für historische Dokumentklassifikation mit Dating-Task, beste Systeme erreichten 22 Jahre Mean Absolute Error
-\end{itemize}
+Die Experimente nutzen den CLAMM ICDAR-2017-Datensatz mit 3,540 Trainings- und 2,000 Testbildern aus dem 5.-16. Jahrhundert. Der Datensatz umfasst 15 Datumsklassen für spezifische Zeitintervalle. Die Aufteilung erfolgt chronologisch: Training auf Dokumenten vor 1400, Test auf Dokumenten nach 1400.
 
-\subsection{SSL-Pretraining}
+\subsection{Experimentelles Setup}
 
-Vision Transformer wird mittels AttMask-Framework auf unlabeled historischen Dokumenten vortrainiert. Das SSL-Training lernt generische visuelle Repräsentationen ohne task-spezifische Labels. Die Hyperparameter werden experimentell für jeden Datensatz optimiert.
+\textbf{Feature-Extraktion:} AttMask-Features von Raven et al. werden als vortrainierte Repräsentationen verwendet. Die Features sind bereits für Writer Retrieval optimiert.
 
-\subsection{Transfer Learning Pipeline}
+\textbf{Baseline:} ResNet-50 mit supervised Training auf CLAMM als Vergleichsmodell.
 
-\begin{enumerate}
-\item SSL-Pretraining auf unlabeled Dokumentenbildern
-\item Lineare Evaluation der extrahierten Features
-\item k-NN Evaluation ohne Hyperparameter-Tuning
-\item Fine-tuning für Writer-ID zu Dating Transfer
-\item Vergleich mit überwachter ResNet-50 Baseline
-\end{enumerate}
+\textbf{Evaluation:} Linear Evaluation und k-NN Klassifikation messen die inhärente Qualität der Features ohne task-spezifisches Training. Anschließend Fine-tuning des kompletten Modells auf Dating.
 
-\subsection{Ablationsstudien}
-
-\begin{itemize}
-\item Einfluss verschiedener Masking-Ratios (40-75\%)
-\item VLAD-Clusterzahl (50, 100, 200)
-\item Foreground-Threshold für Patch-Selektion
-\item Vergleich flat encoding vs. hierarchische Ansätze
-\item Augmentierungsstrategien: geometrische vs. morphologische Transformationen
-\end{itemize}
 
 
 \bibliographystyle{plain}
