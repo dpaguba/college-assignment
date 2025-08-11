@@ -31,7 +31,7 @@
 
 \section*{\centering Zusammenfassung}
 
-In dieser Arbeit wird die Anwendung selbstüberwachter Lernverfahren für die automatisierte Datierung historischer Dokumentenbilder untersucht. Während traditionelle überwachte Methoden durch begrenzte annotierte Datensätze eingeschränkt sind, ermöglicht selbstüberwachtes Vortraining die Nutzung großer Mengen nicht-annotierter historischer Manuskripte. Basierend auf dem AttMask-Framework von Kakogeorgiou et al. \cite{kakogeorgiou2022hide}, das Raven et al. \cite{raven2024self} erfolgreich für Writer Retrieval einsetzten ,  testet diese Arbeit experimentell, ob und inwiefern Merkmale, die zur Unterscheidung individueller Schreiber gelernt wurden, auch für die temporale Klassifikation historischer Dokumente geeignet sind.
+In dieser Arbeit wird die Anwendung selbstüberwachter Lernverfahren für die automatisierte Datierung historischer Dokumentenbilder untersucht. Während traditionelle überwachte Methoden durch begrenzte annotierte Datensätze eingeschränkt sind, ermöglicht selbstüberwachtes Vortraining die Nutzung großer Mengen nicht-annotierter historischer Manuskripte. Basierend auf dem AttMask-Framework von Kakogeorgiou et al. \cite{kakogeorgiou2022hide}, das Raven et al. \cite{raven2024self} erfolgreich für Writer Retrieval einsetzten, testet diese Arbeit experimentell, ob und inwiefern Merkmale, die zur Unterscheidung individueller Schreiber gelernt wurden, auch für die temporale Klassifikation historischer Dokumente geeignet sind.
 
 \begin{multicols}{2}
 
@@ -47,7 +47,7 @@ Frühe Ansätze nutzten handcrafted Features. He et al. \cite{he2016image} errei
 
 \subsection{Deep Learning Ansätze}
 
-Hamid et al. \cite{hamid2019deep} verbesserten die Ergebnisse mit Transfer Learning auf vortrainierten CNNs und erreichten 10.23-16.16 Jahre MAE auf dem MPS-Datensatz . Der ICDAR-2021 Competition Benchmark \cite{seuret2021icdar} setzte den aktuellen Standard mit 22 Jahre MAE als beste Leistung. Aktuelle Vision Transformer Ansätze wie DiT \cite{li2022dit} fokussieren auf moderne Dokumente, nicht historische Manuskripte.
+Hamid et al. \cite{hamid2019deep} verbesserten die Ergebnisse mit Transfer Learning auf vortrainierten CNNs und erreichten 10.23-16.16 Jahre MAE auf dem MPS-Datensatz. Der ICDAR-2021 Competition Benchmark \cite{seuret2021icdar} setzte den aktuellen Standard mit 22 Jahre MAE als beste Leistung. Aktuelle Vision Transformer Ansätze wie DiT \cite{li2022dit} fokussieren auf moderne Dokumente, nicht historische Manuskripte.
 
 \subsection{Writer Identification und SSL}
 
@@ -61,7 +61,7 @@ Die Arbeit nutzt den CLAMM ICDAR-2017-Datensatz \cite{cloppet2017icdar2017} mit 
 
 \subsection{SSL-Architektur}
 
-Das System nutzt vortrainierte AttMask-Features von Raven et al. \cite{raven2024self}, die DINO Self-Distillation mit attention-guided Masking kombinieren. Der Teacher identifiziert salienteste Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die SSL-Features sind bereits nach dem Pretraining für Writer Retrieval optimiert und benötigen kein zusätzliches Training.
+Das System nutzt vortrainierte AttMask-Features von Raven et al. \cite{raven2024self}, die DINO Self-Distillation mit attention-guided Masking kombinieren. Der Teacher identifiziert salienteste Bildregionen über Self-Attention Maps, die dann beim Student maskiert werden. Features werden über VLAD-Aggregation von Foreground-Patches zu globalen Dokumentrepräsentationen zusammengefasst. Die Features werden direkt aus dem SSL-Pretraining übernommen, ohne weitere Optimierung für Writer Retrieval.
 
 \subsection{Transfer Learning Ansatz}
 
@@ -71,17 +71,15 @@ Die Arbeit testet die Übertragbarkeit vortrainierter AttMask-Features von Raven
 
 \subsection{Datensatz}
 
-Die Experimente nutzen den CLAMM ICDAR-2017-Datensatz mit 3,540 Trainings- und 2,000 Testbildern aus dem 5.-16. Jahrhundert. Der Datensatz umfasst 15 Datumsklassen für spezifische Zeitintervalle. Die Aufteilung erfolgt chronologisch: Training auf Dokumenten vor 1400, Test auf Dokumenten nach 1400.
+Die Experimente nutzen den CLAMM ICDAR-2017-Datensatz mit 3,540 Trainings- und 2,000 Testbildern aus dem 5.-16. Jahrhundert. Der Datensatz umfasst 15 Datumsklassen für spezifische Zeitintervalle. Die Aufteilung erfolgt nach dem vordefinierten Train/Test-Split des Datensatzes, um die Vergleichbarkeit mit anderen Arbeiten zu gewährleisten. Zusätzlich wird der ICDAR-2021 Historical Document Classification Datensatz \cite{seuret2021icdar} für erweiterte Evaluationen genutzt.
 
 \subsection{Experimentelles Setup}
 
-\textbf{Feature-Extraktion:} AttMask-Features von Raven et al. werden als vortrainierte Repräsentationen verwendet. Die Features sind bereits für Writer Retrieval optimiert.
+\textbf{Feature-Extraktion:} AttMask-Features von Raven et al. werden als vortrainierte Repräsentationen verwendet. Die Features stammen direkt aus dem SSL-Pretraining.
 
 \textbf{Baseline:} ResNet-50 mit supervised Training auf CLAMM als Vergleichsmodell.
 
 \textbf{Evaluation:} Linear Evaluation und k-NN Klassifikation messen die inhärente Qualität der Features ohne task-spezifisches Training. Anschließend Fine-tuning des kompletten Modells auf Dating.
-
-
 
 \bibliographystyle{plain}
 \bibliography{references}
