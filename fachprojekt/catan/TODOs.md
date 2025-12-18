@@ -1,0 +1,30 @@
+# TODO list
+- [x] Longest Road
+- [x] VP card x 5
+- [x] Monopol x2
+- [x] Straßenbau x2 
+- [x] Year of plenty x2
+- [x] Robber
+- [x] knight power x 14
+- [x] update GUI to show Robber
+- [x] possible settlements broken
+- [x] Harbors get lost
+- [x] hand card limit
+- [x] show Trades
+- [x]  show Cards
+- [x] proper map setup
+- [x] logging
+- [x] network code
+- [x] fix ties for roads
+- [x] Player Trades
+- [x] make client usable to play
+- [ ] add automatic matchmaking
+- [ ] Check if an action is valid
+- [ ] confidentiality between players
+- [ ] only 1 Card action per turn
+- [ ] limit player to player trades
+- [ ] hints what action should be taken by the player (robber, player to player trade, discarding)
+- [x] Card action for player
+- [ ] Highlight end of turn
+- [ ] Highlight Robber
+- [ ] Highlight Trade actions
