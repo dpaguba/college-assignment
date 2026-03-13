@@ -18,5 +18,13 @@ build/
 *.ckpt
 data/
 
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+
 # OS
 .DS_Store
