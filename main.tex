@@ -397,6 +397,12 @@ Parallel dazu verarbeitet das System die Eingaben in vier Schritten:
           \item Den Namen des Objekts per Tastatur tippen.
           \item In einer VR-Umgebung mit einem „virtuellen Laserstrahl" zeigen.
         \end{enumerate}
+
+  \item \textbf{Interaktionsstil (Dialogstil):} Legt fest, in welcher \textit{Form}
+        der Dialog zwischen Mensch und Maschine gestaltet ist (siehe B.3).
+
+  \item \textbf{Interaktionsumgebung:} Die technische Umgebung, in der Aufgaben,
+        Techniken und Stile umgesetzt werden (siehe B.4).
 \end{itemize}
 
 % - - - - - - - - - - - - - - - - - - - - -
@@ -425,6 +431,100 @@ Parallel dazu verarbeitet das System die Eingaben in vier Schritten:
         Kreis.
   \item \textbf{Mental Models:} Stimmt das mentale Modell des Benutzers nicht mit
         der Logik des Computers überein, entstehen Planungsfehler.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Interaktionsstile (Dialoggestaltung)}
+% -----------------------------------------
+
+Ein \textbf{Interaktionsstil} (auch Dialogstil) legt fest, in welcher Form der Dialog
+zwischen Mensch und Maschine gestaltet ist. Es werden drei Hauptstile unterschieden:
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Sprachbasierte Interaktion}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Ein- und Ausgabe erfolgen über natürliche oder künstliche Sprache.
+
+\textbf{A. Kommandosprachen} (z.\,B. Linux Terminal, Windows CMD):
+\begin{itemize}
+  \item \textbf{Vorteile:} Sehr effizient für Profis; ermöglichen Skripte und Makros.
+  \item \textbf{Nachteile:} Hoher Lernaufwand (Syntax muss auswendig gelernt werden);
+        hohe Fehleranfälligkeit.
+\end{itemize}
+
+\textbf{B. Natürliche Sprache} (z.\,B. Siri, ChatGPT):
+\begin{itemize}
+  \item \textbf{Vorteile:} Geringer Lernaufwand, da Alltagssprache genutzt wird.
+  \item \textbf{Nachteile:} Ineffizient durch Redundanz; Mehrdeutigkeiten (Homonyme)
+        führen oft zu Fehlern im System.
+\end{itemize}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Direkte Manipulation (DMI)}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Basiert auf der visuellen Darstellung von Objekten, die mit Eingabegeräten direkt
+bewegt oder verändert werden können.
+
+\textbf{Merkmale:}
+\begin{itemize}
+  \item Sichtbarkeit der Objekte
+  \item Schnelle, umkehrbare Aktionen
+  \item Visuelle statt textuelle Befehle
+\end{itemize}
+
+\textbf{Vorteile:}
+\begin{itemize}
+  \item Intuitiv; Fehler sind sofort sichtbar und korrigierbar.
+  \item Weitgehend sprachunabhängig.
+\end{itemize}
+
+\textbf{Nachteile:}
+\begin{itemize}
+  \item Geringe Präzision.
+  \item Hoher Platzbedarf auf dem Bildschirm.
+  \item Kein Geschwindigkeitsvorteil für Experten.
+\end{itemize}
+
+\begin{examplebox}
+  \textbf{WYSIWYG} („What You See Is What You Get") wie Microsoft Word: Das Dokument
+  wird direkt so dargestellt, wie es später aussieht.
+\end{examplebox}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Gestenbasierte Interaktion}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Interaktion durch Bewegungen des Körpers oder von Körperteilen.
+
+\textbf{Gestenstile:}
+\begin{itemize}
+  \item \textbf{Deiktisch:} Zeigen auf Objekte.
+  \item \textbf{Manipulativ:} Bewegen oder Verändern von Objekten.
+  \item \textbf{Symbolisch:} Posen und kodierte Bewegungen mit festgelegter Bedeutung.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Interaktionsumgebungen}
+% -----------------------------------------
+
+Interaktionsumgebungen sind die technischen Umgebungen, in denen Aufgaben, Techniken
+und Stile umgesetzt werden.
+
+\begin{itemize}
+  \item \textbf{CLI (Command Line Interface):} Textbasiert, streng reglementiert
+        und kodiert.
+  \item \textbf{GUI (Graphical User Interface):} Nutzt Metaphern (z.\,B. den
+        „Schreibtisch") und grafische Widgets.
+  \item \textbf{WIMP-Systeme:} Unterform der GUI -- bestehend aus
+        \textbf{W}indows, \textbf{I}cons, \textbf{M}enus und \textbf{P}ointers.
+  \item \textbf{NUI (Natural User Interface):} Ermöglicht „natürliche" Interaktionen,
+        z.\,B. durch Berührung (iPad) oder Sprache.
+  \item \textbf{TUI (Tangible User Interface):} Greifbare Schnittstellen, bei denen
+        physische Objekte als Eingabemedien dienen.
+  \item \textbf{BCI (Brain Computer Interface):} Direkte Steuerung durch
+        Gehirnströme (Biosignale).
 \end{itemize}
 
 \end{document}
