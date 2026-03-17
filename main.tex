@@ -1164,6 +1164,68 @@ Intuitiver für die Farbauswahl als RGB.
   \textbf{nicht} prüfungsrelevant.
 \end{notebox}
 
+\textbf{Darstellung:} Vektor $(H,\,S,\,V)$ mit $H \in [0°, 360°]$,
+$S \in [0,\,1]$, $V \in [0,\,1]$.
+
+\textbf{Charakteristische Punkte:}
+\begin{itemize}
+  \item \textbf{Schwarzpunkt:} $V = 0$ (Kegelspitze) -- kein Licht,
+        $H$ und $S$ irrelevant.
+  \item \textbf{Weißpunkt:} $S = 0,\; V = 1$ (Mittelpunkt des Deckels) --
+        kein Farbanteil, maximale Helligkeit.
+  \item \textbf{Grau:} $S = 0$, $V \in (0,\,1)$ -- Mittelachse des Kegels;
+        $H$ irrelevant.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[line width=0.7pt, >=Stealth, font=\small]
+  % HSV-Kegel: Spitze (0,0), Deckel y=3.5, Halbachsen 2 und 0.5
+
+  % Hintere (obere) Hälfte des Deckels – gestrichelt
+  \draw[dashed] (2, 3.5) arc (0:180:2 and 0.5);
+
+  % Kegelseiten
+  \draw (-2, 3.5) -- (0, 0) -- (2, 3.5);
+
+  % Vordere (untere) Hälfte des Deckels – durchgezogen
+  \draw (2, 3.5) arc (0:-180:2 and 0.5);
+
+  % Grauachse S=0 (gestrichelt)
+  \draw[dashed] (0, 0) -- (0, 3.5);
+
+  % Hue-Pfeil auf dem Deckelrand
+  \draw[->, thin] (2, 3.5) arc (0:60:2 and 0.5)
+    node[right, font=\scriptsize] {$H$ (Farbwinkel)};
+
+  % Saturation-Pfeil (Radius auf dem Deckel)
+  \draw[->, thin] (0, 3.5) -- (1.8, 3.5)
+    node[above, font=\scriptsize] {$S$ (Sättigung)};
+
+  % Value-Pfeil (links neben dem Kegel)
+  \draw[<->, thin] (-2.7, 0) -- (-2.7, 3.5);
+  \node[left, font=\scriptsize] at (-2.7, 1.75) {$V$ (Hellwert)};
+  \draw[dotted, very thin] (0, 0) -- (-2.7, 0);
+  \draw[dotted, very thin] (-2, 3.5) -- (-2.7, 3.5);
+
+  % Schwarzpunkt (Kegelspitze)
+  \fill (0, 0) circle (2pt)
+    node[below right, font=\scriptsize, align=left]
+      {\textbf{Schwarz}\\ $V = 0$};
+
+  % Weißpunkt (Mittelpunkt des Deckels)
+  \fill (0, 3.5) circle (2pt)
+    node[above right, font=\scriptsize, align=left]
+      {\textbf{Weiß}\\$S = 0,\;V = 1$};
+
+  % Grau-Label
+  \node[right, font=\scriptsize] at (0.1, 1.8) {Grau $(S = 0)$};
+\end{tikzpicture}
+\caption{HSV-Kegel: $H$ = Farbwinkel ($0°$--$360°$), $S$ = Sättigung ($0$--$1$),
+$V$ = Hellwert ($0$--$1$). Schwarz an der Spitze, Weiß im Zentrum des Deckels,
+Grau auf der Mittelachse.}
+\end{figure}
+
 % -----------------------------------------
 \subsection{CMYK-Modell (Subtraktiv)}
 % -----------------------------------------
