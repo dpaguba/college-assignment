@@ -750,168 +750,188 @@ und Stile umgesetzt werden.
 \section{Kapitel C: Wahrnehmung}
 % =========================================
 
+Die Wahrnehmung ist der Prozess, bei dem Reize aus der Umwelt über die Sinnesorgane
+aufgenommen und im Gehirn verarbeitet werden. Für die MMI ist dieses Kapitel essenziell,
+um zu verstehen, wie Informationen präsentiert werden müssen, damit der Mensch sie
+optimal aufnehmen kann.
+
 % -----------------------------------------
-\subsection{Auditive Wahrnehmung: Auditory Icons und Earcons}
+\subsection{Visuelle Wahrnehmung (Sehsinn)}
 % -----------------------------------------
 
-Die auditive Ausgabe entlastet den visuellen Kanal oder stellt Informationen redundant
-(mehrfach codiert) bereit. Zwei grundlegende Konzepte zur akustischen Repräsentation
-werden unterschieden:
+Der dominante Wahrnehmungskanal in der MMI.
 
 % - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Auditory Icons}
+\subsubsection{Sinneszellen: Stäbchen und Zapfen}
 % - - - - - - - - - - - - - - - - - - - - -
-
-Das akustische Gegenstück zu visuellen Icons (Piktogrammen) auf einem Desktop.
 
 \begin{itemize}
-  \item \textbf{Definition:} Repräsentieren ein Objekt oder einen Vorgang durch
-        Geräusche mit \textbf{direkter Analogie} zur realen Welt.
-  \item \textbf{Merkmale:}
-    \begin{itemize}
-      \item Meist \textbf{natürliche Sounds}.
-      \item Bedeutung \textbf{intuitiv} erfassbar, da das Geräusch eng mit der
-            Handlung verknüpft ist.
-    \end{itemize}
+  \item \textbf{Stäbchen:} Zuständig für das \textbf{Hell-Dunkel-Sehen}. Extrem
+        lichtempfindlich, ermöglichen Sehen bei Dämmerung -- können aber keine
+        Farben unterscheiden.
+  \item \textbf{Zapfen:} Zuständig für das \textbf{Farbsehen}. Drei Typen (für
+        verschiedene Wellenlängen); benötigen mehr Licht als Stäbchen.
 \end{itemize}
 
-\begin{examplebox}
-  \begin{itemize}[noitemsep]
-    \item Geräusch von zerknülltem Papier beim Verschieben einer Datei in den
-          Papierkorb.
-    \item Läuten einer Glocke (Rezeptionsklingel) als Hinweis auf eine neue
-          Nachricht.
-  \end{itemize}
-\end{examplebox}
-
 % - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Earcons}
+\subsubsection{Anpassungsmechanismen: Akkommodation und Adaption}
 % - - - - - - - - - - - - - - - - - - - - -
 
-Abstrakter als Auditory Icons -- funktionieren wie eine künstliche Sprache aus Tönen.
-
+\textbf{Akkommodation (Fokussierung):}
 \begin{itemize}
-  \item \textbf{Definition:} \textbf{Abstrakte Codierung} von Informationen, oft als
-        kurze Melodien oder Tonfolgen.
-  \item \textbf{Merkmale:}
-    \begin{itemize}
-      \item Bedeutung \textbf{nicht selbsterklärend} -- muss gelernt werden.
-      \item Können \textbf{hierarchisch strukturiert} sein, um komplexe Zustände
-            oder mehrere Größen gleichzeitig darzustellen.
-    \end{itemize}
-\end{itemize}
-
-\begin{examplebox}
-  \begin{itemize}[noitemsep]
-    \item Fehlermeldungen durch verschiedene Melodien und Wellenformen
-          (Sinus, Rechteck, Dreieck) codiert.
-    \item \glqq{}Operating System Error\grqq{} klingt anders als
-          \glqq{}Execution Error\grqq{}.
-    \item Zustände wie \glqq{}Overflow\grqq{} und \glqq{}Underflow\grqq{} nutzen
-          Variationen in Tonhöhe oder Rhythmus.
-  \end{itemize}
-\end{examplebox}
-
-% - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Gegenüberstellung}
-% - - - - - - - - - - - - - - - - - - - - -
-
-\begin{center}
-\begin{tabular}{p{3cm} p{5cm} p{5cm}}
-\hline
-\textbf{Merkmal} & \textbf{Auditory Icons} & \textbf{Earcons} \\
-\hline
-Natur des Sounds  & Natürliche, bekannte Geräusche   & Abstrakte Melodien / Rhythmen \\[3pt]
-Bedeutung         & Intuitiv (analog zur Realität)   & Abstrakt (muss gelernt werden) \\[3pt]
-Repräsentation    & Konkretes Objekt / Aktion        & Mehrere Variablen / Größen \\[3pt]
-Lernaufwand       & Gering                           & Hoch \\
-\hline
-\end{tabular}
-\end{center}
-
-% - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Einordnung in den Kontext}
-% - - - - - - - - - - - - - - - - - - - - -
-
-\begin{itemize}
-  \item \textbf{Multimediale Interaktion:} Sound neben Grafik = mehr als ein Medium
-        im Einsatz.
-  \item \textbf{Multimodale Interaktion:} Ein auditiver Hinweis (Earcon) kann eine
-        visuelle Anzeige unterstützen und die Robustheit des Systems erhöhen.
-  \item \textbf{Echoisches Gedächtnis:} Auditive Reize werden im sensorischen
-        Speicher für Auditives verarbeitet -- Zerfallszeit ca.\ 3--4 Sekunden,
-        Kapazität ca.\ 5 Chunks.
-\end{itemize}
-
-% -----------------------------------------
-\subsection{Visuelle Wahrnehmung: Akkommodation und Adaption}
-% -----------------------------------------
-
-Beide Begriffe beschreiben, wie sich das menschliche Auge physikalisch an
-unterschiedliche Umweltbedingungen anpasst. Sie finden im
-Interaktionsmodell auf der Benutzerseite in der Phase der
-\textbf{Wahrnehmung (Perception)} statt.
-
-% - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Akkommodation (Fokussierung)}
-% - - - - - - - - - - - - - - - - - - - - -
-
-\begin{itemize}
-  \item \textbf{Definition:} Anpassung der \textbf{Brechkraft} des Auges (Form der
-        Linse).
-  \item \textbf{Zweck:} Objekte in beliebigen Abständen (nah oder fern) scharf auf
-        der Netzhaut (Retina) abbilden.
+  \item \textbf{Definition:} Anpassung der \textbf{Brechkraft} der Linse.
+  \item \textbf{Zweck:} Objekte in beliebigen Abständen scharf auf der Netzhaut
+        abbilden.
   \item \textbf{Auslöser:} Änderung der Entfernung zum betrachteten Objekt.
 \end{itemize}
 
-\begin{examplebox}
-  Beim Wechsel vom Smartphone (Nahbereich) zur weit entfernten Tafel (Fernbereich)
-  verändern die Augenmuskeln die Linsenform, um den Fokuspunkt anzupassen.
-\end{examplebox}
-
 \begin{notebox}
-  \textbf{VR/AR-Relevanz:} Bei VR-Brillen kann ein
-  \textbf{Vergenz-Akkommodations-Konflikt} auftreten, wenn die virtuelle Tiefe nicht
-  mit der physischen Akkommodation des Auges übereinstimmt.
+  \textbf{VR/AR-Relevanz:} \textbf{Vergenz-Akkommodations-Konflikt} -- wenn virtuelle
+  Tiefe nicht mit der physischen Akkommodation übereinstimmt.
 \end{notebox}
 
-% - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Adaption (Helligkeitsanpassung)}
-% - - - - - - - - - - - - - - - - - - - - -
-
+\textbf{Adaption (Helligkeitsanpassung):}
 \begin{itemize}
   \item \textbf{Definition:} Anpassung der \textbf{Pupillenweite} an die
-        Lichtintensität.
-  \item \textbf{Zweck:} Regulierung des Lichteinfalls auf die Sinneszellen.
-    \begin{itemize}
-      \item Viel Licht $\rightarrow$ Pupille klein (Kontraktion).
-      \item Wenig Licht $\rightarrow$ Pupille groß (Dilatation).
-    \end{itemize}
-  \item \textbf{Sinneszellen:}
-    \begin{itemize}
-      \item \textbf{Stäbchen:} Hell-Dunkel-Sehen; hohe Sensitivität, aktiv bei
-            wenig Licht.
-      \item \textbf{Zapfen:} Farbsehen; benötigen mehr Licht.
-    \end{itemize}
+        Lichtintensität (analog zur Blende einer Kamera).
+  \item Viel Licht $\rightarrow$ Pupille klein (Kontraktion).
+  \item Wenig Licht $\rightarrow$ Pupille groß (Dilatation).
 \end{itemize}
-
-\begin{examplebox}
-  Beim Verlassen eines dunklen Kinosaals ins helle Tageslicht ist man kurz geblendet,
-  bis sich die Pupillen verengt haben.
-\end{examplebox}
-
-% - - - - - - - - - - - - - - - - - - - - -
-\subsubsection{Gegenüberstellung}
-% - - - - - - - - - - - - - - - - - - - - -
 
 \begin{center}
 \begin{tabular}{p{3cm} p{5cm} p{5cm}}
 \hline
 \textbf{Merkmal} & \textbf{Akkommodation} & \textbf{Adaption} \\
 \hline
-Was wird angepasst? & Brechkraft (Linse)          & Pupillenweite \\[3pt]
+Was wird angepasst? & Brechkraft (Linse)            & Pupillenweite \\[3pt]
 Ziel                & Schärfe bei variabler Distanz & Lichteinfall regulieren \\[3pt]
-Auslöser            & Entfernung zum Objekt        & Lichtintensität \\
+Auslöser            & Entfernung zum Objekt         & Lichtintensität \\
+\hline
+\end{tabular}
+\end{center}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Sakkaden}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Schnelle, ruckartige Vorwärtssprünge der Augen (z.\,B. beim Lesen). Wir nehmen die
+Welt nicht als kontinuierlichen Fluss wahr, sondern \textbf{fixieren Punkte} und
+\glqq{}springen\grqq{} zum nächsten Bereich. Zwischen zwei Fixationen gibt es eine
+kurze Blindphase.
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Präattentive und Attentive Wahrnehmung}
+% - - - - - - - - - - - - - - - - - - - - -
+
+\begin{itemize}
+  \item \textbf{Präattentive Wahrnehmung:} \textbf{Vorbewusste, unterschwellige}
+        Wahrnehmung. Läuft parallel ab und erkennt einfache Merkmale (Farbe, Form,
+        Bewegung) sofort -- ohne bewusste Aufmerksamkeit.\\
+        \textit{Beispiel:} Ein roter Punkt in einer Menge blauer Punkte fällt sofort
+        auf.
+  \item \textbf{Attentive Wahrnehmung:} Bewusste \textbf{Erkennung und Einordnung
+        komplexer Strukturen}. Erfordert Aufmerksamkeit und sequenziellen Fokus.
+\end{itemize}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Gestaltgesetze}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Menschen tendieren dazu, optische Reize zu \glqq{}verbessern\grqq{} und in
+\textbf{einfache, prägnante Formen} zu gliedern.
+
+\begin{itemize}
+  \item \textbf{Gesetz der guten Gestalt:} Informationen werden leichter behalten
+        und verarbeitet, wenn sie eine klare Ordnung haben.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Auditive Wahrnehmung (Hörsinn)}
+% -----------------------------------------
+
+Wird zur Entlastung des visuellen Kanals oder für Alarmsignale genutzt.
+
+\begin{itemize}
+  \item Unterscheidung zwischen \textbf{Hörschwelle} (leisester Ton) und
+        \textbf{Schmerzgrenze} (lautester Ton).
+  \item \textbf{Echoisches Gedächtnis:} Kurzzwischenspeicher für auditive Reize --
+        Kapazität ca.\ 5 Einheiten, Dauer 3--4 Sekunden.
+\end{itemize}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Auditory Icons vs. Earcons}
+% - - - - - - - - - - - - - - - - - - - - -
+
+\begin{itemize}
+  \item \textbf{Auditory Icons:} Nutzen \textbf{natürliche Geräusche} als direkte
+        Analogie zu Objekten oder Aktionen.\\
+        \textit{Beispiel:} Papierknüllen für \glqq{}Löschen\grqq{}, Glockenläuten
+        für neue Nachricht.
+  \item \textbf{Earcons:} Nutzen \textbf{abstrakte Tonfolgen oder Melodien}. Bedeutung
+        ist nicht intuitiv -- \textbf{muss gelernt werden}. Können hierarchisch
+        strukturiert sein.\\
+        \textit{Beispiel:} Verschiedene Pieptöne für Systemfehlerklassen
+        (\glqq{}OS Error\grqq{} vs.\ \glqq{}Execution Error\grqq{}).
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{p{3cm} p{5cm} p{5cm}}
+\hline
+\textbf{Merkmal} & \textbf{Auditory Icons} & \textbf{Earcons} \\
+\hline
+Natur       & Natürliche Geräusche           & Abstrakte Melodien / Rhythmen \\[3pt]
+Bedeutung   & Intuitiv (analog zur Realität) & Abstrakt (muss gelernt werden) \\[3pt]
+Lernaufwand & Gering                         & Hoch \\
+\hline
+\end{tabular}
+\end{center}
+
+% -----------------------------------------
+\subsection{Haptische Wahrnehmung (Tastsinn \& Propriozeption)}
+% -----------------------------------------
+
+Gewinnt in VR und bei mobilen Geräten (Vibration) zunehmend an Bedeutung.
+
+\begin{itemize}
+  \item \textbf{Propriozeption} (\glqq{}Eigenwahrnehmung\grqq{}): Wahrnehmung der
+        eigenen \textbf{Körperlage im Raum} und der Stellung der Gelenke zueinander.
+  \item \textbf{Kinästhesie} (\glqq{}Bewegungssinn\grqq{}): Empfindung für
+        \textbf{Winkeländerungen in den Gelenken} und deren Richtung.
+  \item \textbf{Homunculus:} Die Sinneszellen sind im Gehirn ungleich verteilt.
+        Hände, Zunge und Lippen belegen einen viel größeren Bereich im sensorischen
+        Cortex als z.\,B. der Rücken.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Olfaktorische und Gustatorische Wahrnehmung}
+% -----------------------------------------
+
+Geruch und Geschmack sind technisch am schwersten umzusetzen, haben aber eine
+\textbf{starke emotionale Wirkung}.
+
+\begin{itemize}
+  \item \textbf{Problem:} Gerüche lassen sich nicht einfach durch wenige
+        \glqq{}Grundgerüche\grqq{} mischen (anders als RGB bei Farben) und sind
+        technisch schwer präzise steuerbar.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Zusammenfassung: Prüfungsrelevanz C.1.3}
+% -----------------------------------------
+
+\begin{center}
+\begin{tabular}{p{4cm} p{9cm}}
+\hline
+\textbf{Thema} & \textbf{Kernpunkt} \\
+\hline
+Zapfen vs.\ Stäbchen   & Zapfen = Farbe; Stäbchen = Hell/Dunkel (Nachtsehen) \\[3pt]
+Akkommodation          & Schärfeeinstellung (Linse / Brechkraft) \\[3pt]
+Adaption               & Helligkeitseinstellung (Pupillenweite) \\[3pt]
+Sakkaden               & Ruckartige Augenbewegungen; Welt wird in Fixationen wahrgenommen \\[3pt]
+Präattentiv            & Sofortige, unbewusste Merkmalserkennung (Farbe, Form) \\[3pt]
+Auditory Icons         & Natürlicher Sound, intuitiv \\[3pt]
+Earcons                & Abstrakte Melodie, muss gelernt werden \\[3pt]
+Propriozeption         & Wissen, wo sich die eigenen Körperteile befinden \\
 \hline
 \end{tabular}
 \end{center}
