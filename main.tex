@@ -981,6 +981,69 @@ Materie und dem biologischen Sehapparat.
         lassen sich durch additive Mischung dreier realer Grundfarben erzeugen.
 \end{itemize}
 
+\textbf{Darstellung:} Vektor $(R,\,G,\,B)$ mit $R,G,B \in [0,\,1]$
+(bzw.\ $0$--$255$ als 8-Bit-Wert).
+
+\textbf{Charakteristische Punkte:}
+\begin{itemize}
+  \item \textbf{Schwarzpunkt:} $(0,0,0)$ -- kein Licht, kein Farbanteil.
+  \item \textbf{Weißpunkt:} $(1,1,1)$ bzw.\ $(255,255,255)$ -- maximale
+        Intensität aller drei Kanäle.
+  \item \textbf{Grau:} Hauptdiagonale des Würfels:
+        $(\alpha,\alpha,\alpha)$ mit $\alpha \in [0,1]$ --
+        gleiche Intensität in allen Kanälen.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=2, line width=0.7pt, >=Stealth, font=\small]
+  % Axonometrische Projektion: R rechts, G schräg oben-rechts, B gerade oben
+  \coordinate (O)  at (0,    0   );
+  \coordinate (vR) at (1,    0   );
+  \coordinate (vG) at (0.35, 0.5 );
+  \coordinate (vB) at (0,    1   );
+  \coordinate (RG) at (1.35, 0.5 );
+  \coordinate (RB) at (1,    1   );
+  \coordinate (GB) at (0.35, 1.5 );
+  \coordinate (W)  at (1.35, 1.5 );
+
+  % Versteckte Kanten (gestrichelt)
+  \draw[dashed] (O) -- (vR);
+  \draw[dashed] (O) -- (vG);
+  \draw[dashed] (O) -- (vB);
+
+  % Sichtbare Kanten
+  \draw (vR) -- (RG) -- (vG);
+  \draw (vR) -- (RB);
+  \draw (vG) -- (GB);
+  \draw (vB) -- (RB);
+  \draw (vB) -- (GB);
+  \draw (RG) -- (W);
+  \draw (RB) -- (W);
+  \draw (GB) -- (W);
+
+  % Achsenpfeile und Beschriftung
+  \draw[->, thin] (vR) -- ++(0.25, 0)    node[right]       {$R$};
+  \draw[->, thin] (vG) -- ++(0.18, 0.22) node[above right] {$G$};
+  \draw[->, thin] (vB) -- ++(0, 0.25)    node[above]       {$B$};
+
+  % Schwarzpunkt und Weißpunkt
+  \fill (O) circle (1.5pt)
+    node[below left, align=right, font=\scriptsize]
+      {\textbf{Schwarz}\\$(0,0,0)$};
+  \fill (W) circle (1.5pt)
+    node[above right, align=left, font=\scriptsize]
+      {\textbf{Weiß}\\$(1,1,1)$};
+
+  % Graudiagonale
+  \draw[dotted, line width=1pt] (O) -- (W)
+    node[midway, right, font=\scriptsize, xshift=4pt]
+      {Grau $(\alpha,\alpha,\alpha)$};
+\end{tikzpicture}
+\caption{RGB-Einheitswürfel: Schwarzpunkt $(0,0,0)$, Weißpunkt $(1,1,1)$,
+Grau auf der Hauptdiagonale.}
+\end{figure}
+
 % -----------------------------------------
 \subsection{CIE-Modell (Geräteunabhängiges Referenzmodell)}
 % -----------------------------------------
