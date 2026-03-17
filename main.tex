@@ -474,6 +474,106 @@ Parallel dazu verarbeitet das System die Eingaben in vier Schritten:
 
 
 % -----------------------------------------
+\subsection{Kommunikationskanäle}
+% -----------------------------------------
+
+Dieses Thema befasst sich damit, wie Informationen physisch zwischen Mensch und Maschine
+übertragen werden. Man unterscheidet strikt zwischen der \textbf{Sender-} und der
+\textbf{Empfängerseite}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Stealth, line width=0.7pt]
+  \node[draw, minimum width=2.2cm, minimum height=2.8cm, align=center] (mensch)  at (0, 0)
+    {Mensch};
+  \node[draw, minimum width=2.4cm, minimum height=2.8cm, align=center] (rechner) at (7, 0)
+    {MMI-System\\(Rechner)};
+
+  % Mensch → Rechner (obere Linie, dashed)
+  \draw[->, dashed]
+    ([yshift=4mm]mensch.east) -- ([yshift=4mm]rechner.west)
+    node[midway, above, font=\small] {Modalitäten}
+    node[midway, below, font=\small] {Sensorik};
+
+  % Rechner → Mensch (untere Linie, dashed)
+  \draw[->, dashed]
+    ([yshift=-4mm]rechner.west) -- ([yshift=-4mm]mensch.east)
+    node[midway, above, font=\small] {Medien}
+    node[midway, below, font=\small] {Sinne};
+\end{tikzpicture}
+\caption{Kommunikationskanäle zwischen Mensch und MMI-System}
+\end{figure}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Die vier Grundkomponenten}
+% - - - - - - - - - - - - - - - - - - - - -
+
+\begin{itemize}
+  \item \textbf{Modalität} (Mensch $\rightarrow$ Maschine): Typ des Ausgabesignals,
+        den der \textbf{Mensch} erzeugt.\\
+        \textit{Beispiele:} Sprache, Töne, Gestik, Mimik, Körperbewegungen,
+        Biosignale (Gehirnströme).
+
+  \item \textbf{Sensorik} (Aufnahme durch die Maschine): Technische Kanäle, mit
+        denen das \textbf{System} Signale des Menschen aufnimmt.\\
+        \textit{Beispiele:} Mikrofone, Kameras, Touchscreens, elektrochemische
+        Sensoren, elektromagnetische Antennen.
+
+  \item \textbf{Medien} (Maschine $\rightarrow$ Mensch): Typ des Ausgabesignals,
+        den die \textbf{Maschine} erzeugt.\\
+        \textit{Beispiele:} Text, Grafik (Standbild/Animation), Sprachsynthese,
+        künstlicher oder realistischer Ton.
+
+  \item \textbf{Sinne} (Aufnahme durch den Menschen): Menschliche Sinnesorgane,
+        die Signale der Maschine registrieren.\\
+        \textit{Beispiele:} Sehen (visuell), Hören (auditiv), Tasten
+        (haptisch/taktil), Riechen (olfaktorisch), Schmecken (gustatorisch).
+\end{itemize}
+
+\begin{notebox}
+  Schema für die Klausur:\\
+  \textbf{Mensch (Modalität) $\rightarrow$ Sensorik $\rightarrow$ Rechner
+  $\rightarrow$ Medium $\rightarrow$ Sinne $\rightarrow$ Mensch}
+\end{notebox}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Kombination mehrerer Kanäle}
+% - - - - - - - - - - - - - - - - - - - - -
+
+\begin{center}
+\begin{tabular}{p{2.8cm} p{5.5cm} p{5cm}}
+\hline
+\textbf{Begriff} & \textbf{Erklärung} & \textbf{Beispiel} \\
+\hline
+\textbf{Multimedial} & Mehr als ein \textbf{Medium} (Ausgabeseite des Rechners) &
+  Lernsystem mit Text, Bild und Video \\[4pt]
+\textbf{Multimodal} & Mehr als eine \textbf{Modalität} (Eingabeseite des Menschen) &
+  Sprechen + Zeigen: „Lösche dieses Objekt" + Fingerzeig \\[4pt]
+\textbf{Multicodal} & Verschiedene \textbf{Kodierungen} für dasselbe Medium &
+  „STOPP" als Wort + rotes Achteck-Symbol \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Multimediale Interaktion:}
+\begin{itemize}
+  \item \textbf{Vorteil:} Informationen über mehrere Kanäle (Hören \& Sehen) werden
+        besser aufgenommen und behalten.
+  \item \textbf{Nachteil:} Gefahr der \textbf{Informationsüberlastung} -- schwierig,
+        die Aufmerksamkeit auf das Wesentliche zu lenken.
+\end{itemize}
+
+\textbf{Multimodale Interaktion:}
+\begin{itemize}
+  \item \textbf{Vorteil:} \textbf{Höhere Robustheit} -- bei Umgebungslärm kann das
+        System die Absicht durch Gestik erkennen, auch wenn die Sprache nicht
+        verstanden wird.
+  \item \textbf{Nachteil:} \textbf{Technische Komplexität} -- das System muss
+        verschiedene Eingabeströme (z.\,B. Lippenbewegung + Ton) in Echtzeit
+        synchronisieren und verschmelzen.
+\end{itemize}
+
+% -----------------------------------------
 \subsection{Interaktionsstile (Dialoggestaltung)}
 % -----------------------------------------
 
