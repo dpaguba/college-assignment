@@ -104,15 +104,17 @@
 \section{Kapitel B: Interaktive Systeme -- Architekturmodelle}
 % =========================================
 
-In der Mensch-Maschine-Interaktion (MMI) dienen Architekturmodelle dazu, die Struktur eines
-Softwaresystems so zu organisieren, dass die Benutzungsschnittstelle (UI) sauber von der
-eigentlichen Anwendungslogik getrennt wird.
+\subsection*{B.1.3. Systemarchitektur: Architekturmodelle}
 
-Man unterscheidet drei grundlegende Arten von Architekturmodellen:
+Architekturmodelle dienen in der Mensch-Maschine-Interaktion dazu, die Struktur eines
+interaktiven Systems so zu organisieren, dass die Benutzungsschnittstelle (UI) und die
+Anwendungslogik sinnvoll getrennt werden.
+
+Man unterteilt diese Modelle grundsätzlich in drei Kategorien:
 
 \begin{enumerate}
-  \item \textbf{Schichtenmodelle} (z.\,B. Seeheim-Modell)
-  \item \textbf{Objektorientierte Modelle} (z.\,B. Model-View-Controller -- MVC)
+  \item \textbf{Schichtenmodelle} (Beispiel: Seeheim-Modell)
+  \item \textbf{Objektorientierte Modelle} (Beispiel: Model-View-Controller -- MVC)
   \item \textbf{Gerätemodelle}
 \end{enumerate}
 
@@ -120,110 +122,90 @@ Man unterscheidet drei grundlegende Arten von Architekturmodellen:
 \subsection{Das Seeheim-Modell (Schichtenmodell)}
 % -----------------------------------------
 
-Das Seeheim-Modell ist ein klassisches Beispiel für ein Schichtenmodell, das eine klare Trennung
-zwischen dem Benutzer und der eigentlichen Anwendung vorsieht. Es besteht aus drei Hauptschichten
-innerhalb der Benutzungsschnittstelle:
+Das Seeheim-Modell ist ein klassisches Beispiel für eine hierarchische Trennung in drei
+Schichten.
 
+\textbf{Die Schichten:}
 \begin{itemize}
-  \item \textbf{Präsentations-Schicht (Presentation Layer):}
-    \begin{itemize}
-      \item Diese Schicht ist direkt dem Benutzer zugewandt.
-      \item Sie beinhaltet die \textbf{visuelle Darstellung} und die \textbf{physische Interaktion}
-            (z.\,B. Widgets wie Buttons, Menüs oder Eingabefelder).
-    \end{itemize}
-
-  \item \textbf{Dialogsteuer-Schicht (Dialogue Control Layer):}
-    \begin{itemize}
-      \item Diese Schicht fungiert als „Gehirn" der Interaktion.
-      \item Sie legt fest, wie das System auf Benutzereingaben reagiert und in welchem Zustand
-            sich der Dialog gerade befindet.
-    \end{itemize}
-
-  \item \textbf{Anwendungs-Schicht (Application Interface Layer):}
-    \begin{itemize}
-      \item Schnittstelle zur eigentlichen Fachlogik (der „Anwendung").
-      \item Sie definiert, welche Daten und Funktionen der Anwendung für die
-            Benutzungsschnittstelle verfügbar sind.
-    \end{itemize}
+  \item \textbf{Präsentations-Schicht:} Sie ist direkt dem Benutzer zugewandt und beinhaltet
+        die visuelle Darstellung sowie die physische Interaktion (Widgets wie Buttons).
+  \item \textbf{Dialogsteuer-Schicht:} Sie ist das „Gedächtnis" des Dialogs und legt fest,
+        wie das System auf Eingaben reagiert und in welchem Zustand sich die Interaktion
+        befindet.
+  \item \textbf{Anwendungs-Schicht:} Sie stellt die Schnittstelle zur eigentlichen Fachlogik
+        der Anwendung dar.
 \end{itemize}
 
 \textbf{Vorteile:}
 \begin{itemize}
-  \item \textbf{Aufgabenteilung:} UI-Entwickler und Anwendungslogik-Entwickler können
+  \item \textbf{Portierbarkeit \& Wiederverwendbarkeit:} Man kann die UI (Präsentation)
+        austauschen, ohne den Code der Anwendung ändern zu müssen.
+  \item \textbf{Aufgabenteilung:} UI-Designer und Programmierer der Anwendungslogik können
         unabhängig voneinander arbeiten.
-  \item \textbf{Portierbarkeit:} Die Präsentationsschicht lässt sich austauschen
-        (z.\,B. von Windows auf Linux), ohne die Anwendungslogik zu ändern.
-  \item \textbf{Rapid Prototyping:} Da die Schichten getrennt sind, lassen sich Prototypen
-        der UI schneller erstellen.
+  \item \textbf{Rapid Prototyping:} Die Oberfläche lässt sich schnell verändern oder als
+        Prototyp bauen, da sie vom Kern getrennt ist.
 \end{itemize}
 
-\textbf{Grenzen / Nachteile:}
+\textbf{Nachteile:}
 \begin{itemize}
-  \item In der Realität sind die Grenzen oft \textbf{fließend}; eine strikte Trennung ist nicht
-        immer sinnvoll.
-  \item \textbf{Performance-Probleme:} Schnelle grafische Ausgaben (wie in Echtzeit-Spielen)
-        benötigen oft „Sonderwege" an der Dialogsteuerung vorbei, um keine Verzögerungen
-        zu verursachen.
+  \item \textbf{Leistungseinbußen („Sonderwege"):} Sehr schnelle grafische Ausgaben
+        (z.\,B. bei Spielen oder Echtzeit-Visualisierungen) müssen die Schichten oft umgehen,
+        da der Weg durch den Dialogcontroller zu langsam ist.
+  \item \textbf{Fließende Grenzen:} In der Praxis ist es oft schwer, eine strikte Grenze
+        zwischen der Präsentation und der Steuerung zu ziehen.
+  \item \textbf{Komplexität des Kontrollflusses:} Das Modell gibt keine klaren Hinweise
+        darauf, wie genau die Nachrichten zwischen den Schichten fließen
+        (Prozeduraufruf vs. Nachrichtenaustausch).
 \end{itemize}
 
 % -----------------------------------------
-\subsection{Das Model-View-Controller-Muster (MVC)}
+\subsection{Model-View-Controller (MVC)}
 % -----------------------------------------
 
-MVC ist ein objektorientiertes Entwurfsmuster, das heute der Standard für fast alle modernen
-UI-Frameworks (Java Swing, Android, Qt) ist. Es teilt ein System in drei interagierende
-Komponenten:
+Dies ist das heute am weitesten verbreitete Entwurfsmuster für moderne Benutzeroberflächen
+wie Android, Java Swing oder Qt.
 
+\textbf{Die drei Komponenten:}
 \begin{itemize}
-  \item \textbf{Model (Modell):}
-    \begin{itemize}
-      \item Verwaltet die \textbf{Daten} und die \textbf{Verarbeitungslogik}.
-      \item Es weiß nichts über die grafische Darstellung.
-      \item Bei Datenänderungen benachrichtigt es die registrierten Beobachter (Views)
-            über einen Listener-Mechanismus.
-    \end{itemize}
-
-  \item \textbf{View (Ansicht / Darstellung):}
-    \begin{itemize}
-      \item Zuständig für die \textbf{grafische Darstellung} der Daten auf dem Bildschirm.
-      \item Fragt die benötigten Daten aktiv vom Model ab.
-      \item Wird vom Model informiert, wenn eine Neudarstellung nötig ist
-            (z.\,B. nach einer Textselektion).
-    \end{itemize}
-
-  \item \textbf{Controller (Steuerung):}
-    \begin{itemize}
-      \item Verarbeitet \textbf{Ereignisse (Events)}, wie Benutzereingaben über Maus
-            oder Tastatur.
-      \item Ruft die entsprechende Logik im Model auf und leitet Änderungen an die
-            View weiter.
-    \end{itemize}
+  \item \textbf{Model (Modell):} Verwaltet die zentralen Daten und die Verarbeitungslogik.
+        Es informiert registrierte Beobachter (Views) über Änderungen.
+  \item \textbf{View (Ansicht):} Zuständig für die grafische Darstellung. Sie fragt die Daten
+        aktiv beim Model ab und reagiert auf Änderungsmitteilungen.
+  \item \textbf{Controller (Steuerung):} Verarbeitet Ereignisse (Events) wie Mausklicks oder
+        Tastatureingaben. Er ruft die Logik im Model auf und leitet Änderungen an die View
+        weiter.
 \end{itemize}
 
-\begin{examplebox}
-  In einer Tabellenkalkulation ist das \textit{Model} die Liste der Zahlen, die \textit{View}
-  das Gitternetz auf dem Bildschirm und der \textit{Controller} das Modul, das reagiert,
-  wenn eine Zahl in eine Zelle getippt wird.
-\end{examplebox}
+\textbf{Vorteile:}
+\begin{itemize}
+  \item \textbf{Mehrfache Ansichten:} Ein Model kann gleichzeitig in verschiedenen Views
+        dargestellt werden (z.\,B. dieselben Daten als Tabelle und als Kreisdiagramm).
+  \item \textbf{Synchronisation:} Durch den Listener-Mechanismus (Beobachter-Muster) bleiben
+        alle Ansichten automatisch aktuell, wenn sich die Daten ändern.
+\end{itemize}
+
+\textbf{Beispiele für MVC-Systeme:} Java AWT/Swing, Windows-UIs, Android-Apps, Qt-Framework.
 
 % -----------------------------------------
-\subsection{Serviceorientierte Architektur (SOA)}
+\subsection{Serviceorientierte Architektur (SOA) / Client-Server}
 % -----------------------------------------
 
-Die SOA wird als Dreiecksbeziehung zwischen drei Akteuren dargestellt:
+Dieses Modell wird als Dreiecksbeziehung dargestellt, um Dienste flexibel zu nutzen.
 
-\begin{enumerate}
-  \item \textbf{Service Provider (Anbieter):} Erstellt einen Dienst und macht ihn bekannt
+\textbf{Die Akteure:}
+\begin{itemize}
+  \item \textbf{Service Provider:} Erstellt einen Dienst und stellt ihn bereit
         (\textit{Publish}).
-  \item \textbf{Service Registry (Verzeichnis):} Ein Ort, an dem Dienste gelistet sind.
-        Der Nutzer sucht hier nach einem Dienst (\textit{Find}).
-  \item \textbf{Service Consumer (Nutzer):} Findet den Dienst im Verzeichnis und bindet ihn
-        direkt an seine Anwendung (\textit{Bind}).
-\end{enumerate}
+  \item \textbf{Service Registry:} Ein Verzeichnis, in dem der Consumer nach passenden
+        Diensten suchen kann (\textit{Find}).
+  \item \textbf{Service Consumer:} Findet den Dienst und bindet ihn in seine Anwendung ein
+        (\textit{Bind}).
+\end{itemize}
 
 \begin{examplebox}
-  Ein typisches Beispiel ist das \textbf{Client-Server-Modell}, bei dem ein Anwendungsprogramm
-  (Client) Dienste eines Graphiksystems (Server, z.\,B. OpenGL) nutzt.
+  \textbf{Anwendung in der Computergraphik:} Ein Anwendungsprogramm fungiert als
+  \textbf{Client} und nutzt die Dienste eines Graphiksystems (z.\,B. OpenGL) als
+  \textbf{Server}.
 \end{examplebox}
 
 \end{document}
