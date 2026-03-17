@@ -208,14 +208,14 @@ Das heute am weitesten verbreitete Entwurfsmuster für moderne Benutzeroberfläc
   \node[comp] (model) at ( 3,    0) {Model};
   \node[comp] (ctrl)  at ( 0,  -3) {Controller};
 
-  % Model → View (dashed: notify)
-  \draw[->, dashed, bend left=20]
+  % Model → View (dashed: notify) — oben
+  \draw[->, dashed, bend right=20]
     (model) to
     node[above, lbl] {benachrichtigt registrierte Views\\(Listener) bei Änderungen}
     (view);
 
-  % View → Model (query)
-  \draw[->, bend left=20]
+  % View → Model (query) — unten
+  \draw[->, bend right=20]
     (view) to
     node[below, lbl] {fragt Daten ab}
     (model);
