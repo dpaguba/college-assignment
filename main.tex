@@ -38,38 +38,28 @@
   {\thesubsection}{1em}{}
 
 \titleformat{\subsubsection}
-  {\normalsize\itshape}
+  {\normalsize\itshape\bfseries}
   {\thesubsubsection}{1em}{}
 
 % ---------- Boxes ----------
 \usepackage[most]{tcolorbox}
 
 \newtcolorbox{definitionbox}[1][]{
-  colback=white,
-  colframe=black,
-  coltext=black,
-  fonttitle=\bfseries,
-  title={Definition},
-  #1
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Definition}, #1
 }
-
 \newtcolorbox{notebox}[1][]{
-  colback=white,
-  colframe=black,
-  coltext=black,
-  fonttitle=\bfseries,
-  title={Hinweis},
-  #1
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Hinweis}, #1
+}
+\newtcolorbox{examplebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Beispiel}, #1
 }
 
-\newtcolorbox{examplebox}[1][]{
-  colback=white,
-  colframe=black,
-  coltext=black,
-  fonttitle=\bfseries,
-  title={Beispiel},
-  #1
-}
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds}
 
 % ---------- Math ----------
 \usepackage{amsmath, amssymb}
@@ -78,6 +68,9 @@
 \usepackage{enumitem}
 \setlist[itemize]{leftmargin=1.5em, itemsep=2pt}
 \setlist[enumerate]{leftmargin=1.5em, itemsep=2pt}
+
+% ---------- Figures ----------
+\usepackage{float}
 
 % ---------- Hyperlinks ----------
 \usepackage[hidelinks]{hyperref}
@@ -101,10 +94,12 @@
 \newpage
 
 % =========================================
-\section{Kapitel B: Interaktive Systeme -- Architekturmodelle}
+\section{Kapitel B: Interaktive Systeme}
 % =========================================
 
-\subsection*{B.1.3. Systemarchitektur: Architekturmodelle}
+% -----------------------------------------
+\subsection{Systemarchitektur: Architekturmodelle}
+% -----------------------------------------
 
 Architekturmodelle dienen in der Mensch-Maschine-Interaktion dazu, die Struktur eines
 interaktiven Systems so zu organisieren, dass die Benutzungsschnittstelle (UI) und die
@@ -115,105 +110,201 @@ Man unterteilt diese Modelle grundsätzlich in drei Kategorien:
 \begin{enumerate}
   \item \textbf{Schichtenmodelle} (Beispiel: Seeheim-Modell)
   \item \textbf{Objektorientierte Modelle} (Beispiel: Model-View-Controller -- MVC)
-  \item \textbf{Gerätemodelle}
+  \item \textbf{Gerätemodelle} (Beispiel: Serviceorientierte Architektur)
 \end{enumerate}
 
 % -----------------------------------------
-\subsection{Das Seeheim-Modell (Schichtenmodell)}
+\subsubsection{Das Seeheim-Modell (Schichtenmodell)}
 % -----------------------------------------
 
 Das Seeheim-Modell ist ein klassisches Beispiel für eine hierarchische Trennung in drei
 Schichten.
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  layerbox/.style={draw, minimum width=2.4cm, minimum height=1cm,
+                   align=center, font=\small},
+  >=Stealth
+]
+  % Benutzer
+  \node[ellipse, draw, minimum width=2cm, minimum height=0.7cm] (user) at (0, 3.8)
+    {Benutzer};
+
+  % Three layer boxes
+  \node[layerbox] (pres) at (0,    2) {\textbf{Präsentations-}\\Schicht};
+  \node[layerbox] (dial) at (3.2,  2) {\textbf{Dialogsteuer-}\\schicht};
+  \node[layerbox] (app)  at (6.4,  2) {\textbf{Anwendungs-}\\schicht};
+
+  % Benutzungsschnittstelle frame
+  \begin{scope}[on background layer]
+    \node[draw, dashed, inner sep=0.5cm,
+          fit=(pres)(dial)(app),
+          label=below:{\small\itshape Benutzungsschnittstelle}] {};
+  \end{scope}
+
+  % Anwendung (outside)
+  \node[layerbox, minimum width=2cm] (anw) at (9.8, 2) {\textbf{Anwendung}};
+
+  % Arrows
+  \draw[<->] (user)  -- (pres);
+  \draw[<->] (pres)  -- (dial);
+  \draw[<->] (dial)  -- (app);
+  \draw[<->] (app)   -- (anw);
+\end{tikzpicture}
+\caption{Das Seeheim-Modell}
+\end{figure}
+
 \textbf{Die Schichten:}
 \begin{itemize}
-  \item \textbf{Präsentations-Schicht:} Sie ist direkt dem Benutzer zugewandt und beinhaltet
+  \item \textbf{Präsentations-Schicht:} Direkt dem Benutzer zugewandt; beinhaltet
         die visuelle Darstellung sowie die physische Interaktion (Widgets wie Buttons,
         Menüs, Eingabefelder).
-  \item \textbf{Dialogsteuer-Schicht:} Sie ist das „Gehirn" bzw. „Gedächtnis" des Dialogs
-        und legt fest, wie das System auf Eingaben reagiert und in welchem Zustand sich
+  \item \textbf{Dialogsteuer-Schicht:} Das „Gehirn" bzw. „Gedächtnis" des Dialogs;
+        legt fest, wie das System auf Eingaben reagiert und in welchem Zustand sich
         die Interaktion befindet.
-  \item \textbf{Anwendungs-Schicht:} Sie stellt die Schnittstelle zur eigentlichen Fachlogik
-        dar und definiert, welche Daten und Funktionen der Anwendung für die UI
-        verfügbar sind.
+  \item \textbf{Anwendungs-Schicht:} Schnittstelle zur eigentlichen Fachlogik;
+        definiert, welche Daten und Funktionen der Anwendung für die UI verfügbar sind.
 \end{itemize}
 
 \textbf{Vorteile:}
 \begin{itemize}
-  \item \textbf{Portierbarkeit \& Wiederverwendbarkeit:} Man kann die UI (Präsentation)
-        austauschen, ohne den Code der Anwendung ändern zu müssen.
-  \item \textbf{Aufgabenteilung:} UI-Designer und Programmierer der Anwendungslogik können
-        unabhängig voneinander arbeiten.
-  \item \textbf{Rapid Prototyping:} Die Oberfläche lässt sich schnell verändern oder als
-        Prototyp bauen, da sie vom Kern getrennt ist.
+  \item \textbf{Portierbarkeit \& Wiederverwendbarkeit:} UI lässt sich austauschen,
+        ohne den Anwendungscode zu ändern.
+  \item \textbf{Aufgabenteilung:} UI-Designer und Entwickler der Anwendungslogik
+        können unabhängig voneinander arbeiten.
+  \item \textbf{Rapid Prototyping:} Die Oberfläche lässt sich schnell verändern,
+        da sie vom Kern getrennt ist.
 \end{itemize}
 
 \textbf{Nachteile:}
 \begin{itemize}
-  \item \textbf{Leistungseinbußen („Sonderwege"):} Sehr schnelle grafische Ausgaben
-        (z.\,B. bei Spielen oder Echtzeit-Visualisierungen) müssen die Schichten oft umgehen,
+  \item \textbf{Leistungseinbußen („Sonderwege"):} Schnelle grafische Ausgaben
+        (z.\,B. Echtzeit-Visualisierungen) müssen die Schichten oft umgehen,
         da der Weg durch den Dialogcontroller zu langsam ist.
-  \item \textbf{Fließende Grenzen:} In der Praxis ist es oft schwer, eine strikte Grenze
-        zwischen der Präsentation und der Steuerung zu ziehen.
-  \item \textbf{Komplexität des Kontrollflusses:} Das Modell gibt keine klaren Hinweise
-        darauf, wie genau die Nachrichten zwischen den Schichten fließen
-        (Prozeduraufruf vs. Nachrichtenaustausch).
+  \item \textbf{Fließende Grenzen:} In der Praxis ist eine strikte Grenze zwischen
+        Präsentation und Steuerung oft schwer zu ziehen.
+  \item \textbf{Komplexität des Kontrollflusses:} Keine klaren Vorgaben, wie
+        Nachrichten zwischen den Schichten fließen
+        (Prozeduraufruf vs.\ Nachrichtenaustausch).
 \end{itemize}
 
 % -----------------------------------------
-\subsection{Model-View-Controller (MVC)}
+\subsubsection{Model-View-Controller (MVC)}
 % -----------------------------------------
 
-Dies ist das heute am weitesten verbreitete Entwurfsmuster für moderne Benutzeroberflächen
-wie Android, Java Swing oder Qt.
+Das heute am weitesten verbreitete Entwurfsmuster für moderne Benutzeroberflächen
+(Android, Java Swing, Qt).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  comp/.style={draw, minimum width=2.4cm, minimum height=0.9cm,
+               align=center, font=\small\bfseries},
+  lbl/.style={font=\footnotesize, align=center},
+  >=Stealth
+]
+  \node[comp] (view)  at (-3,    0) {View};
+  \node[comp] (model) at ( 3,    0) {Model};
+  \node[comp] (ctrl)  at ( 0,  -3) {Controller};
+
+  % Model → View (dashed: notify)
+  \draw[->, dashed, bend left=20]
+    (model) to
+    node[above, lbl] {benachrichtigt registrierte Views\\(Listener) bei Änderungen}
+    (view);
+
+  % View → Model (query)
+  \draw[->, bend left=20]
+    (view) to
+    node[below, lbl] {fragt Daten ab}
+    (model);
+
+  % Controller → View
+  \draw[->]
+    (ctrl) -- node[left, lbl] {informiert über\\Darstellungsänderung\\(z.\,B. Textselektion)} (view);
+
+  % Controller → Model
+  \draw[->]
+    (ctrl) -- node[right, lbl] {ruft Verarbeitungslogik auf,\\leitet Änderungen weiter} (model);
+
+  % Events → Controller
+  \draw[->]
+    (0, -4.8) -- node[right, lbl] {Events\\(z.\,B. Benutzereingabe)} (ctrl);
+
+  % Side labels
+  \node[lbl, left=0.1cm of view]  {(Graphische)\\Darstellung};
+  \node[lbl, right=0.1cm of model] {Daten und\\Verarbeitungs-\\logik};
+\end{tikzpicture}
+\caption{Model-View-Controller-Entwurfsmuster (MVC)}
+\end{figure}
 
 \textbf{Die drei Komponenten:}
 \begin{itemize}
-  \item \textbf{Model (Modell):} Verwaltet die zentralen Daten und die Verarbeitungslogik.
-        Es informiert registrierte Beobachter (Views) über Änderungen.
-  \item \textbf{View (Ansicht):} Zuständig für die grafische Darstellung. Sie fragt die Daten
-        aktiv beim Model ab und reagiert auf Änderungsmitteilungen.
-  \item \textbf{Controller (Steuerung):} Verarbeitet Ereignisse (Events) wie Mausklicks oder
-        Tastatureingaben. Er ruft die Logik im Model auf und leitet Änderungen an die View
-        weiter.
+  \item \textbf{Model:} Verwaltet Daten und Verarbeitungslogik; informiert
+        registrierte Views über Änderungen.
+  \item \textbf{View:} Grafische Darstellung; fragt Daten aktiv beim Model ab
+        und reagiert auf Änderungsmitteilungen.
+  \item \textbf{Controller:} Verarbeitet Events (Mausklicks, Tastatureingaben);
+        ruft Logik im Model auf und leitet Änderungen an die View weiter.
 \end{itemize}
 
 \textbf{Vorteile:}
 \begin{itemize}
-  \item \textbf{Mehrfache Ansichten:} Ein Model kann gleichzeitig in verschiedenen Views
-        dargestellt werden (z.\,B. dieselben Daten als Tabelle und als Kreisdiagramm).
-  \item \textbf{Synchronisation:} Durch den Listener-Mechanismus (Beobachter-Muster) bleiben
-        alle Ansichten automatisch aktuell, wenn sich die Daten ändern.
+  \item \textbf{Mehrfache Ansichten:} Ein Model kann gleichzeitig in verschiedenen
+        Views dargestellt werden (z.\,B. als Tabelle und als Diagramm).
+  \item \textbf{Synchronisation:} Durch den Listener-Mechanismus bleiben alle
+        Views automatisch aktuell.
 \end{itemize}
 
 \begin{examplebox}
-  In einem Musik-Player ist das \textit{Model} die Playlist, der aktuelle Track und der
-  Wiedergabestatus. Die \textit{View} zeigt Titel, Fortschrittsbalken und Album-Cover an.
-  Der \textit{Controller} verarbeitet Benutzereingaben wie Play\,/\,Pause oder Weiter.
+  In einem Musik-Player ist das \textit{Model} die Playlist, der aktuelle Track und
+  der Wiedergabestatus. Die \textit{View} zeigt Titel, Fortschrittsbalken und
+  Album-Cover an. Der \textit{Controller} verarbeitet Eingaben wie Play\,/\,Pause
+  oder Weiter.
 \end{examplebox}
 
-\textbf{Beispiele für MVC-Systeme:} Java AWT/Swing, Windows-UIs, Android-Apps, Qt-Framework.
+\textbf{Beispiele:} Java AWT/Swing, Windows-UIs, Android-Apps, Qt-Framework.
 
 % -----------------------------------------
-\subsection{Serviceorientierte Architektur (SOA) / Client-Server}
+\subsubsection{Serviceorientierte Architektur (SOA) -- Gerätemodell}
 % -----------------------------------------
 
-Dieses Modell wird als Dreiecksbeziehung dargestellt, um Dienste flexibel zu nutzen.
+SOA wird als Dreiecksbeziehung dargestellt und dient in der MMI als Gerätemodell:
+die Anwendung nutzt Hardware-Dienste (z.\,B. Grafik) über einen standardisierten
+Service-Kanal.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  actor/.style={circle, draw, minimum size=2.2cm, align=center, font=\small\bfseries},
+  lbl/.style={font=\small},
+  >=Stealth
+]
+  \node[actor] (reg)  at ( 0,   3) {Service\\Registry};
+  \node[actor] (prov) at (-3,   0) {Service\\Provider};
+  \node[actor] (cons) at ( 3,   0) {Service\\Consumer};
+
+  \draw[->] (prov) -- node[left,  lbl] {Publish} (reg);
+  \draw[->] (reg)  -- node[right, lbl] {Find}    (cons);
+  \draw[<->](prov) -- node[below, lbl] {Bind}    (cons);
+\end{tikzpicture}
+\caption{Serviceorientierte Architektur (SOA)}
+\end{figure}
 
 \textbf{Die Akteure:}
 \begin{itemize}
   \item \textbf{Service Provider:} Erstellt einen Dienst und stellt ihn bereit
         (\textit{Publish}).
-  \item \textbf{Service Registry:} Ein Verzeichnis, in dem der Consumer nach passenden
-        Diensten suchen kann (\textit{Find}).
-  \item \textbf{Service Consumer:} Findet den Dienst und bindet ihn in seine Anwendung ein
+  \item \textbf{Service Registry:} Verzeichnis, in dem der Consumer passende
+        Dienste sucht (\textit{Find}).
+  \item \textbf{Service Consumer:} Findet den Dienst und bindet ihn ein
         (\textit{Bind}).
 \end{itemize}
 
 \begin{examplebox}
-  \textbf{Anwendung in der Computergraphik:} Ein Anwendungsprogramm fungiert als
-  \textbf{Client} und nutzt die Dienste eines Graphiksystems (z.\,B. OpenGL) als
-  \textbf{Server}.
+  In der Computergraphik fungiert das Anwendungsprogramm als \textbf{Client} und
+  nutzt die Dienste eines Graphiksystems (z.\,B. OpenGL) als \textbf{Server}.
 \end{examplebox}
 
 \end{document}
