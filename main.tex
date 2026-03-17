@@ -1,0 +1,229 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------- Encoding & Language ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+% ---------- Fonts ----------
+\usepackage{lmodern}
+
+% ---------- Layout ----------
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+]{geometry}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ---------- Header / Footer ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Sections styling ----------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection}{1em}{}
+  [\vspace{2pt}\hrule height 0.8pt\vspace{4pt}]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\itshape}
+  {\thesubsubsection}{1em}{}
+
+% ---------- Boxes ----------
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{definitionbox}[1][]{
+  colback=white,
+  colframe=black,
+  coltext=black,
+  fonttitle=\bfseries,
+  title={Definition},
+  #1
+}
+
+\newtcolorbox{notebox}[1][]{
+  colback=white,
+  colframe=black,
+  coltext=black,
+  fonttitle=\bfseries,
+  title={Hinweis},
+  #1
+}
+
+\newtcolorbox{examplebox}[1][]{
+  colback=white,
+  colframe=black,
+  coltext=black,
+  fonttitle=\bfseries,
+  title={Beispiel},
+  #1
+}
+
+% ---------- Math ----------
+\usepackage{amsmath, amssymb}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt}
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Misc ----------
+\usepackage{microtype}
+
+% =========================================
+%                DOCUMENT
+% =========================================
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Mensch-Maschine-Interaktion}\\[6pt]
+  {\large Vorlesungsnotizen}\\[4pt]
+  {\small Stand: \today}
+\end{center}
+
+\vspace{1em}
+\tableofcontents
+\newpage
+
+% =========================================
+\section{Kapitel B: Interaktive Systeme -- Architekturmodelle}
+% =========================================
+
+In der Mensch-Maschine-Interaktion (MMI) dienen Architekturmodelle dazu, die Struktur eines
+Softwaresystems so zu organisieren, dass die Benutzungsschnittstelle (UI) sauber von der
+eigentlichen Anwendungslogik getrennt wird.
+
+Man unterscheidet drei grundlegende Arten von Architekturmodellen:
+
+\begin{enumerate}
+  \item \textbf{Schichtenmodelle} (z.\,B. Seeheim-Modell)
+  \item \textbf{Objektorientierte Modelle} (z.\,B. Model-View-Controller -- MVC)
+  \item \textbf{Gerätemodelle}
+\end{enumerate}
+
+% -----------------------------------------
+\subsection{Das Seeheim-Modell (Schichtenmodell)}
+% -----------------------------------------
+
+Das Seeheim-Modell ist ein klassisches Beispiel für ein Schichtenmodell, das eine klare Trennung
+zwischen dem Benutzer und der eigentlichen Anwendung vorsieht. Es besteht aus drei Hauptschichten
+innerhalb der Benutzungsschnittstelle:
+
+\begin{itemize}
+  \item \textbf{Präsentations-Schicht (Presentation Layer):}
+    \begin{itemize}
+      \item Diese Schicht ist direkt dem Benutzer zugewandt.
+      \item Sie beinhaltet die \textbf{visuelle Darstellung} und die \textbf{physische Interaktion}
+            (z.\,B. Widgets wie Buttons, Menüs oder Eingabefelder).
+    \end{itemize}
+
+  \item \textbf{Dialogsteuer-Schicht (Dialogue Control Layer):}
+    \begin{itemize}
+      \item Diese Schicht fungiert als „Gehirn" der Interaktion.
+      \item Sie legt fest, wie das System auf Benutzereingaben reagiert und in welchem Zustand
+            sich der Dialog gerade befindet.
+    \end{itemize}
+
+  \item \textbf{Anwendungs-Schicht (Application Interface Layer):}
+    \begin{itemize}
+      \item Schnittstelle zur eigentlichen Fachlogik (der „Anwendung").
+      \item Sie definiert, welche Daten und Funktionen der Anwendung für die
+            Benutzungsschnittstelle verfügbar sind.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Vorteile:}
+\begin{itemize}
+  \item \textbf{Aufgabenteilung:} UI-Entwickler und Anwendungslogik-Entwickler können
+        unabhängig voneinander arbeiten.
+  \item \textbf{Portierbarkeit:} Die Präsentationsschicht lässt sich austauschen
+        (z.\,B. von Windows auf Linux), ohne die Anwendungslogik zu ändern.
+  \item \textbf{Rapid Prototyping:} Da die Schichten getrennt sind, lassen sich Prototypen
+        der UI schneller erstellen.
+\end{itemize}
+
+\textbf{Grenzen / Nachteile:}
+\begin{itemize}
+  \item In der Realität sind die Grenzen oft \textbf{fließend}; eine strikte Trennung ist nicht
+        immer sinnvoll.
+  \item \textbf{Performance-Probleme:} Schnelle grafische Ausgaben (wie in Echtzeit-Spielen)
+        benötigen oft „Sonderwege" an der Dialogsteuerung vorbei, um keine Verzögerungen
+        zu verursachen.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Das Model-View-Controller-Muster (MVC)}
+% -----------------------------------------
+
+MVC ist ein objektorientiertes Entwurfsmuster, das heute der Standard für fast alle modernen
+UI-Frameworks (Java Swing, Android, Qt) ist. Es teilt ein System in drei interagierende
+Komponenten:
+
+\begin{itemize}
+  \item \textbf{Model (Modell):}
+    \begin{itemize}
+      \item Verwaltet die \textbf{Daten} und die \textbf{Verarbeitungslogik}.
+      \item Es weiß nichts über die grafische Darstellung.
+      \item Bei Datenänderungen benachrichtigt es die registrierten Beobachter (Views)
+            über einen Listener-Mechanismus.
+    \end{itemize}
+
+  \item \textbf{View (Ansicht / Darstellung):}
+    \begin{itemize}
+      \item Zuständig für die \textbf{grafische Darstellung} der Daten auf dem Bildschirm.
+      \item Fragt die benötigten Daten aktiv vom Model ab.
+      \item Wird vom Model informiert, wenn eine Neudarstellung nötig ist
+            (z.\,B. nach einer Textselektion).
+    \end{itemize}
+
+  \item \textbf{Controller (Steuerung):}
+    \begin{itemize}
+      \item Verarbeitet \textbf{Ereignisse (Events)}, wie Benutzereingaben über Maus
+            oder Tastatur.
+      \item Ruft die entsprechende Logik im Model auf und leitet Änderungen an die
+            View weiter.
+    \end{itemize}
+\end{itemize}
+
+\begin{examplebox}
+  In einer Tabellenkalkulation ist das \textit{Model} die Liste der Zahlen, die \textit{View}
+  das Gitternetz auf dem Bildschirm und der \textit{Controller} das Modul, das reagiert,
+  wenn eine Zahl in eine Zelle getippt wird.
+\end{examplebox}
+
+% -----------------------------------------
+\subsection{Serviceorientierte Architektur (SOA)}
+% -----------------------------------------
+
+Die SOA wird als Dreiecksbeziehung zwischen drei Akteuren dargestellt:
+
+\begin{enumerate}
+  \item \textbf{Service Provider (Anbieter):} Erstellt einen Dienst und macht ihn bekannt
+        (\textit{Publish}).
+  \item \textbf{Service Registry (Verzeichnis):} Ein Ort, an dem Dienste gelistet sind.
+        Der Nutzer sucht hier nach einem Dienst (\textit{Find}).
+  \item \textbf{Service Consumer (Nutzer):} Findet den Dienst im Verzeichnis und bindet ihn
+        direkt an seine Anwendung (\textit{Bind}).
+\end{enumerate}
+
+\begin{examplebox}
+  Ein typisches Beispiel ist das \textbf{Client-Server-Modell}, bei dem ein Anwendungsprogramm
+  (Client) Dienste eines Graphiksystems (Server, z.\,B. OpenGL) nutzt.
+\end{examplebox}
+
+\end{document}
