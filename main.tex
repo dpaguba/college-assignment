@@ -28,18 +28,26 @@
 
 % ---------- Sections styling ----------
 \usepackage{titlesec}
+
+% Section: groß, fett, mit Linie darunter
 \titleformat{\section}
   {\large\bfseries}
   {\thesection}{1em}{}
   [\vspace{2pt}\hrule height 0.8pt\vspace{4pt}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
 
+% Subsection: normal fett, deutlich sichtbar
 \titleformat{\subsection}
   {\normalsize\bfseries}
   {\thesubsection}{1em}{}
+  [\vspace{1pt}\hrule height 0.3pt\vspace{2pt}]
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
 
+% Subsubsection: kleiner, kursiv, eingerückt — klar untergeordnet
 \titleformat{\subsubsection}
-  {\normalsize\itshape\bfseries}
-  {\thesubsubsection}{1em}{}
+  {\small\mdseries\itshape}
+  {\hspace{1em}\thesubsubsection}{0.8em}{}
+\titlespacing{\subsubsection}{1em}{8pt}{2pt}
 
 % ---------- Boxes ----------
 \usepackage[most]{tcolorbox}
@@ -325,6 +333,98 @@ Service-Kanal.
         erhöht den Implementierungsaufwand gegenüber direkten Aufrufen.
   \item \textbf{Single Point of Failure:} Fällt die Registry aus, können
         Consumer keine neuen Dienste mehr finden.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Das Mensch-Maschine-Interaktionsmodell}
+% -----------------------------------------
+
+Dieses Modell beschreibt die Interaktion als einen \textbf{geschlossenen Regelkreis (Loop)}
+zwischen einem menschlichen Benutzer und einem Computersystem. Jede Aktion ruft eine
+Reaktion hervor; die Kommunikation findet über eine Veränderung der „Umwelt" statt
+(z.\,B. was auf dem Bildschirm angezeigt wird).
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Die Benutzerseite -- Kognitiver Prozess des Menschen}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Der Mensch durchläuft intern vier Hauptphasen:
+
+\begin{enumerate}
+  \item \textbf{Wahrnehmung (Perception):} Der Benutzer nimmt Signale der Maschine
+        über seine Sinnesorgane (Augen, Ohren, Tastsinn) auf.
+  \item \textbf{Bewertung (Evaluation):} Das Wahrgenommene wird mit dem ursprünglichen
+        Ziel verglichen. \textit{„Ist das passiert, was ich wollte?"}
+  \item \textbf{Zielsetzung (Goal):} Basierend auf der Bewertung entscheidet der
+        Benutzer, was als Nächstes zu tun ist.
+  \item \textbf{Planung \& Handlung (Execution):} Der Benutzer plant die physische
+        Bewegung und führt sie über sein motorisches System aus.
+\end{enumerate}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Die Computerseite -- Informationsverarbeitung des Systems}
+% - - - - - - - - - - - - - - - - - - - - -
+
+Parallel dazu verarbeitet das System die Eingaben in vier Schritten:
+
+\begin{enumerate}
+  \item \textbf{Informationsaufnahme:} Das System registriert Signale über
+        \textbf{Sensoren} oder Eingabegeräte (Maus, Tastatur, Kamera, Mikrofon).
+  \item \textbf{Analyse:} Das System interpretiert die Daten -- \textbf{Bedeutungsanalyse}
+        oder Mustererkennung (z.\,B. „Der Klick erfolgte auf den Speichern-Button").
+  \item \textbf{Zustandsübergang:} Die Programmlogik wird ausgeführt; der interne
+        Zustand der Software ändert sich (z.\,B. Datei wird gespeichert, Objekt
+        in einer 3D-Szene wird verschoben).
+  \item \textbf{Informationsausgabe:} Das System erzeugt Feedback über \textbf{Medien}
+        (Grafik auf dem Display, Ton aus Lautsprechern).
+\end{enumerate}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Kernbegriffe der Interaktion}
+% - - - - - - - - - - - - - - - - - - - - -
+
+\begin{itemize}
+  \item \textbf{Interaktionsaufgabe (Interaction Task):} Eine \textit{abstrakte}
+        Aktion innerhalb einer Anwendung.\\
+        \textit{Beispiele:} Objektauswahl, Text eingeben, Objekt im Raum transformieren
+        (drehen / verschieben).
+
+  \item \textbf{Interaktionstechnik (Interaction Technique):} Die \textit{konkrete
+        technische Realisierung} einer Interaktionsaufgabe.\\
+        \textit{Beispiele für „Objekt auswählen":}
+        \begin{enumerate}
+          \item Mit der Maus auf ein Icon klicken.
+          \item Den Namen des Objekts per Tastatur tippen.
+          \item In einer VR-Umgebung mit einem „virtuellen Laserstrahl" zeigen.
+        \end{enumerate}
+\end{itemize}
+
+% - - - - - - - - - - - - - - - - - - - - -
+\subsubsection{Bewertung des Modells}
+% - - - - - - - - - - - - - - - - - - - - -
+
+\textbf{Vorteile:}
+\begin{itemize}
+  \item \textbf{Fehlerlokalisierung:} Man kann genau bestimmen, wo ein Problem liegt --
+        bei der \textbf{Wahrnehmung} (Benutzer sieht den Button nicht) oder bei der
+        \textbf{Analyse} (System versteht die Spracheingabe nicht).
+  \item \textbf{Strukturierte Gestaltung:} Zwingt Entwickler, stets an das
+        \textbf{Feedback} (Informationsausgabe) zu denken, damit der Kreis
+        geschlossen bleibt.
+  \item \textbf{Ganzheitlichkeit:} Betrachtet nicht nur Hardware, sondern auch die
+        \textbf{Kognition} des Menschen.
+\end{itemize}
+
+\textbf{Nachteile:}
+\begin{itemize}
+  \item \textbf{Latenz-Probleme:} Wenn der Computer zu lange für den
+        Zustandsübergang braucht (Wartezeit $>$ 10\,s), bricht der Benutzer den
+        mentalen Kreis ab.
+  \item \textbf{Komplexität:} Das Modell ist idealisiert -- in der Realität laufen
+        viele Prozesse \textbf{parallel} und nicht in einem einfachen sequenziellen
+        Kreis.
+  \item \textbf{Mental Models:} Stimmt das mentale Modell des Benutzers nicht mit
+        der Logik des Computers überein, entstehen Planungsfehler.
 \end{itemize}
 
 \end{document}
