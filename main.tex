@@ -902,4 +902,175 @@ Gewinnt in VR und bei mobilen Geräten (Vibration) zunehmend an Bedeutung.
 \end{itemize}
 
 
+% =========================================
+\section{Kapitel C.2: Farbmodelle}
+% =========================================
+
+Farbmodelle sind mathematische Beschreibungen, um Farben durch Zahlenwerte zu
+repräsentieren. In der MMI entscheidend für Erzeugung, Übertragung und Anzeige
+von Bildern auf verschiedenen Ausgabemedien.
+
+% -----------------------------------------
+\subsection{Physikalische Grundlagen der Farbwahrnehmung}
+% -----------------------------------------
+
+Der menschliche Farbeindruck ist das Ergebnis einer Interaktion zwischen Licht,
+Materie und dem biologischen Sehapparat.
+
+\begin{itemize}
+  \item \textbf{Sichtbares Spektrum:} ca.\ \textbf{400\,nm (Violett)} bis
+        ca.\ \textbf{700\,nm (Rot)}.
+  \item \textbf{Drei Faktoren des Farbeindrucks:}
+    \begin{enumerate}
+      \item \textbf{Spektralverteilung der Lichtquelle} $E(\lambda)$: Energieverteilung
+            des einfallenden Lichts.
+      \item \textbf{Reflektanz des Objekts} $\rho(\lambda)$: Anteil des reflektierten
+            Lichts. Reflektiertes Licht:
+            \[ L(\lambda) = E(\lambda) \cdot \rho(\lambda) \]
+      \item \textbf{Beobachter:} Farbwahrnehmung $p$ durch die spektrale
+            Absorptionskurve $\sigma(\lambda)$ der Netzhautzellen:
+            \[ p = \int \sigma(\lambda)\, L(\lambda)\, d\lambda \]
+    \end{enumerate}
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Stealth, line width=0.7pt, node distance=2cm]
+  \node[draw, align=center, minimum width=1.8cm, minimum height=1cm] (licht)
+    {Licht\\$E(\lambda)$};
+  \node[draw, align=center, minimum width=1.8cm, minimum height=1cm, right=2cm of licht] (objekt)
+    {Objekt\\$\rho(\lambda)$};
+  \node[draw, align=center, minimum width=1.8cm, minimum height=1cm, right=2cm of objekt] (auge)
+    {Beobachter\\$\sigma(\lambda)$};
+  \node[draw, align=center, minimum width=1.8cm, minimum height=1cm, right=2cm of auge] (gehirn)
+    {Gehirn\\$p$};
+
+  \draw[->] (licht) -- node[above, font=\small] {$\times\,\rho$} (objekt);
+  \draw[->] (objekt) -- node[above, font=\small] {$L(\lambda)$} (auge);
+  \draw[->] (auge) -- node[above, font=\small] {$\int\sigma L\,d\lambda$} (gehirn);
+\end{tikzpicture}
+\caption{Sensorische Farbwahrnehmung: Licht $\rightarrow$ Objekt $\rightarrow$ Auge $\rightarrow$ Gehirn}
+\end{figure}
+
+\begin{notebox}
+  \textbf{Dreifarbenlehre:} Der Mensch besitzt drei Zapfentypen
+  (\textbf{S}hort, \textbf{M}edium, \textbf{L}ong) für Blau, Grün und Rot.
+  Ein Farbsystem benötigt daher mindestens \textbf{drei Grundtöne}.
+\end{notebox}
+
+% -----------------------------------------
+\subsection{RGB-Modell (Additiv)}
+% -----------------------------------------
+
+\textbf{Additives} Farbmodell -- basiert auf der Mischung von farbigem Licht.
+
+\begin{itemize}
+  \item \textbf{Prinzip:} Farben als gewichtete Summe von Rot, Grün, Blau.
+        Maximale Intensität aller drei $\rightarrow$ \textbf{Weiß}.
+  \item \textbf{Darstellung:} Einheitswürfel (Color Cube); Achsen R, G, B von
+        0 bis 1 (bzw.\ 0 bis 255).
+\end{itemize}
+
+\textbf{Probleme:}
+\begin{itemize}
+  \item \textbf{Geräteabhängigkeit:} Farbton hängt von den physikalischen
+        Grundfarben des jeweiligen Monitors ab.
+  \item \textbf{Mangelnde Intuition:} Schwierig, eine Wunschfarbe durch
+        R-G-B-Anteile zu schätzen.
+  \item \textbf{Eingeschränkter Farbraum:} Nicht alle wahrnehmbaren Farben
+        lassen sich durch additive Mischung dreier realer Grundfarben erzeugen.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{CIE-Modell (Geräteunabhängiges Referenzmodell)}
+% -----------------------------------------
+
+Definiert von der \textit{Commission Internationale de l'Éclairage} -- löst das
+Problem der Geräteabhängigkeit durch \textbf{theoretische} Komponenten.
+
+\textbf{Komponenten X, Y, Z} (statt R, G, B):
+\[
+  X = k\int P(\lambda)\,\bar{x}(\lambda)\,d\lambda \qquad
+  Y = k\int P(\lambda)\,\bar{y}(\lambda)\,d\lambda \qquad
+  Z = k\int P(\lambda)\,\bar{z}(\lambda)\,d\lambda
+\]
+
+\begin{itemize}
+  \item \textbf{Y-Komponente} entspricht exakt der \textbf{Helligkeitsempfindlichkeit}
+        des menschlichen Auges.
+  \item \textbf{Normalisierung} (Chromatizitätskoordinaten):
+        \[ x = \frac{X}{X+Y+Z} \qquad y = \frac{Y}{X+Y+Z} \qquad z = \frac{Z}{X+Y+Z} \]
+        Da $x + y + z = 1$, reichen \textbf{zwei Werte} ($x$ und $y$) zur
+        Beschreibung des Farbtons.
+  \item \textbf{CIE-Farbtondiagramm:} Typische \glqq{}Schuhsohlen-Form\grqq{}.
+        Der Rand = reine Spektralfarben. Der Gamut eines Monitors wird als Dreieck
+        eingezeichnet.
+  \item \textbf{sRGB:} Industriestandard (HP \& Microsoft) auf CIE-Basis mit
+        \textbf{D65-Weißpunkt} als Referenz.
+\end{itemize}
+
+\textbf{Messinstrumente:}
+\begin{itemize}
+  \item \textbf{Colorimeter:} Misst $X$, $Y$, $Z$.
+  \item \textbf{Spektroradiometer:} Misst $X$, $Y$, $Z$ + das gesamte Spektrum.
+  \item \textbf{Fotometer:} Misst ausschließlich die Helligkeit ($Y$).
+\end{itemize}
+
+% -----------------------------------------
+\subsection{HSV- und HLS-Modelle (Nutzerorientiert)}
+% -----------------------------------------
+
+Intuitiver für die Farbauswahl als RGB.
+
+\textbf{HSV-Parameter:}
+\begin{itemize}
+  \item \textbf{H (Hue / Farbton):} Grundfarbton als Winkel $0°$--$360°$.
+  \item \textbf{S (Saturation / Sättigung):} Weißanteil; Reinheit der Farbe
+        ($0$--$1$).
+  \item \textbf{V (Value / Hellwert):} Schwarzanteil; Helligkeit ($0$--$1$).
+\end{itemize}
+
+\textbf{HLS:} Ähnlich aufgebaut, mit \textbf{L}ightness anstelle von Value.
+
+\begin{notebox}
+  Die mathematische Umrechnung zwischen HLS/HSV und RGB ist
+  \textbf{nicht} prüfungsrelevant.
+\end{notebox}
+
+% -----------------------------------------
+\subsection{CMYK-Modell (Subtraktiv)}
+% -----------------------------------------
+
+\textbf{Subtraktives} Farbmodell -- für reflektierende Medien (Drucker, Papier).
+
+\begin{itemize}
+  \item \textbf{Prinzip:} Pigmente absorbieren bestimmte Wellenlängen. Alle
+        Farben zusammen $\rightarrow$ theoretisch \textbf{Schwarz}.
+  \item \textbf{Warum K (Black) als 4. Komponente?}
+    \begin{enumerate}
+      \item Reines Schwarz aus C+M+Y kaum erreichbar (meist dunkles Braun).
+      \item Hoher Farbauftrag dreier Schichten würde das Papier zu feucht machen.
+    \end{enumerate}
+\end{itemize}
+
+% -----------------------------------------
+\subsection{YIQ / YUV-Modelle (Fernsehsignale)}
+% -----------------------------------------
+
+Entwickelt für \textbf{Kompatibilität mit Schwarzweiß-Fernsehern}.
+
+\begin{itemize}
+  \item \textbf{Y-Komponente:} Überträgt nur die \textbf{Helligkeitsinformation}
+        (Luminanz) -- ein S/W-Fernseher wertet nur diesen Kanal aus.
+  \item \textbf{Chrominanz (I, Q bzw.\ U, V):} Übertragen die Farbinformation.
+  \item \textbf{YIQ:} US-amerikanisches NTSC-System.
+  \item \textbf{YUV:} Europäisches PAL-System (Deutschland). Farbdifferenzen:
+        $U = R - Y$, $V = B - Y$.
+\end{itemize}
+
+\begin{notebox}
+  Die konkreten Umrechnungsmatrizen zwischen RGB und YIQ/YUV sind
+  \textbf{nicht} prüfungsrelevant.
+\end{notebox}
+
 \end{document}
