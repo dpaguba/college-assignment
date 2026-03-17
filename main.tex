@@ -1387,4 +1387,200 @@ $(\alpha,\alpha,\alpha,0)$ ergibt theoretisches, aber unreines Grau/Schwarz.}
 \end{figure}
 
 
+% =========================================
+\section{Kapitel C.4: Diskretisierung}
+% =========================================
+
+Diskretisierung = Umwandlung eines orts- und intensitätskontinuierlichen
+Signals (z.\,B. ein reales Bild) in \textbf{diskrete digitale Größen}.
+
+Zwei Hauptschritte:
+\begin{enumerate}
+  \item \textbf{Abtastung (Sampling):} Diskretisierung des \textbf{Ortes}
+        -- Festlegen der Pixelpositionen.
+  \item \textbf{Quantisierung:} Diskretisierung der \textbf{Intensität}
+        -- Festlegen der Helligkeits-/Farbwerte.
+\end{enumerate}
+
+% -----------------------------------------
+\subsection{Mathematische Grundlagen: Komplexe Zahlen}
+% -----------------------------------------
+
+Komplexe Zahlen werden nur benötigt, um die Fouriertransformation zu
+beschreiben.
+
+\begin{itemize}
+  \item \textbf{Kartesische Form:} $z = a + bi$, mit Realteil $a$ und
+        Imaginärteil $b$; es gilt $i^2 = -1$.
+  \item \textbf{Polarform:} $z = |z| \cdot e^{i\phi} = |z|(\cos\phi + i\sin\phi)$,
+        wobei $|z|$ die \textbf{Amplitude} (Betrag) und $\phi$ die
+        \textbf{Phase} (Winkel) ist.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Fouriertransformation (FT)}
+% -----------------------------------------
+
+\textbf{Kernidee:} Jedes Signal lässt sich als \textbf{gewichtete Summe
+periodischer Sinus-/Cosinuswellen} unterschiedlicher Frequenzen darstellen
+(Überlagerung von Basisfunktionen).
+
+\subsubsection{Eindimensionale FT}
+
+Für eine integrierbare Funktion $f(x),\; f:\mathbb{R}\to\mathbb{R}$:
+\[
+  F(u) := \int_{-\infty}^{\infty} f(x)\,\exp[-iux]\,\mathrm{d}x,
+  \quad u \in \mathbb{R},\quad i := \sqrt{-1}.
+\]
+
+\textbf{Komponenten einer Schwingung:}
+\begin{itemize}
+  \item \textbf{Frequenz} $u$: Wie schnell schwingt die Welle?
+        Feine Details $\leftrightarrow$ hohe Frequenz;
+        grobe Flächen $\leftrightarrow$ niedrige Frequenz.
+  \item \textbf{Amplitude} $|F(u)|$: Wie stark ist dieser Detailgrad
+        im Signal vertreten?
+  \item \textbf{Phase} $\phi(u)$: Wie ist die Welle räumlich verschoben?
+\end{itemize}
+
+$F(u)$ ist üblicherweise \textbf{komplexwertig}: $F(u) = |F(u)|\cdot\exp[i\phi(u)]$.
+
+\textbf{Rücktransformation -- Frequenz im Signal:}
+\[
+  f(x) = \frac{1}{2\pi}\int_{-\infty}^{\infty}
+  |F(u)|\,\cos\bigl(\underbrace{u}_{\text{Frequenz}}x
+  + \underbrace{\phi(u)}_{\text{Phase}}\bigr)\,\mathrm{d}u.
+\]
+
+Je dichter die Stützstellen $F(u)$ (höhere Auflösung), desto besser wird
+$f(x)$ approximiert.
+
+\subsubsection{Zweidimensionale FT (für Bilder)}
+
+\[
+  F(u,v) := \int_{-\infty}^{\infty}\!\!\int_{-\infty}^{\infty}
+  f(x,y)\,\exp[-i(ux+vy)]\,\mathrm{d}x\,\mathrm{d}y,
+  \quad u,v \in \mathbb{R}.
+\]
+
+\textbf{Frequenz bei Bildern:} Eine Sinus-/Cosinuswelle, bei der
+helle Grautöne große Werte und dunkle Grautöne niedrige Werte
+visualisieren.
+
+\textbf{Diskrete 2D-FT} (für ein $M \times N$-Bild):
+\[
+  f(m,n) = \frac{1}{MN}
+  \sum_{k=0}^{M-1}\sum_{l=0}^{N-1}
+  |F(k,l)|\,\cos\!\left(2\pi\!\left(\frac{mk}{M}+\frac{nl}{N}\right)
+  +\phi(k,l)\right).
+\]
+
+\subsubsection{Klausurrelevante Eigenschaften der FT}
+
+\begin{itemize}
+  \item \textbf{Separierbarkeit:} Eine 2D-FT kann berechnet werden,
+        indem man erst alle \textbf{Zeilen} (1D-FT) und dann alle
+        \textbf{Spalten} des Ergebnisses (1D-FT) transformiert.
+  \item \textbf{Faltungssatz:} Eine Faltung (Filterung) im Ortsbereich
+        entspricht einer \textbf{Multiplikation} im Frequenzbereich:
+        \[ f(x,y) \ast\ast h(x,y) \;\circ\!=\!\bullet\; F(u,v)\cdot H(u,v). \]
+        $\Rightarrow$ Rechenaufwand erheblich geringer.
+  \item \textbf{FFT (Fast Fourier Transform):} Divide-\&-Conquer-Algorithmus;
+        reduziert den Aufwand von $O(M^2)$ auf $O(M\log M)$.
+\end{itemize}
+
+\subsubsection{Rechtecksignal als Beispiel}
+
+Ein Rechteckimpuls der Breite $X$ und Höhe $A$ im Ortsbereich besitzt
+im Frequenzbereich ein si-förmiges Spektrum mit Hauptmaximum $AX$ bei
+$u=0$ und Nullstellen bei $u = \pm 1/X,\, \pm 2/X,\, \ldots$
+
+\[
+  \mathrm{si}(\xi) := \frac{\sin\xi}{\xi}.
+\]
+
+% -----------------------------------------
+\subsection{Abtasttheorem (Whittaker-Shannon)}
+% -----------------------------------------
+
+\begin{definitionbox}
+  Das ursprüngliche Signal ist aus dem Abtastsignal
+  \textbf{rekonstruierbar}, wenn die Abtastung mit einer
+  \textbf{mehr als doppelt so hohen Frequenz} wie der höchsten im
+  Signal vorkommenden Frequenz erfolgt:
+  \[ b_x := \frac{2\pi}{\Delta x} > 2\,b_u, \qquad
+     b_y := \frac{2\pi}{\Delta y} > 2\,b_v. \]
+\end{definitionbox}
+
+\textbf{Beweisidee (anschaulich):}
+\begin{itemize}
+  \item Durch die Abtastung wiederholt sich das Spektrum $F(u,v)$ im
+        Frequenzbereich periodisch (Abstand $\Delta u = 2\pi/\Delta x$).
+  \item Ist die Abtastfrequenz zu niedrig, \textbf{überlappen} sich
+        diese Kopien $\Rightarrow$ \textbf{Aliasing} (Spektren nicht
+        mehr trennbar).
+  \item Ist sie hoch genug, bleiben die Kopien getrennt, und das
+        Original-Spektrum lässt sich mit einem
+        \textbf{Rechtecktiefpassfilter} exakt herausschneiden:
+        \[ F(u,v) = F_d(u,v)\cdot H_{TP}(u,v). \]
+\end{itemize}
+
+\textbf{Äquivalente Bedingung für die Abtastintervalle:}
+\[
+  \Delta x \leq \frac{\pi}{b_u}, \qquad \Delta y \leq \frac{\pi}{b_v}.
+\]
+(Hälfte der kleinsten Periode der höchsten vorkommenden Frequenz.)
+
+\textbf{Aliasing-Effekte bei Verletzung des Theorems:}
+\begin{itemize}
+  \item \textbf{Moiré-Muster:} Falsche Streifenmuster auf fein
+        strukturierten Flächen.
+  \item \textbf{Lösung:} Vor der Abtastung einen Tiefpassfilter
+        anwenden -- das Bild wird leicht unscharf, aber Aliasing
+        verschwindet.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Quantisierung}
+% -----------------------------------------
+
+Quantisierung = Rundung der kontinuierlichen Intensitätswerte auf
+eine \textbf{endliche Menge diskreter Stufen}.
+
+\begin{itemize}
+  \item \textbf{Mach-Band-Effekt:} Bei zu wenigen Graustufen (z.\,B.\ 16)
+        nimmt das Auge an Übergängen künstliche helle/dunkle Streifen
+        wahr, die im Original nicht vorhanden sind.
+  \item \textbf{Logarithmische Quantisierung:} Das menschliche Auge
+        unterscheidet bei dunklen Tönen feinere Abstufungen als bei
+        hellen $\Rightarrow$ logarithmische Stufenverteilung ist
+        effizienter als eine lineare.
+  \item \textbf{Dithering:} Für Displays mit wenig Farben werden Pixel
+        verschiedener Farben so gemischt, dass das Auge aus der
+        Distanz einen neuen Farbton wahrnimmt (Punktmuster).
+    \begin{itemize}
+      \item \textbf{Farbquantisierung:} Erstellung einer optimalen
+            Farbtabelle.
+      \item \textbf{Farbersetzung:} Berechnung des Ergebnisbildes aus
+            dem Eingabebild anhand der Tabelle.
+    \end{itemize}
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Signalverarbeitungspipeline}
+% -----------------------------------------
+
+Reihenfolge der 7 Schritte vom Rohsignal zur Interpretation:
+
+\begin{enumerate}
+  \item \textbf{Signalaufnahme:} Licht registrieren.
+  \item \textbf{Signaldiskretisierung:} Abtasten und Quantisieren.
+  \item \textbf{Signalrestauration:} Technische Kamerafehler korrigieren.
+  \item \textbf{Signalverbesserung:} Filter anwenden (Kontrast, Rauschen).
+  \item \textbf{Signalsegmentierung:} Bild in Bereiche unterteilen
+        (z.\,B.\ Vorder-/Hintergrund).
+  \item \textbf{Merkmalsextraktion:} Eigenschaften messen (Kanten, Formen).
+  \item \textbf{Klassifikation/Interpretation:} System trifft Entscheidung.
+\end{enumerate}
+
 \end{document}
