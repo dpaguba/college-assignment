@@ -1314,5 +1314,77 @@ maximale Sättigung am Äquator ($L=0{,}5$), Grau auf der Mittelachse ($S=0$).}
     \end{enumerate}
 \end{itemize}
 
+\textbf{Darstellung:} 4-Komponenten-Vektor $(C,\,M,\,Y,\,K)$ mit
+$C,M,Y,K \in [0,\,1]$ (bzw.\ $0\%$--$100\%$).
+
+\textbf{Charakteristische Punkte:}
+\begin{itemize}
+  \item \textbf{Weißpunkt:} $(0,0,0,0)$ -- kein Farbauftrag, Papierfarbe.
+  \item \textbf{Schwarzpunkt:} $(0,0,0,1)$ mit $K=1$ -- reines Schwarz durch
+        Schwarztinte; theoretisch auch $(1,1,1,0)$, aber in der Praxis nur
+        dunkles Braun.
+  \item \textbf{Grau:} $C=M=Y=0$, $K \in (0,1)$ -- reine Schwarztinte
+        abgestuft (sauberstes Grau in der Praxis).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=2, line width=0.7pt, >=Stealth, font=\small]
+  % CMY-Würfel (axonometrisch): Ursprung = Weiß (0,0,0,0)
+  % C→rechts, M→schräg oben-rechts, Y→oben
+  \coordinate (W)  at (0,    0   );
+  \coordinate (vC) at (1,    0   );
+  \coordinate (vM) at (0.35, 0.5 );
+  \coordinate (vY) at (0,    1   );
+  \coordinate (CM) at (1.35, 0.5 );
+  \coordinate (CY) at (1,    1   );
+  \coordinate (MY) at (0.35, 1.5 );
+  \coordinate (B)  at (1.35, 1.5 );
+
+  % Versteckte Kanten (gestrichelt)
+  \draw[dashed] (W) -- (vC);
+  \draw[dashed] (W) -- (vM);
+  \draw[dashed] (W) -- (vY);
+
+  % Sichtbare Kanten
+  \draw (vC) -- (CM) -- (vM);
+  \draw (vC) -- (CY);
+  \draw (vM) -- (MY);
+  \draw (vY) -- (CY);
+  \draw (vY) -- (MY);
+  \draw (CM) -- (B);
+  \draw (CY) -- (B);
+  \draw (MY) -- (B);
+
+  % Achsenpfeile
+  \draw[->, thin] (vC) -- ++(0.25, 0)    node[right]       {$C$};
+  \draw[->, thin] (vM) -- ++(0.18, 0.22) node[above right] {$M$};
+  \draw[->, thin] (vY) -- ++(0, 0.25)    node[above]       {$Y$};
+
+  % Weißpunkt (Ursprung)
+  \fill (W) circle (1.5pt)
+    node[below left, font=\scriptsize, align=right]
+      {\textbf{Weiß}\\$(0,0,0,0)$};
+
+  % Theoretisches CMY-Schwarz
+  \fill (B) circle (1.5pt)
+    node[above right, font=\scriptsize, align=left]
+      {\textbf{CMY-Schwarz}\\$(1,1,1,0)$\\(in Praxis: braun)};
+
+  % Graudiagonale (CMY-Weg)
+  \draw[dotted, line width=1pt] (W) -- (B)
+    node[midway, right, font=\scriptsize, xshift=4pt]
+      {$(\alpha,\alpha,\alpha,0)$};
+
+  % K-Achse: separate Schwarztinte
+  \draw[->, dashed, line width=0.8pt] (W) -- ++(-0.5, -0.4)
+    node[below left, font=\scriptsize, align=center]
+      {\textbf{Schwarz}\\$(0,0,0,1)$\\$K$-Achse};
+\end{tikzpicture}
+\caption{CMYK: CMY-Würfel mit Weißpunkt im Ursprung $(0,0,0,0)$.
+Die $K$-Achse liefert reines Schwarz $(0,0,0,1)$; die Raumdiagonale
+$(\alpha,\alpha,\alpha,0)$ ergibt theoretisches, aber unreines Grau/Schwarz.}
+\end{figure}
+
 
 \end{document}
