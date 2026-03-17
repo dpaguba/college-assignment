@@ -344,6 +344,73 @@ zwischen einem menschlichen Benutzer und einem Computersystem. Jede Aktion ruft 
 Reaktion hervor; die Kommunikation findet über eine Veränderung der „Umwelt" statt
 (z.\,B. was auf dem Bildschirm angezeigt wird).
 
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  rbox/.style={draw, rounded corners=4pt, minimum width=1.7cm, minimum height=1.0cm,
+               align=center, font=\small, fill=white, line width=0.6pt},
+  >=Stealth, line width=0.7pt
+]
+  %% ===== NODES =====
+  \node[rbox] (bew)  at (-5.5,  1.4) {Bewer-\\tung};
+  \node[rbox] (ziel) at (-5.5,  0.0) {Ziel-\\setzung};
+  \node[rbox] (plan) at (-5.5, -1.4) {Planung};
+  \node[rbox] (wahr) at (-3.3,  1.4) {Wahr-\\nehmung};
+  \node[rbox] (hand) at (-3.3, -1.4) {Hand-\\lung};
+
+  \node[rbox, minimum height=1.5cm] (aufn) at (3.5,  1.4) {Informa-\\tions-\\auf-\\nahme};
+  \node[rbox, minimum height=1.5cm] (ausg) at (3.5, -1.4) {Informa-\\tions-\\aus-\\gabe};
+  \node[rbox] (anal) at (5.7,  1.4) {Analyse};
+  \node[rbox] (zust) at (5.7, -1.4) {Zu-\\stands-\\über-\\gang};
+
+  %% ===== BACKGROUNDS =====
+  \begin{scope}[on background layer]
+    \filldraw[fill=orange!70, draw=black, line width=1pt]
+      (1.8, -2.6) rectangle (7.4, 2.6);
+    \filldraw[fill=green!55, draw=black, line width=1pt]
+      (-4.5, 0) ellipse (3.2cm and 2.8cm);
+    \node[draw, rounded corners=8pt, fill=orange!25, line width=0.6pt,
+          inner sep=0.4cm, fit=(aufn)(ausg)(anal)(zust)] {};
+    \node[draw, rounded corners=6pt, fill=yellow!60, line width=0.6pt,
+          inner sep=0.3cm, fit=(bew)(ziel)(plan)] {};
+    \node[draw, rounded corners=6pt, fill=yellow!60, line width=0.6pt,
+          inner sep=0.3cm, fit=(wahr)(hand)] {};
+  \end{scope}
+
+  %% ===== LABELS =====
+  \node[font=\bfseries] at (-4.5, 2.4) {Benutzer};
+  \node[font=\bfseries] at (4.6,  2.2) {Computersystem};
+
+  %% ===== UMWELT BOX =====
+  \node[draw, fill=blue!20, line width=0.7pt,
+        minimum width=2.0cm, minimum height=3.2cm,
+        align=center, font=\small] (umwelt) at (0, 0)
+    {Ände-\\rungen\\der\\Umwelt};
+
+  %% ===== ARROWS INSIDE BENUTZER =====
+  \draw[->] (wahr.west)  -- (bew.east);
+  \draw[->] (bew.south)  -- (ziel.north);
+  \draw[->] (ziel.south) -- (plan.north);
+  \draw[->] (plan.east)  -- (hand.west);
+  \draw[->, dashed] (hand.north) -- (wahr.south);
+
+  %% ===== CONNECTIONS THROUGH UMWELT (alle horizontal) =====
+  \draw[->] (hand.east)                 -- ([yshift=-14mm]umwelt.west);
+  \draw[->] ([yshift= 14mm]umwelt.west) -- (wahr.east);
+  \draw[->] ([yshift= 14mm]umwelt.east) -- (aufn.west);
+  \draw[->] (ausg.west)                 -- ([yshift=-14mm]umwelt.east);
+
+  %% ===== ARROWS INSIDE COMPUTER =====
+  \draw[->] (aufn.east)  -- (anal.west);
+  \draw[->] (anal.south) -- (zust.north);
+  \draw[->] (zust.west)  -- (ausg.east);
+
+\end{tikzpicture}%
+}
+\caption{Mensch-Maschine-Interaktionsmodell}
+\end{figure}
+
 % - - - - - - - - - - - - - - - - - - - - -
 \subsubsection{Die Benutzerseite -- Kognitiver Prozess des Menschen}
 % - - - - - - - - - - - - - - - - - - - - -
