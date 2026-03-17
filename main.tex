@@ -577,73 +577,152 @@ Dieses Thema befasst sich damit, wie Informationen physisch zwischen Mensch und 
 \subsection{Interaktionsstile (Dialoggestaltung)}
 % -----------------------------------------
 
-Ein \textbf{Interaktionsstil} (auch Dialogstil) legt fest, in welcher Form der Dialog
-zwischen Mensch und Maschine gestaltet ist. Es werden drei Hauptstile unterschieden:
+Ein \textbf{Interaktionsstil} (auch Dialogstil oder Dialogform) legt fest, wie der
+Austausch zwischen Mensch und Maschine strukturell gestaltet ist. Es werden drei
+Hauptstile unterschieden: \textbf{sprachbasiert}, \textbf{direkt-manipulativ} und
+\textbf{gestenbasiert}.
 
 % - - - - - - - - - - - - - - - - - - - - -
 \subsubsection{Sprachbasierte Interaktion}
 % - - - - - - - - - - - - - - - - - - - - -
 
-Ein- und Ausgabe erfolgen über natürliche oder künstliche Sprache.
+Nutzt geschriebene oder gesprochene Sprache zur Kommunikation. Zwei Varianten:
 
-\textbf{A. Kommandosprachen} (z.\,B. Linux Terminal, Windows CMD):
+\textbf{A. Kommandosprachen (CLI)} -- synthetische Sprachen mit strenger Syntax.
+
+\textit{Merkmale:} Zeichen, Abkürzungen und Wörter nach einer festen Grammatik.\\
+\textit{Beispiele:} Linux-Terminal (\texttt{ls -al}), Windows CMD, SQL-Abfragen.\\
+\textit{Zielgruppe:} Professionelle Nutzer und Administratoren.
+
 \begin{itemize}
-  \item \textbf{Vorteile:} Sehr effizient für Profis; ermöglichen Skripte und Makros.
-  \item \textbf{Nachteile:} Hoher Lernaufwand (Syntax muss auswendig gelernt werden);
-        hohe Fehleranfälligkeit.
+  \item \textbf{Vorteile:}
+    \begin{itemize}
+      \item \textbf{Effizienz:} Erfahrene Nutzer lösen komplexe Aufgaben sehr schnell.
+      \item \textbf{Skriptfähigkeit:} Erlaubt Makros und Automatisierungen.
+      \item \textbf{Direkter Zugriff:} Tiefe Systemfunktionen ohne grafische Umwege.
+    \end{itemize}
+  \item \textbf{Nachteile:}
+    \begin{itemize}
+      \item \textbf{Hoher Lernaufwand:} Befehle müssen auswendig gelernt werden
+            (\textit{Recall} statt \textit{Recognition}).
+      \item \textbf{Fehleranfälligkeit:} Ein Tippfehler führt oft zu Fehlern;
+            Hilfestellungen sind schwer zu geben.
+    \end{itemize}
 \end{itemize}
 
-\textbf{B. Natürliche Sprache} (z.\,B. Siri, ChatGPT):
+\textbf{B. Natürliche Sprache} -- Interaktion wie im Alltag.
+
+\textit{Beispiele:} Sprachassistenten (Alexa, Siri), Chatbots (ChatGPT),
+Auskunftssysteme der Bahn.
+
 \begin{itemize}
-  \item \textbf{Vorteile:} Geringer Lernaufwand, da Alltagssprache genutzt wird.
-  \item \textbf{Nachteile:} Ineffizient durch Redundanz; Mehrdeutigkeiten (Homonyme)
-        führen oft zu Fehlern im System.
+  \item \textbf{Vorteile:}
+    \begin{itemize}
+      \item \textbf{Geringer Lernaufwand:} Keine speziellen Befehle nötig.
+      \item \textbf{Barrierefreiheit:} Ideal, wenn die Hände beschäftigt sind.
+    \end{itemize}
+  \item \textbf{Nachteile:}
+    \begin{itemize}
+      \item \textbf{Ineffizienz:} Natürliche Sprache ist redundant.
+      \item \textbf{Mehrdeutigkeit:} Wörter können verschiedene Bedeutungen haben.\\
+            \textit{Beispiel:} \glqq{}Wir fliegen nach Hamburg\grqq{} vs.\
+            \glqq{}Der Raum ist voller Fliegen\grqq{}.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Techniken der sprachbasierten Interaktion:}
+\begin{itemize}
+  \item \textbf{Eingabe:} Tastatur, Handschrift, Spracheingabe, Gebärdenspracheingabe.
+  \item \textbf{Ausgabe:} Text auf dem Display, Sprachsynthese, Gebärdensprachausgabe.
 \end{itemize}
 
 % - - - - - - - - - - - - - - - - - - - - -
 \subsubsection{Direkte Manipulation (DMI)}
 % - - - - - - - - - - - - - - - - - - - - -
 
-Basiert auf der visuellen Darstellung von Objekten, die mit Eingabegeräten direkt
-bewegt oder verändert werden können.
+Objekte auf dem Bildschirm werden direkt mit einem Eingabegerät (Maus, Finger)
+angefasst und verändert.
 
-\textbf{Merkmale:}
+\textbf{Zentrale Charakteristika:}
+\begin{enumerate}
+  \item \textbf{Sichtbarkeit} aller relevanten Objekte und Aktionen.
+  \item \textbf{Schnelle, umkehrbare Aktionen:} Änderungen sind schrittweise
+        ausführbar und können sofort rückgängig gemacht werden.
+  \item \textbf{Visuelle Manipulation:} Ersetzen von Textbefehlen durch Ziehen,
+        Klicken oder Verschieben.
+\end{enumerate}
+
+\textbf{Das WYSIWYG-Prinzip:} \glqq{}What you see is what you get\grqq{} --
+das Dokument wird am Bildschirm exakt so dargestellt, wie es später aussieht.
 \begin{itemize}
-  \item Sichtbarkeit der Objekte
-  \item Schnelle, umkehrbare Aktionen
-  \item Visuelle statt textuelle Befehle
+  \item \textit{WYSIWYG:} Microsoft Word.
+  \item \textit{Nicht-WYSIWYG:} \LaTeX{} (Code wird kompiliert, Ergebnis erst danach
+        sichtbar).
+\end{itemize}
+
+\textbf{Metaphern} -- Konzepte aus der physischen Welt für intuitive Bedienung:
+\begin{itemize}
+  \item \textbf{Desktop-Metapher:} Bildschirm als Schreibtisch mit Ordnern und
+        Papierkorb.
+  \item \textbf{Buch-Metapher:} Umblättern von Seiten in einer App.
 \end{itemize}
 
 \textbf{Vorteile:}
 \begin{itemize}
-  \item Intuitiv; Fehler sind sofort sichtbar und korrigierbar.
+  \item Intuitive Bedienung; Fehler sofort sichtbar und korrigierbar.
   \item Weitgehend sprachunabhängig.
 \end{itemize}
 
 \textbf{Nachteile:}
 \begin{itemize}
-  \item Geringe Präzision.
-  \item Hoher Platzbedarf auf dem Bildschirm.
-  \item Kein Geschwindigkeitsvorteil für Experten.
+  \item Platzraubend auf dem Display.
+  \item Icons können verwechselt werden.
+  \item Geringere Präzision (vgl. \glqq{}Fat Finger Problem\grqq{}).
 \end{itemize}
-
-\begin{examplebox}
-  \textbf{WYSIWYG} (\glqq{}What You See Is What You Get\grqq{}) wie Microsoft Word: Das Dokument
-  wird direkt so dargestellt, wie es später aussieht.
-\end{examplebox}
 
 % - - - - - - - - - - - - - - - - - - - - -
 \subsubsection{Gestenbasierte Interaktion}
 % - - - - - - - - - - - - - - - - - - - - -
 
-Interaktion durch Bewegungen des Körpers oder von Körperteilen.
+Interaktion durch Bewegungen des Körpers oder einzelner Körperteile (Finger, Hände,
+Augen).
 
-\textbf{Gestenstile:}
+\textbf{Geste vs. Pose:}
 \begin{itemize}
-  \item \textbf{Deiktisch:} Zeigen auf Objekte.
-  \item \textbf{Manipulativ:} Bewegen oder Verändern von Objekten.
-  \item \textbf{Symbolisch:} Posen und kodierte Bewegungen mit festgelegter Bedeutung.
+  \item \textbf{Geste (Bewegt-Geste):} Dynamische Bewegung mit kommunikativer
+        Absicht (z.\,B. Winken).
+  \item \textbf{Pose (Statische Geste):} Symbolhafte Haltung ohne Bewegung
+        (z.\,B. \glqq{}Daumen hoch\grqq{}).
 \end{itemize}
+
+\textbf{Die 5 Gestenstile:}
+\begin{enumerate}
+  \item \textbf{Deiktische Gesten:} Zeige- oder Verweisgesten zur Auswahl von
+        Objekten (besonders in VR oder am interaktiven Tisch).
+  \item \textbf{Manipulative Gesten:} Direkte Steuerung von Objekten.\\
+        \textit{Beispiel:} Pinch-to-zoom (Zwei-Finger-Spreizgeste) auf dem iPad.
+  \item \textbf{Symbolische Gesten:} Kodieren einen festen Befehl.\\
+        \textit{Beispiel:} \glqq{}V\grqq{}-Zeichen mit den Fingern.
+  \item \textbf{Sprachbegleitende Gesten:} Co-verbale Bewegungen während des
+        Redens. Technisch schwer zu erfassen (Echtzeit-Synchronisation mit Sprache
+        erforderlich).
+  \item \textbf{Zeichen-/Gebärdensprache:} Komplexe lexikalische Sprachen mit
+        eigener Grammatik aus Sequenzen von Gesten.
+\end{enumerate}
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{p{3.5cm} p{5cm} p{4cm}}
+\hline
+\textbf{Stil} & \textbf{Hauptmerkmal} & \textbf{Beispiel} \\
+\hline
+Sprachbasiert (CLI)     & Effizienz durch Textbefehle       & Linux Terminal (\texttt{ls}) \\[3pt]
+Sprachbasiert (Natürl.) & Intuition durch Alltagssprache    & Siri / Alexa \\[3pt]
+Direkte Manipulation    & Visuelles Handeln (Metaphern)     & Drag \& Drop am Desktop \\[3pt]
+Gestenbasiert           & Körperbewegung als Eingabe        & Zoom-Geste am Smartphone \\
+\hline
+\end{tabular}
+\end{center}
 
 % -----------------------------------------
 \subsection{Interaktionsumgebungen}
