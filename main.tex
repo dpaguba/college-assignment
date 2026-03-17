@@ -168,7 +168,7 @@ Schichten.
   \item \textbf{Präsentations-Schicht:} Direkt dem Benutzer zugewandt; beinhaltet
         die visuelle Darstellung sowie die physische Interaktion (Widgets wie Buttons,
         Menüs, Eingabefelder).
-  \item \textbf{Dialogsteuer-Schicht:} Das „Gehirn" bzw. „Gedächtnis" des Dialogs;
+  \item \textbf{Dialogsteuer-Schicht:} Das \glqq{}Gehirn\grqq{} bzw. \glqq{}Gedächtnis\grqq{} des Dialogs;
         legt fest, wie das System auf Eingaben reagiert und in welchem Zustand sich
         die Interaktion befindet.
   \item \textbf{Anwendungs-Schicht:} Schnittstelle zur eigentlichen Fachlogik;
@@ -187,7 +187,7 @@ Schichten.
 
 \textbf{Nachteile:}
 \begin{itemize}
-  \item \textbf{Leistungseinbußen („Sonderwege"):} Schnelle grafische Ausgaben
+  \item \textbf{Leistungseinbußen (\glqq{}Sonderwege\grqq{}):} Schnelle grafische Ausgaben
         (z.\,B. Echtzeit-Visualisierungen) müssen die Schichten oft umgehen,
         da der Weg durch den Dialogcontroller zu langsam ist.
   \item \textbf{Fließende Grenzen:} In der Praxis ist eine strikte Grenze zwischen
@@ -341,7 +341,7 @@ Service-Kanal.
 
 Dieses Modell beschreibt die Interaktion als einen \textbf{geschlossenen Regelkreis (Loop)}
 zwischen einem menschlichen Benutzer und einem Computersystem. Jede Aktion ruft eine
-Reaktion hervor; die Kommunikation findet über eine Veränderung der „Umwelt" statt
+Reaktion hervor; die Kommunikation findet über eine Veränderung der \glqq{}Umwelt\grqq{} statt
 (z.\,B. was auf dem Bildschirm angezeigt wird).
 
 \begin{figure}[H]
@@ -421,7 +421,7 @@ Der Mensch durchläuft intern vier Hauptphasen:
   \item \textbf{Wahrnehmung (Perception):} Der Benutzer nimmt Signale der Maschine
         über seine Sinnesorgane (Augen, Ohren, Tastsinn) auf.
   \item \textbf{Bewertung (Evaluation):} Das Wahrgenommene wird mit dem ursprünglichen
-        Ziel verglichen. \textit{„Ist das passiert, was ich wollte?"}
+        Ziel verglichen. \textit{\glqq{}Ist das passiert, was ich wollte?\grqq{}}
   \item \textbf{Zielsetzung (Goal):} Basierend auf der Bewertung entscheidet der
         Benutzer, was als Nächstes zu tun ist.
   \item \textbf{Planung \& Handlung (Execution):} Der Benutzer plant die physische
@@ -438,7 +438,7 @@ Parallel dazu verarbeitet das System die Eingaben in vier Schritten:
   \item \textbf{Informationsaufnahme:} Das System registriert Signale über
         \textbf{Sensoren} oder Eingabegeräte (Maus, Tastatur, Kamera, Mikrofon).
   \item \textbf{Analyse:} Das System interpretiert die Daten -- \textbf{Bedeutungsanalyse}
-        oder Mustererkennung (z.\,B. „Der Klick erfolgte auf den Speichern-Button").
+        oder Mustererkennung (z.\,B. \glqq{}Der Klick erfolgte auf den Speichern-Button\grqq{}).
   \item \textbf{Zustandsübergang:} Die Programmlogik wird ausgeführt; der interne
         Zustand der Software ändert sich (z.\,B. Datei wird gespeichert, Objekt
         in einer 3D-Szene wird verschoben).
@@ -458,11 +458,11 @@ Parallel dazu verarbeitet das System die Eingaben in vier Schritten:
 
   \item \textbf{Interaktionstechnik (Interaction Technique):} Die \textit{konkrete
         technische Realisierung} einer Interaktionsaufgabe.\\
-        \textit{Beispiele für „Objekt auswählen":}
+        \textit{Beispiele für \glqq{}Objekt auswählen\grqq{}:}
         \begin{enumerate}
           \item Mit der Maus auf ein Icon klicken.
           \item Den Namen des Objekts per Tastatur tippen.
-          \item In einer VR-Umgebung mit einem „virtuellen Laserstrahl" zeigen.
+          \item In einer VR-Umgebung mit einem \glqq{}virtuellen Laserstrahl\grqq{} zeigen.
         \end{enumerate}
 
   \item \textbf{Interaktionsstil (Dialogstil):} Legt fest, in welcher \textit{Form}
@@ -548,9 +548,9 @@ Dieses Thema befasst sich damit, wie Informationen physisch zwischen Mensch und 
 \textbf{Multimedial} & Mehr als ein \textbf{Medium} (Ausgabeseite des Rechners) &
   Lernsystem mit Text, Bild und Video \\[4pt]
 \textbf{Multimodal} & Mehr als eine \textbf{Modalität} (Eingabeseite des Menschen) &
-  Sprechen + Zeigen: „Lösche dieses Objekt" + Fingerzeig \\[4pt]
+  Sprechen + Zeigen: \glqq{}Lösche dieses Objekt\grqq{} + Fingerzeig \\[4pt]
 \textbf{Multicodal} & Verschiedene \textbf{Kodierungen} für dasselbe Medium &
-  „STOPP" als Wort + rotes Achteck-Symbol \\
+  \glqq{}STOPP\grqq{} als Wort + rotes Achteck-Symbol \\
 \hline
 \end{tabular}
 \end{center}
@@ -628,7 +628,7 @@ bewegt oder verändert werden können.
 \end{itemize}
 
 \begin{examplebox}
-  \textbf{WYSIWYG} („What You See Is What You Get") wie Microsoft Word: Das Dokument
+  \textbf{WYSIWYG} (\glqq{}What You See Is What You Get\grqq{}) wie Microsoft Word: Das Dokument
   wird direkt so dargestellt, wie es später aussieht.
 \end{examplebox}
 
@@ -656,10 +656,10 @@ und Stile umgesetzt werden.
   \item \textbf{CLI (Command Line Interface):} Textbasiert, streng reglementiert
         und kodiert.
   \item \textbf{GUI (Graphical User Interface):} Nutzt Metaphern (z.\,B. den
-        „Schreibtisch") und grafische Widgets.
+        \glqq{}Schreibtisch\grqq{}) und grafische Widgets.
   \item \textbf{WIMP-Systeme:} Unterform der GUI -- bestehend aus
         \textbf{W}indows, \textbf{I}cons, \textbf{M}enus und \textbf{P}ointers.
-  \item \textbf{NUI (Natural User Interface):} Ermöglicht „natürliche" Interaktionen,
+  \item \textbf{NUI (Natural User Interface):} Ermöglicht \glqq{}natürliche\grqq{} Interaktionen,
         z.\,B. durch Berührung (iPad) oder Sprache.
   \item \textbf{TUI (Tangible User Interface):} Greifbare Schnittstellen, bei denen
         physische Objekte als Eingabemedien dienen.
