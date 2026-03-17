@@ -307,4 +307,24 @@ Service-Kanal.
   nutzt die Dienste eines Graphiksystems (z.\,B. OpenGL) als \textbf{Server}.
 \end{examplebox}
 
+\textbf{Vorteile:}
+\begin{itemize}
+  \item \textbf{Lose Kopplung:} Provider und Consumer müssen sich nicht direkt
+        kennen -- die Vermittlung läuft über die Registry.
+  \item \textbf{Austauschbarkeit:} Ein Dienst (z.\,B. ein Eingabegerät) kann
+        gegen einen anderen ausgetauscht werden, ohne die Anwendung zu ändern.
+  \item \textbf{Wiederverwendbarkeit:} Einmal registrierte Dienste können von
+        mehreren Consumern gleichzeitig genutzt werden.
+\end{itemize}
+
+\textbf{Nachteile:}
+\begin{itemize}
+  \item \textbf{Overhead durch Registry:} Jede Kommunikation läuft über eine
+        zusätzliche Vermittlungsschicht, was Latenz erzeugen kann.
+  \item \textbf{Komplexität:} Das Verwalten von Diensten (Publish, Find, Bind)
+        erhöht den Implementierungsaufwand gegenüber direkten Aufrufen.
+  \item \textbf{Single Point of Failure:} Fällt die Registry aus, können
+        Consumer keine neuen Dienste mehr finden.
+\end{itemize}
+
 \end{document}
