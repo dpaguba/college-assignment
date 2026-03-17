@@ -1226,6 +1226,78 @@ $V$ = Hellwert ($0$--$1$). Schwarz an der Spitze, Weiß im Zentrum des Deckels,
 Grau auf der Mittelachse.}
 \end{figure}
 
+\textbf{HLS-Parameter:}
+\begin{itemize}
+  \item \textbf{H (Hue / Farbton):} Grundfarbton als Winkel $0°$--$360°$.
+  \item \textbf{L (Lightness / Helligkeit):} Helligkeit von Schwarz ($0$) über
+        gesättigte Farben ($0{,}5$) bis Weiß ($1$).
+  \item \textbf{S (Saturation / Sättigung):} Reinheit der Farbe ($0$--$1$).
+\end{itemize}
+
+\textbf{Darstellung:} Vektor $(H,\,L,\,S)$ mit $H \in [0°, 360°]$,
+$L \in [0,\,1]$, $S \in [0,\,1]$.
+
+\textbf{Charakteristische Punkte:}
+\begin{itemize}
+  \item \textbf{Schwarzpunkt:} $L = 0$ (untere Spitze) -- $H$ und $S$ irrelevant.
+  \item \textbf{Weißpunkt:} $L = 1$ (obere Spitze) -- $H$ und $S$ irrelevant.
+  \item \textbf{Grau:} $S = 0$, $L \in (0,\,1)$ -- Mittelachse des Doppelkegels.
+  \item \textbf{Maximale Sättigung:} $L = 0{,}5$ (Äquator des Doppelkegels).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[line width=0.7pt, >=Stealth, font=\small]
+  % HLS-Doppelkegel: Schwarzspitze (0,0), Äquator y=2, Weißspitze (0,4)
+
+  % Hintere Hälfte des Äquators (gestrichelt)
+  \draw[dashed] (2, 2) arc (0:180:2 and 0.5);
+
+  % Unterer Kegel
+  \draw (-2, 2) -- (0, 0) -- (2, 2);
+
+  % Oberer Kegel
+  \draw (-2, 2) -- (0, 4) -- (2, 2);
+
+  % Vordere Hälfte des Äquators
+  \draw (2, 2) arc (0:-180:2 and 0.5);
+
+  % Grauachse (S=0)
+  \draw[dashed] (0, 0) -- (0, 4);
+
+  % H-Pfeil (Farbwinkel am Äquatorrand)
+  \draw[->, thin] (2, 2) arc (0:60:2 and 0.5)
+    node[right, font=\scriptsize] {$H$};
+
+  % S-Pfeil (Radius am Äquator)
+  \draw[->, thin] (0, 2) -- (1.8, 2)
+    node[above, font=\scriptsize] {$S$};
+
+  % L-Pfeil (links neben dem Doppelkegel)
+  \draw[<->, thin] (-2.8, 0) -- (-2.8, 4);
+  \node[left, font=\scriptsize, align=right] at (-2.8, 2) {$L$\\(Lightness)};
+  \draw[dotted, very thin] (0, 0) -- (-2.8, 0);
+  \draw[dotted, very thin] (-2, 2) -- (-2.8, 2);
+  \draw[dotted, very thin] (0, 4) -- (-2.8, 4);
+
+  % Schwarzpunkt
+  \fill (0, 0) circle (2pt)
+    node[below right, font=\scriptsize] {\textbf{Schwarz}\quad$L = 0$};
+
+  % Weißpunkt
+  \fill (0, 4) circle (2pt)
+    node[above right, font=\scriptsize] {\textbf{Weiß}\quad$L = 1$};
+
+  % Äquator-Label
+  \node[right, font=\scriptsize] at (2.1, 2) {max.\,$S$\;($L = 0{,}5$)};
+
+  % Grau-Label
+  \node[right, font=\scriptsize] at (0.1, 1) {Grau $(S = 0)$};
+\end{tikzpicture}
+\caption{HLS-Doppelkegel: Schwarz ($L=0$) und Weiß ($L=1$) an den Spitzen,
+maximale Sättigung am Äquator ($L=0{,}5$), Grau auf der Mittelachse ($S=0$).}
+\end{figure}
+
 % -----------------------------------------
 \subsection{CMYK-Modell (Subtraktiv)}
 % -----------------------------------------
