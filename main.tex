@@ -128,12 +128,14 @@ Schichten.
 \textbf{Die Schichten:}
 \begin{itemize}
   \item \textbf{Präsentations-Schicht:} Sie ist direkt dem Benutzer zugewandt und beinhaltet
-        die visuelle Darstellung sowie die physische Interaktion (Widgets wie Buttons).
-  \item \textbf{Dialogsteuer-Schicht:} Sie ist das „Gedächtnis" des Dialogs und legt fest,
-        wie das System auf Eingaben reagiert und in welchem Zustand sich die Interaktion
-        befindet.
+        die visuelle Darstellung sowie die physische Interaktion (Widgets wie Buttons,
+        Menüs, Eingabefelder).
+  \item \textbf{Dialogsteuer-Schicht:} Sie ist das „Gehirn" bzw. „Gedächtnis" des Dialogs
+        und legt fest, wie das System auf Eingaben reagiert und in welchem Zustand sich
+        die Interaktion befindet.
   \item \textbf{Anwendungs-Schicht:} Sie stellt die Schnittstelle zur eigentlichen Fachlogik
-        der Anwendung dar.
+        dar und definiert, welche Daten und Funktionen der Anwendung für die UI
+        verfügbar sind.
 \end{itemize}
 
 \textbf{Vorteile:}
@@ -183,6 +185,12 @@ wie Android, Java Swing oder Qt.
   \item \textbf{Synchronisation:} Durch den Listener-Mechanismus (Beobachter-Muster) bleiben
         alle Ansichten automatisch aktuell, wenn sich die Daten ändern.
 \end{itemize}
+
+\begin{examplebox}
+  In einer Tabellenkalkulation ist das \textit{Model} die Liste der Zahlen, die \textit{View}
+  das Gitternetz auf dem Bildschirm und der \textit{Controller} das Modul, das reagiert,
+  wenn eine Zahl in eine Zelle getippt wird.
+\end{examplebox}
 
 \textbf{Beispiele für MVC-Systeme:} Java AWT/Swing, Windows-UIs, Android-Apps, Qt-Framework.
 
