@@ -1079,6 +1079,70 @@ Problem der Geräteabhängigkeit durch \textbf{theoretische} Komponenten.
   \item \textbf{Fotometer:} Misst ausschließlich die Helligkeit ($Y$).
 \end{itemize}
 
+\textbf{Darstellung:} 3D-Vektor $(X,\,Y,\,Z)$; nach Normalisierung
+zweidimensionale Chromatizitätskoordinaten $(x,\,y)$ plus Helligkeit $Y$
+(xyY-Modell).
+
+\textbf{Charakteristische Punkte:}
+\begin{itemize}
+  \item \textbf{Schwarzpunkt:} $(X,Y,Z) = (0,0,0)$ -- kein Licht;
+        im Chromatizitätsdiagramm undefiniert ($Y = 0$).
+  \item \textbf{Weißpunkt (D65):} $(x,\,y) = (0{,}3127,\;0{,}3290)$,
+        $Y = 1{,}0$ -- Norm-Weißpunkt nach sRGB-Standard.
+  \item \textbf{Grau:} Gleiche Chromatizität wie der Weißpunkt
+        ($(x,y)$ konstant), nur $Y$ variiert zwischen 0 und 1 --
+        Grau liegt auf der \textbf{Neutralachse} im $xy$-Diagramm.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=5, line width=0.7pt, >=Stealth]
+  % Achsen
+  \draw[->] (-0.02, 0) -- (0.85, 0) node[right, font=\small] {$x$};
+  \draw[->] (0, -0.02) -- (0, 0.92) node[above, font=\small] {$y$};
+
+  % Achsen-Ticks
+  \foreach \x in {0.2, 0.4, 0.6, 0.8} {
+    \draw (\x, 0) -- (\x, -0.012) node[below, font=\tiny] {\x};
+  }
+  \foreach \y in {0.2, 0.4, 0.6, 0.8} {
+    \draw (0, \y) -- (-0.012, \y) node[left, font=\tiny] {\y};
+  }
+
+  % Spektrallokus (vereinfachte Schuhsohlen-Form)
+  \draw[thick]
+    (0.174, 0.005)
+    .. controls (0.14, 0.02) and (0.10, 0.08) ..
+    (0.078, 0.171)
+    .. controls (0.06, 0.32) and (0.06, 0.62) ..
+    (0.073, 0.833)
+    .. controls (0.12, 0.83) and (0.22, 0.77) ..
+    (0.302, 0.692)
+    .. controls (0.46, 0.60) and (0.61, 0.44) ..
+    (0.735, 0.265);
+
+  % Purpurlinie (verbindet Rot- und Violettende)
+  \draw[thick] (0.735, 0.265) -- (0.174, 0.005);
+
+  % sRGB-Gamut-Dreieck
+  \draw[dashed]
+    (0.64, 0.33) -- (0.30, 0.60) -- (0.15, 0.06) -- cycle;
+  \node[font=\tiny] at (0.38, 0.27) {sRGB-Gamut};
+
+  % D65-Weißpunkt
+  \fill (0.3127, 0.3290) circle (0.6pt)
+    node[below right, font=\tiny, align=left]
+      {\textbf{D65-Weißpunkt}\\$(0{,}31;\;0{,}33)$};
+
+  % Neutralachse (Grau)
+  \fill (0.3127, 0.3290) circle (0pt)
+    node[above left, font=\tiny] {Grau\,/\,Neutral};
+\end{tikzpicture}
+\caption{CIE-Chromatizitätsdiagramm (schematisch): Spektrallokus,
+D65-Weißpunkt und sRGB-Gamut-Dreieck. Schwarz ($Y=0$) liegt außerhalb
+der xy-Ebene.}
+\end{figure}
+
 % -----------------------------------------
 \subsection{HSV- und HLS-Modelle (Nutzerorientiert)}
 % -----------------------------------------
