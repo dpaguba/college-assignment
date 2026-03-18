@@ -3319,14 +3319,27 @@ In 3D ergibt das drei Komponentenfunktionen $x(t),\, y(t),\, z(t)$. Der Paramete
   \item \textbf{Schraubenlinie}: $x = \sin t,\quad y = \cos t,\quad z = t$
 \end{itemize}
 
-\subsubsection*{F.2.2 Implizite Darstellung einer Kurve}
+\subsubsection*{F.2.2 Explizite vs. implizite Darstellung — Beispiel Kreis}
 
-Eine Kurve ist die \textbf{Nullstellenmenge} einer Funktion — alle Punkte, die eine Bedingung erfüllen:
+\textbf{1) Explizite Darstellung} — intuitiv, aber man muss mehrere Funktionen zusammenbauen:
 \[
-  F(x, y) = 0
+  y = f(x) = \sqrt{1 - x^2}, \qquad y = -f(x) = -\sqrt{1 - x^2}
 \]
+Der Kreis zerfällt in zwei Hälften, weil die explizite Form \textbf{rechtseindeutig} sein muss: für jedes $x$ darf es nur \textit{ein} $y$ geben. Vorteil: man kann klare visuelle Geometrie direkt ablesen.
 
-\textbf{Vorteil:} Einfacher Inzidenztest — einfach Koordinaten einsetzen und prüfen ob $= 0$. Eine einzige Gleichung genügt für eine vollständige Form (z.\,B.\ Einheitskreis: $x^2 + y^2 - 1 = 0$, statt zwei explizite Äste $y = \pm\sqrt{1-x^2}$).
+\textbf{2) Implizite Darstellung} — eine einzige Gleichung, dafür schwieriger abzuleiten:
+\[
+  F(x, y) = 0 \qquad \Rightarrow \qquad x^2 + y^2 - 1 = 0
+\]
+$F = 0$ bedeutet: der Punkt liegt \textit{genau auf dem Rand} des Objekts. Das erlaubt einen einfachen \textbf{Inzidenztest} (liegt ein Punkt auf der Kurve?) — Koordinaten einsetzen, Ergebnis gleich null? Auf der Kurve. Die implizite Form kennt keine „Rechtseindeutigkeit" und beschreibt den ganzen Kreis auf einmal.
+
+\textbf{Kegelschnitte (implizit):}
+\begin{itemize}
+  \item Ellipse: $\dfrac{x^2}{a^2} + \dfrac{y^2}{b^2} - 1 = 0$
+  \item Parabel: $y^2 - 2px = 0$
+\end{itemize}
+
+Im 3D-Raum entsteht eine Raumkurve als \textbf{Schnitt zweier impliziter Flächen}: $F(x,y,z)=0$ \textit{und} $G(x,y,z)=0$.
 
 \textbf{Kegelschnitte:}
 \begin{itemize}
