@@ -2298,7 +2298,8 @@ Probe: $T\cdot(1,2,3,1)^T = (8,6,4,1)^T$ \checkmark
 
 % --- Weiter mit den restlichen Pipeline-Schritten ---
 
-\begin{enumerate}[resume]
+\begin{enumerate}
+  \setcounter{enumi}{1}
 
   \item \textbf{Beleuchtung (Lighting)}
 
@@ -2335,6 +2336,7 @@ Das Phong-Modell ist ein \textbf{lokales Beleuchtungsmodell}: Es betrachtet nur 
 
   % Surface point P
   \fill (0,0) circle (3pt);
+  \node[below right, font=\small] at (0.1,-0.1) {$P$};
 
   % Normal n (straight up)
   \draw[->,very thick] (0,0) -- (0,3.2) node[above] {$\mathbf{n}$};
@@ -2348,10 +2350,17 @@ Das Phong-Modell ist ein \textbf{lokales Beleuchtungsmodell}: Es betrachtet nur 
   % View vector v
   \draw[->,very thick] (0,0) -- ({3.0*cos(18)},{3.0*sin(18)}) node[right] {$\mathbf{v}$};
 
-  % Angle arc between n and l_i
+  % Einfallswinkel: arc n <-> l_i, mit theta
   \draw (0,0.8) arc (90:130:0.8);
-  % Angle arc between n and r_i
+  \node[font=\scriptsize] at ({1.15*cos(110)},{1.15*sin(110)}) {$\theta$};
+
+  % Ausfallswinkel: arc n <-> r_i (gleich theta nach Reflexionsgesetz)
   \draw (0,0.8) arc (90:50:0.8);
+  \node[font=\scriptsize] at ({1.15*cos(70)},{1.15*sin(70)}) {$\theta$};
+
+  % Winkel alpha zwischen r_i und v (bestimmt spekularen Anteil)
+  \draw[dashed] ({2.0*cos(50)},{2.0*sin(50)}) arc (50:18:2.0);
+  \node[font=\scriptsize] at ({2.35*cos(34)},{2.35*sin(34)}) {$\alpha$};
 
   % Specular lobe (dashed ellipse aligned with r_i direction)
   \begin{scope}[rotate=50]
@@ -2506,7 +2515,8 @@ Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesa
 
 % --- Weiter mit Schritten 3–6 ---
 
-\begin{enumerate}[resume]
+\begin{enumerate}
+  \setcounter{enumi}{2}
 
   \item \textbf{Clipping}
 
