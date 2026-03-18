@@ -2726,6 +2726,12 @@ Tatsächliche Pixelposition: $n_x = \tilde{n}_x/\tilde{n}_z$, \quad $n_y = \tild
   \mathbf{L} = \mathbf{R}^*(\mathbf{I}_3\,|\,-\mathbf{t})
   \qquad \text{(3×4 Matrix)}
 \]
+wobei $\mathbf{I}_3$ die $3\times3$ Einheitsmatrix ist. Die Notation $(\mathbf{I}_3\,|\,-\mathbf{t})$ bezeichnet die um $-\mathbf{t}$ erweiterte Matrix:
+\[
+  (\mathbf{I}_3\,|\,-\mathbf{t}) =
+  \begin{pmatrix}1&0&0&-t_x\\0&1&0&-t_y\\0&0&1&-t_z\end{pmatrix}
+\]
+Sie verschiebt den homogenen Weltpunkt um $-\mathbf{t}$ (zieht die Kameraposition ab); anschließend dreht $\mathbf{R}$ das Ergebnis in die Kameraausrichtung.
 \begin{itemize}
   \item $\mathbf{t}$: Position des Projektionszentrums in Weltkoordinaten.
   \item $\mathbf{R} = (\mathbf{r}_x, \mathbf{r}_y, \mathbf{r}_z)$: Rotationsmatrix aus den normierten Kameraachsen; $\mathbf{r}_z$ zeigt entlang der optischen Achse.
