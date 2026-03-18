@@ -3611,4 +3611,28 @@ Ein \textbf{$d$-dimensionaler polyedrischer Komplex} ist eine endliche Menge von
 
 Sind alle Elemente Simplexe, heißt der Komplex \textbf{simplizialer Komplex}. Ein typischer Fehler ist die sogenannte \textbf{T-Stelle} (hängender Knoten): ein Punkt liegt im Inneren einer Kante eines anderen Simplex — der Durchschnitt ist dann kein gemeinsames Seiten-Simplex, was die Bedingung verletzt.
 
+\subsection{Polygontriangulierung}
+
+Zerlegung eines einfachen Polygons in Dreiecke durch nicht-schneidende Diagonalen. Notwendig, da Grafik-Algorithmen (Verrasterung, Beleuchtung) primär auf Dreiecken arbeiten.
+
+\subsubsection*{Ohrenabschneiden (Ear Clipping)}
+
+\textbf{Ohr} = drei aufeinanderfolgende Eckpunkte, die ein Dreieck bilden, das vollständig im Inneren des Polygons liegt und keinen nichtkonvexen Eckpunkt enthält.
+
+\textbf{Kernaussage:} Jedes einfache Polygon hat mindestens ein Ohr.
+
+\textbf{Algorithmus:}
+\begin{enumerate}
+  \item Alle konvexen und nichtkonvexen Eckpunkte identifizieren.
+  \item Für jeden Punkt prüfen: bildet er mit Vorgänger und Nachfolger ein Ohr?
+  \item Ohr gefunden → Diagonale einfügen, Dreieck entfernen, Konvexität der Nachbarn aktualisieren.
+  \item Wiederholen bis nur noch ein Dreieck übrig.
+\end{enumerate}
+
+\textbf{Zeitaufwand:} $O(n^3)$ trivial; $O(n^2)$ mit Algorithmus von Kong; $O(n \cdot k)$ wobei $k$ = Anzahl nichtkonvexer Ecken.
+
+\subsubsection*{Triangulierung monotoner Polygone}
+
+Ein Polygon heißt \textbf{$y$-monoton}, wenn jede horizontale Linie es in höchstens zwei Punkten schneidet. Solche Polygone lassen sich durch einen \textbf{Sweepline-Algorithmus} effizienter triangulieren: Punkte nach $y$ sortieren, mit einem Stack abarbeiten und Diagonalen zu bereits besuchten Punkten ziehen.
+
 \end{document}
