@@ -2709,6 +2709,58 @@ $f$ steht auf der Diagonale als Skalierungsfaktor; die letzte Zeile $(0,0,1,0)$ 
 \end{tabular}
 \end{notebox}
 
+\subsubsection*{Kamerakalibrierung (D.4.5)}
+
+Das Lochkamera-Modell beschreibt die \textit{ideale} Abbildung. Reale Kameras weichen davon ab — durch Linsenverzerrung, Sensorversatz, Pixelgröße. Kamerakalibrierung ermittelt die konkreten Parameter, um diese Abweichungen zu korrigieren.
+
+\textbf{Abbildungsfunktion:}
+\[
+  \tilde{\mathbf{n}} = \mathbf{K} \circ \mathbf{L}\,\tilde{\mathbf{p}}
+\]
+$\tilde{\mathbf{p}}$: 3D-Weltpunkt (homogene Koordinaten, 4D) \quad $\tilde{\mathbf{n}}$: Ergebnis in homogenen Pixelkoordinaten (3D).\\
+Tatsächliche Pixelposition: $n_x = \tilde{n}_x/\tilde{n}_z$, \quad $n_y = \tilde{n}_y/\tilde{n}_z$.
+
+\medskip
+\textbf{Externe Kameraparameter L} — \textit{Wo ist die Kamera und wohin schaut sie?}
+\[
+  \mathbf{L} = \mathbf{R}^*(\mathbf{I}_3\,|\,-\mathbf{t})
+  \qquad \text{(3×4 Matrix)}
+\]
+\begin{itemize}
+  \item $\mathbf{t}$: Position des Projektionszentrums in Weltkoordinaten.
+  \item $\mathbf{R} = (\mathbf{r}_x, \mathbf{r}_y, \mathbf{r}_z)$: Rotationsmatrix aus den normierten Kameraachsen; $\mathbf{r}_z$ zeigt entlang der optischen Achse.
+\end{itemize}
+$\mathbf{L}$ bringt jeden Weltpunkt ins Kamerakoordinatensystem.
+
+\medskip
+\textbf{Interne Kameraparameter K} — \textit{Wie bildet der Sensor einen Punkt auf Pixel ab?}
+\[
+  \mathbf{K} = \mathbf{D} \circ \mathbf{P}
+  \qquad \text{(3×3 Matrix)}
+\]
+
+\textbf{Projektionsmatrix P} — ideale perspektivische Projektion mit Brennweite $f$:
+\[
+  \mathbf{P} = \begin{pmatrix}f&0&0\\0&f&0\\0&0&1\end{pmatrix}
+\]
+
+\textbf{Digitalisierungsmatrix D} — rechnet kontinuierliche Bildkoordinaten in diskrete Pixel um:
+\[
+  \mathbf{D} = \begin{pmatrix}1/d_x&0&c_x\\0&1/d_y&c_y\\0&0&1\end{pmatrix}
+\]
+\begin{itemize}
+  \item $d_x, d_y$: physische Größe eines Sensorelements auf dem Chip. Je größer ein Sensorelement, desto weniger Pixel passen drauf → größere $d$ = gröberes Bild.
+  \item $c_x, c_y$: \textbf{Hauptpunkt} (Bildmittelpunkt) — wo die optische Achse senkrecht auf den Sensor trifft. Liegt meist nahe der Bildmitte, aber nicht exakt (Fertigungstoleranz).
+\end{itemize}
+
+\textbf{Linsenverzerrung:} Reale Linsen erzeugen geometrische Verzerrungen, die durch Kalibrierung korrigiert werden:
+\begin{itemize}
+  \item \textbf{Kissenförmig:} Kanten wölben sich nach innen — typisch bei Teleobjektiven.
+  \item \textbf{Tonnenförmig:} Kanten wölben sich nach außen — typisch bei Weitwinkel.
+\end{itemize}
+
+\textbf{View Frustum \& NDC:} Die Kamera erfasst nur einen pyramidenstumpfförmigen Bereich (\textit{View Frustum}), begrenzt durch near/far-Ebenen und den Öffnungswinkel (FOV). Die Projektion normiert dieses Frustum auf einen $2\times2\times1$-Quader in \textit{Normalized Device Coordinates (NDC)} — damit ist die Darstellung auflösungsunabhängig.
+
 % --- Weiter mit Schritten 5–6 ---
 
 \begin{enumerate}
