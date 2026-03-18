@@ -3428,4 +3428,51 @@ Man teilt jede Kante des Kontrollpolygons im Verhältnis $t^* : (1-t^*)$ und ver
 Algebraische Herleitung und Graderhöhung sind \textbf{nicht prüfungsrelevant}. Wichtig: graphische Erklärung des De-Casteljau-Algorithmus + die vier Eigenschaften oben.
 \end{notebox}
 
+\subsection{B-Splines}
+
+\subsubsection*{Nachteile der Bézier-Technik}
+\begin{itemize}
+  \item \textbf{Keine lokale Kontrolle:} Jede Änderung eines Kontrollpunkts verändert die \textit{gesamte} Kurve — gezielte Korrekturen an einer Stelle sind nicht möglich.
+  \item \textbf{Hoher Polynomgrad:} Mit jedem weiteren Kontrollpunkt steigt der Grad um 1 → hoher Rechenaufwand und numerische Ungenauigkeiten bei komplexen Formen.
+\end{itemize}
+
+\subsubsection*{Lösung: B-Splines}
+
+Statt einer einzigen Kurve hohen Grades setzt man die Form aus \textbf{Segmenten niedrigen Grades} zusammen. Die Übergänge sind glatt — der Nutzer sieht eine einzige Kurve.
+
+\textbf{Cox-de Boor-Rekursion} — Basisfunktionen $N_{i,k}(t)$:
+
+\textit{Basisfall ($k=1$):} Sprungfunktion —
+\[
+  N_{i,1}(t) = \begin{cases} 1 & t \in [x_i, x_{i+1}[ \\ 0 & \text{sonst} \end{cases}
+\]
+
+\textit{Rekursionsschritt:} Höhere Ordnungen als gewichtete Summe zweier Funktionen niedrigerer Ordnung:
+\[
+  N_{i,k}(t) = \frac{t - x_i}{x_{i+1+k-1} - x_i}\,N_{i,k-1}(t) + \frac{x_{i+k} - t}{x_{i+k} - x_{i+1}}\,N_{i+1,k-1}(t)
+\]
+
+Eine B-Spline-Kurve $P(t)$ wird durch \textbf{de Boor-Punkte} $B_i$ (Kontrollpunkte), Basisfunktionen $N_{i,k}$ und einen \textbf{Knotenvektor} $x_i$ definiert. Der Polynomgrad ist stets $k-1$.
+
+\subsubsection*{Eigenschaften von B-Splines}
+
+\begin{itemize}
+  \item \textbf{Lokale Kontrolle:} Ein Kontrollpunkt beeinflusst die Kurve nur in seinem \textbf{Support}-Bereich (bei Ordnung $k$: genau $k$ Intervalle). Änderungen bleiben lokal.
+  \item \textbf{Stetigkeit:} Eine B-Spline-Kurve der Ordnung $k$ ist $C^{k-2}$-stetig (d.\,h.\ $(k{-}2)$-mal stetig differenzierbar).
+  \item \textbf{Konvexe Hülle:} Kurve liegt innerhalb der konvexen Hülle der Kontrollpunkte.
+  \item \textbf{Partition der Eins:} $\sum_i N_{i,k}(t) = 1$ für alle $t$.
+\end{itemize}
+
+\subsubsection*{Knotenvektor}
+
+Der Knotenvektor $x_0 \leq x_1 \leq \cdots$ steuert, wie die Parameter auf die Segmente verteilt werden:
+\begin{itemize}
+  \item \textbf{Uniform:} gleichabständige Knoten, z.\,B.\ $0, 1, 2, 3, \dots$
+  \item \textbf{Offen (Open Knot Vector):} Mehrfachknoten an den Enden — die Kurve interpoliert den ersten und letzten Kontrollpunkt (wie Bézier).
+\end{itemize}
+
+\begin{notebox}{Spezialfall: B-Spline = Bézier}
+Ist die Ordnung $k$ gleich der Anzahl der Kontrollpunkte $n$ und wird ein offener Knotenvektor verwendet, reduziert sich die B-Spline-Basis zur \textbf{Bernstein-Basis} — die B-Spline-Kurve wird zur Bézier-Kurve.
+\end{notebox}
+
 \end{document}
