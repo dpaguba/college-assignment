@@ -1694,13 +1694,36 @@ visualisieren.
 \subsubsection{Klausurrelevante Eigenschaften der FT}
 
 \begin{itemize}
-  \item \textbf{Separierbarkeit:} Eine 2D-FT kann berechnet werden,
-        indem man erst alle \textbf{Zeilen} (1D-FT) und dann alle
-        \textbf{Spalten} des Ergebnisses (1D-FT) transformiert.
+  \item \textbf{Vertauschungssatz:} Wenn $f(x,y) \;\circ\!=\!\bullet\; F(u,v)$,
+        dann gilt:
+        \[ F(x,y) \;\circ\!=\!\bullet\; 4\pi^2 f(-u,-v). \]
+        d.\,h.\ Orts- und Frequenzbereich sind vertauschbar (bis auf Skalierung
+        und Vorzeichenumkehr).
+
+  \item \textbf{Separierbarkeit:} Die 2D-FT kann durch zwei aufeinanderfolgende
+        1D-FTs berechnet werden -- erst zeilenweise, dann spaltenweise
+        (oder umgekehrt):
+        \[
+          f(x,y)
+          \;\xrightarrow{\;x\;}\;
+          F^x(u,y)
+          \;\xrightarrow{\;y\;}\;
+          F(u,v)
+        \]
+        \[
+          f(x,y)
+          \;\xrightarrow{\;y\;}\;
+          F^y(x,v)
+          \;\xrightarrow{\;x\;}\;
+          F(u,v)
+        \]
+        ($F^x$ = Zwischenergebnis nach FT in $x$-Richtung.)
+
   \item \textbf{Faltungssatz:} Eine Faltung (Filterung) im Ortsbereich
         entspricht einer \textbf{Multiplikation} im Frequenzbereich:
         \[ f(x,y) \ast\ast h(x,y) \;\circ\!=\!\bullet\; F(u,v)\cdot H(u,v). \]
         $\Rightarrow$ Rechenaufwand erheblich geringer.
+
   \item \textbf{FFT (Fast Fourier Transform):} Divide-\&-Conquer-Algorithmus;
         reduziert den Aufwand von $O(M^2)$ auf $O(M\log M)$.
 \end{itemize}
