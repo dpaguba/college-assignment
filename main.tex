@@ -3019,13 +3019,7 @@ Die abstrakte 6-Schritte-Pipeline (Kapitel D) beschreibt \textit{was} berechnet 
 \textbf{Zustandsmaschine (State Machine):} Die GPU befindet sich immer in einem definierten Zustand (aktive Textur, Shader, Transformationsmatrix usw.). Ein gesetzter Zustand bleibt erhalten, bis er explizit geändert wird — jede Zeichenoperation wird durch den aktuellen Zustand beeinflusst. Zustände können mit \texttt{glGet*} / \texttt{glIsEnabled} gelesen werden, was aber die Pipeline zum Stillstand bringen und die Performance beeinträchtigen kann.
 
 \medskip
-\textbf{Objektkonzept:} OpenGL kapselt Ressourcen (Texturen, Puffer, Shader) in Objekten — kein OOP, sondern ein \textbf{Handle-System}. Arbeitszyklus:
-\begin{enumerate}
-  \item \texttt{glGen*} — Objekt erzeugen, Server liefert einen eindeutigen Handle (Name).
-  \item \texttt{glBind*} — Objekt aktivieren (zum aktuellen Ziel für nachfolgende Befehle machen).
-  \item Daten übertragen / Objekt konfigurieren.
-  \item \texttt{glDelete*} — Ressourcen auf dem Server wieder freigeben.
-\end{enumerate}
+\textbf{Objektkonzept:} OpenGL kapselt Ressourcen (Texturen, Puffer, Shader) in Objekten — kein OOP, sondern ein \textbf{Handle-System}: \texttt{glGen*} erzeugt ein Objekt, \texttt{glBind*} aktiviert es, \texttt{glDelete*} gibt es frei.
 
 \medskip
 \textbf{Feste vs. programmierbare Pipeline:}
