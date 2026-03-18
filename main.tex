@@ -2959,17 +2959,31 @@ Ziel: alle Pixel im Inneren eines Polygons finden. Das Scan-Line-Verfahren arbei
 
 \[
   \underbrace{\text{Lokale KS}}_{\text{Objekt}}
-  \;\to\;
+  \;\xrightarrow{M_{\text{model}}}\;
   \underbrace{\text{Weltkoordinaten}}_{\text{Szene}}
-  \;\to\;
-  \underbrace{\text{Kamera-KS}}_{\text{Viewing}}
-  \;\to\;
-  \underbrace{\text{NDC}}_{\text{Clipping}}
-  \;\to\;
-  \underbrace{\text{Bildschirm-KS}}_{\text{2D}}
-  \;\to\;
-  \underbrace{\text{Raster-KS}}_{\text{Pixel}}
+  \;\xrightarrow{M_{\text{view}}}\;
+  \underbrace{\text{Kamera-KS}}_{\text{Eye Space}}
+  \;\xrightarrow{M_{\text{proj}}}\;
+  \underbrace{\text{Clip Space}}_{\text{Clipping}}
+  \;\xrightarrow{\div w}\;
+  \underbrace{\text{NDC}}_{[-1,1]^3}
+  \;\xrightarrow{\text{Viewport}}\;
+  \underbrace{\text{Bildschirm-KS}}_{\text{Pixel}}
 \]
+
+\begin{itemize}
+  \item \textbf{Modell-Transformation} ($M_\text{model}$): platziert das Objekt aus seinem lokalen Koordinatensystem in die gemeinsame Weltszene (Translation, Rotation, Skalierung).
+  \item \textbf{View-Transformation} ($M_\text{view}$): verschiebt die gesamte Szene so, dass die Kamera im Ursprung sitzt und entlang $-z$ blickt. Modell- und View-Matrix werden oft zur \textbf{Modelview-Matrix} zusammengefasst.
+  \item \textbf{Projektions-Transformation} ($M_\text{proj}$): definiert das Sichtfeld (View Frustum); überführt in den Clip Space. Hier findet Clipping statt.
+  \item \textbf{Perspektivische Division} ($\div w$): teilt alle Koordinaten durch die homogene Komponente $w$ → erzeugt den perspektivischen Tiefeneffekt und liefert NDC mit $x,y,z \in [-1,1]$.
+  \item \textbf{Viewport-Transformation}: skaliert NDC auf die tatsächliche Pixelfläche des Ausgabefensters.
+\end{itemize}
+
+Gesamte Transformation im Vertex Shader:
+\[
+  v_\text{clip} = M_\text{proj} \cdot M_\text{view} \cdot M_\text{model} \cdot v
+\]
+Durch homogene Koordinaten lassen sich alle Stufen zu einer einzigen \textbf{Model-View-Projection-Matrix} (MVP) kombinieren.
 
 \subsection*{E. GPU-basierte Graphik-Pipeline}
 
