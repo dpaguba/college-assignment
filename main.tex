@@ -3281,4 +3281,26 @@ Die beiden Eigenschaften sind unabhängig voneinander:
 \end{itemize}
 \end{notebox}
 
+\subsection{Geometrische Modellierungstechniken}
+
+Es gibt vier grundlegende Ansätze, um 3D-Objekte im Computer zu repräsentieren — von einfach bis vollständig:
+
+\begin{itemize}
+  \item \textbf{2D-Projektion (Zeichnungen):} Klassische Darstellung räumlicher Objekte in der Ebene (z.\,B.\ technische Zeichnungen). Kein echtes 3D-Modell — nur eine Ansicht.
+  \item \textbf{Drahtgitter-Modellierung:} Nur die Kanten des Objekts werden dargestellt. Schnell und einfach, aber kein Volumen, keine Flächen — man sieht „durch" das Objekt hindurch.
+  \item \textbf{Surface Modeling (Flächenmodellierung):} Das Objekt wird als Hülle aus Flächen beschrieben. Enthält Geometrie (Form und Abmessungen), aber \textit{keine Topologie} — die Verbindungsstruktur zwischen den Flächen ist nicht gespeichert. Netzrepräsentation, kein Konstruktionsbaum. Umfasst analytische Flächen sowie Freiform- und skulpturale Oberflächen.
+  \item \textbf{Solid Modeling (Volumenmodellierung):} Im Gegensatz zur Flächenmodellierung enthalten diese Modelle sowohl Volumen- als auch Randinformationen. Das Objekt ist vollständig und eindeutig definiert — man kann z.\,B.\ das Gewicht berechnen oder prüfen, ob ein Punkt innen liegt.
+\end{itemize}
+
+\subsubsection*{Solid Modeling — Unterformen}
+
+\textbf{1. Konstruktive Volumenkörpergeometrie (CSG — Constructive Solid Geometry):}
+Komplexe Objekte entstehen durch \textbf{Mengenoperationen} (Vereinigung $\cup$, Schnitt $\cap$, Differenz $\setminus$) auf einfachen \textbf{geometrischen Primitiven} (Quader, Zylinder, Kugel, …). Beispiel: Quader $-$ Zylinder ergibt einen Quader mit Bohrung. Das Ergebnis lässt sich auch auf verschiedene Weisen konstruieren: $(A - B) + C$ oder $A + (C - B)$ — gleiche Form, unterschiedliche Konstruktionshistorie.
+
+\textbf{2. Boundary Representation (B-Rep):}
+Das Objekt wird über seine \textbf{begrenzenden Hüllflächen} beschrieben — Flächen, Kanten und Eckpunkte sowie ihre topologischen Verbindungen. Enthält sowohl Geometrie als auch Topologie. Standard in CAD-Systemen.
+
+\textbf{3. Feature-basierte und parametrische Modellierung:}
+Objekte werden durch \textbf{Konstruktionselemente} (Features, z.\,B.\ Bohrung, Fase, Rippe) und \textbf{Variablen/Parameter} beschrieben. Änderung eines Parameters (z.\,B.\ Durchmesser) aktualisiert automatisch das gesamte Modell. Grundlage moderner CAD-Software.
+
 \end{document}
