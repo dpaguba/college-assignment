@@ -2614,15 +2614,15 @@ Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.
 
 % --- Details zu Schritt 4: Projektion ---
 
-\textbf{Lochkamera} (das Standardmodell in der CG): kein Objektiv, nur ein Punkt (Projektionszentrum, PZ) und eine Bildebene. Kein Unschärfe-Effekt, da alles durch denselben Punkt läuft. In einer echten Lochkamera steht das Bild auf dem Kopf — in der CG schiebt man die Bildebene einfach \textit{vor} das PZ, dann ist es wieder aufrecht.
+\textbf{Lochkamera} (das Standardmodell in der CG): kein Objektiv, nur ein Punkt (Projektionszentrum) und eine Bildebene. Kein Unschärfe-Effekt, da alles durch denselben Punkt läuft. In einer echten Lochkamera steht das Bild auf dem Kopf — in der CG schiebt man die Bildebene einfach \textit{vor} das Projektionszentrum, dann ist es wieder aufrecht.
 
-\textbf{Brennweite $f$} = Abstand zwischen PZ und Bildebene. Sie bestimmt Zoom und Sichtfeld (Field of View):
+\textbf{Brennweite $f$} = Abstand zwischen Projektionszentrum und Bildebene. Sie bestimmt Zoom und Sichtfeld (Field of View):
 \begin{itemize}
-  \item Große $f$ → Bildebene weit vom PZ → kleiner Öffnungswinkel → \textbf{Teleobjektiv} (starker Zoom)
-  \item Kleine $f$ → Bildebene nah am PZ → großer Öffnungswinkel → \textbf{Weitwinkelobjektiv}
+  \item Große $f$ → Bildebene weit vom Projektionszentrum → kleiner Öffnungswinkel → \textbf{Teleobjektiv} (starker Zoom)
+  \item Kleine $f$ → Bildebene nah am Projektionszentrum → großer Öffnungswinkel → \textbf{Weitwinkelobjektiv}
 \end{itemize}
 
-\textbf{Parallelprojektion:} Das PZ liegt im Unendlichen — die Kamera ist angenommen unendlich weit weg, daher fallen alle Projektionsstrahlen exakt parallel auf die Bildebene. Die z-Koordinate wird einfach auf 0 gesetzt:
+\textbf{Parallelprojektion:} Das Projektionszentrum liegt im Unendlichen — die Kamera ist angenommen unendlich weit weg, daher fallen alle Projektionsstrahlen exakt parallel auf die Bildebene. Die z-Koordinate wird einfach auf 0 gesetzt:
 \[
   \tilde{\mathbf{P}} = (p_x,\, p_y,\, 0)^\top
   \qquad \Leftrightarrow \qquad
@@ -2632,7 +2632,7 @@ Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.
 \]
 Objekte erscheinen gleich groß unabhängig vom Abstand. Geeignet für technische Zeichnungen und CAD.
 
-\textbf{Perspektivische Projektion:} PZ liegt im Endlichen — alle Strahlen laufen in einem Punkt zusammen. Entferntere Objekte erscheinen kleiner, weil sich dieselbe Größe auf einen kleineren Winkel verteilt. Entspricht dem menschlichen Sehen.
+\textbf{Perspektivische Projektion:} Das Projektionszentrum liegt im Endlichen — alle Strahlen laufen in einem Punkt zusammen. Entferntere Objekte erscheinen kleiner, weil sich dieselbe Größe auf einen kleineren Winkel verteilt. Entspricht dem menschlichen Sehen.
 
 Die Formel ergibt sich direkt aus dem \textbf{Strahlensatz}:
 \[
@@ -2653,8 +2653,8 @@ $f$ steht auf der Diagonale als Skalierungsfaktor; die letzte Zeile $(0,0,1,0)$ 
 \begin{tabular}{lll}
   & \textbf{Parallelprojektion} & \textbf{Perspektivisch} \\
   \hline
-  PZ & im Unendlichen & im Endlichen \\
-  Strahlen & parallel & konvergieren in PZ \\
+  Projektionszentrum & im Unendlichen & im Endlichen \\
+  Strahlen & parallel & konvergieren im Projektionszentrum \\
   Größe mit Abstand & gleich & kleiner (Tiefenkürzung) \\
   Anwendung & CAD, techn. Zeichnung & Spiele, Film, VR \\
 \end{tabular}
