@@ -2139,6 +2139,22 @@ Der Weg eines physikalischen Reizes vom Sensor bis zur Interpretation — 7 Schr
 
 \textbf{Ergebnis:} Einzelwerte oder Wertfolgen — Zeichen, Positionen, Töne, Bilder. Wichtigste Gütemerkmale: \textbf{Latenz} und \textbf{Abweichung} (Soll vs.\ Ist).
 
+% -----------------------------------------
+\subsection{Lernkonzepte}
+% -----------------------------------------
+
+Der Unterschied liegt darin, \textit{welche Information} beim Training verfügbar ist:
+
+\begin{itemize}
+  \item \textbf{Überwachtes Lernen (Supervised):} Lernen aus Daten-Label-Paaren — das Modell weiß, was richtig ist. Beispiele: Klassifikation, Regression, strukturierte Vorhersage.
+
+  \item \textbf{Unüberwachtes Lernen (Unsupervised):} Keine Labels — das Modell findet selbst Struktur in den Daten. Beispiele: Clustering, Dimensionsreduktion, generative Modelle.
+
+  \item \textbf{Selbst-überwachtes Lernen (Self-supervised):} Labels werden automatisch aus den Daten selbst erzeugt (Daten-Daten-Paare) — kein manuelles Annotieren nötig. Beispiele: Self-supervised Stereo/Flow, Kontrastives Lernen.
+
+  \item \textbf{Verstärkungslernen (Reinforcement):} Agent lernt durch aktive Exploration und erhält spärliche Belohnungssignale. Beispiele: Deep Q-Learning, Policy Gradient, Actor-Critic.
+\end{itemize}
+
 % =========================================
 \section{D -- Bilderzeugung}
 % =========================================
