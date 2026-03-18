@@ -4119,4 +4119,146 @@ Bestimmt, ob und wie der Manipulator ein Szenenobjekt berührt. Drei Dimensionen
 
 \textbf{Suchstrukturen} (z.\,B.\ OBB-Bäume, kd-Bäume) reduzieren die Anzahl nötiger Schnitttests: Zunächst schnelle Grobprüfung auf Hüllkörper-Ebene, dann nur bei Überlappung Feinprüfung auf Dreiecksebene.
 
+% =========================================
+\section{J -- UX/UI-Design und Entwicklungsprozesse}
+% =========================================
+
+% -----------------------------------------
+\subsection{UX-Design: Grundbegriffe}
+% -----------------------------------------
+
+\begin{itemize}
+  \item \textbf{Utility (Nutzen):} Hat das Produkt einen realen Nutzen für den Benutzer?
+  \item \textbf{Usability (Benutzerfreundlichkeit):} Wie einfach, effektiv und zufriedenstellend ist die Nutzung?
+  \item \textbf{Usefulness (Nützlichkeit):} Utility + Usability zusammen.
+  \item \textbf{User Experience (UX):} „Summe der Interaktionsgefühle" — alles, was der Nutzer vor, während und nach der Nutzung erlebt.
+  \item \textbf{Banding Experience:} „Summe der Gefühle" gegenüber einer Marke — über einzelne Produkte hinaus.
+\end{itemize}
+
+UX ist breiter als Usability (ISO~9241-210): Usability betrifft nur die \textit{Nutzungsphase} (Effektivität, Effizienz, Spaß), UX umfasst zusätzlich \textit{vor} der Nutzung (Erwartungen, Erfahrungen) und \textit{danach} (Zufriedenheit, emotionale Bindung).
+
+\textbf{UX vs.\ UI:}
+\begin{itemize}
+  \item \textbf{UX Design:} Gestaltung des gesamten Nutzungserlebnisses — Forschung, Szenarien, Informationsarchitektur, Interaktionsdesign.
+  \item \textbf{UI Design:} Gestaltung der konkreten Benutzeroberfläche — Farben, Formen, Layouts, Typografie.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Benutzergerechte Gestaltung}
+% -----------------------------------------
+
+\subsubsection*{Anhaltspunkte}
+\begin{itemize}
+  \item Einsatz mentaler Modelle und Metaphern zur Verständnisunterstützung.
+  \item Nutzung der Terminologie der Benutzenden (nicht der Entwickler).
+  \item Reduktion kognitiver Belastung.
+  \item Klare Strukturierung der Benutzungsschnittstelle.
+  \item Kombination visueller und textueller Elemente.
+  \item Sichtbarkeit von Systemzuständen und möglichen Aktionen.
+  \item Rückkopplung (Feedback) auf Nutzeraktionen.
+\end{itemize}
+
+\subsubsection*{Konsistenz}
+
+Konsistenz bedeutet, dass gleichartige Dinge gleichartig aussehen und sich gleich verhalten — reduziert Lernaufwand:
+\begin{itemize}
+  \item \textbf{Sprachliche Konsistenz:} einheitliche Terminologie für Buttons, Menüeinträge, Dialoge.
+  \item \textbf{Strukturelle Konsistenz:} konsistente Anordnung von Bedienelementen (Menüs, Toolbars).
+  \item \textbf{Grafische Konsistenz:} einheitliche Farben, Schatten, Linienstärken, Icons.
+  \item \textbf{Interaktionskonsistenz:} einheitliche Reaktionen auf Funktions- und Maustasten.
+\end{itemize}
+
+\subsubsection*{Adaptierbarkeit und Adaptivität}
+\begin{itemize}
+  \item \textbf{Erwartungskonformes Verhalten:} Dialog entspricht den Fähigkeiten und Erwartungen der Benutzenden.
+  \item \textbf{Adaptierbarkeit:} Nutzende können die Oberfläche selbst anpassen (Grenzen vorgegeben).
+  \item \textbf{Adaptivität:} System passt sich automatisch an den Nutzenden an.
+\end{itemize}
+
+\textbf{Querschnittsaspekte:} Bewusste UX-Gestaltung, Barrierefreiheit, Fokus auf Interface-Entwicklung, Beispiele zur Erklärung der Bedienung.
+
+% -----------------------------------------
+\subsection{ISO 9241 -- Ergonomie der Mensch-System-Interaktion}
+% -----------------------------------------
+
+\textbf{7 Grundsätze für benutzergerechte Gestaltung (Teil 110):}
+\begin{enumerate}
+  \item \textbf{Aufgabenangemessenheit:} Geeignete Funktionalität, keine unnötigen Interaktionen.
+  \item \textbf{Selbstbeschreibungsfähigkeit:} System erklärt sich selbst durch Hilfe und Rückmeldungen.
+  \item \textbf{Lernförderlichkeit:} Anleitung, Metaphern — Ziel: minimale Erlernzeit.
+  \item \textbf{Steuerbarkeit:} Nutzer steuert den Dialog, nicht umgekehrt.
+  \item \textbf{Erwartungskonformität:} Konsistenz, Anpassung ans Benutzermodell.
+  \item \textbf{Individualisierbarkeit:} Anpassbarkeit an Bedürfnisse und Kenntnisse.
+  \item \textbf{Fehlertoleranz:} System reagiert tolerant auf Fehler oder ermöglicht einfache Fehlerkorrektur.
+\end{enumerate}
+
+% -----------------------------------------
+\subsection{User Interface Engineering (UIE)}
+% -----------------------------------------
+
+UIE ist ein \textbf{phasenorientiertes Vorgehen} der Softwareentwicklung, bei dem in allen Phasen Gebrauchstauglichkeit und UX im Fokus stehen. Zentral: Bewertung von Prototypen durch Nutzer bzw.\ Experten und iterative Weiterentwicklung. Methoden sind stark skalierbar — auch bei begrenztem Aufwand nützlich.
+
+\textbf{Entwicklungsprozesse} können verschiedene Typen haben:
+\begin{itemize}
+  \item UX Experience Design
+  \item Szenariobasierte Entwicklung
+  \item Contextual Design
+  \item Partizipative Entwicklung und Living Labs
+\end{itemize}
+
+\textbf{Entwurfsprozess:} Iterativer Zyklus — ausgehend von der Anforderungsanalyse entstehen, diskutieren und verfeinern sich Lösungsvarianten:
+\textit{Verstehen → Prototyping → Überprüfen → Verbessern} (und zurück).
+
+\textbf{Evaluierung von Benutzungsschnittstellen} — zwei Klassen:
+\begin{itemize}
+  \item \textbf{Usability Inspections:} Experten bewerten Prototyp/System anhand von Richtlinien und Heuristiken.
+  \item \textbf{Empirische Evaluierungen:} Testen mit echten Benutzern.
+\end{itemize}
+
+% -----------------------------------------
+\subsection{Design Thinking}
+% -----------------------------------------
+
+Systematische, nutzerzentrierte Herangehensweise an komplexe Probleme. Im Zentrum stehen Nutzerwünsche und nutzerorientiertes Erfinden. Drei Komponenten des Innovations-Dreiecks:
+\begin{itemize}
+  \item \textbf{Machbarkeit} (Technologie/Umsetzbarkeit)
+  \item \textbf{Tragfähigkeit} (Wirtschaft/Marktfähigkeit)
+  \item \textbf{Erwünschtheit} (Mensch/Nutzen)
+\end{itemize}
+
+Innovation entsteht im Schnittpunkt aller drei.
+
+\subsubsection*{Double Diamond}
+
+Zwei Denkmodi wechseln sich ab:
+\begin{itemize}
+  \item \textbf{Divergentes Denken:} offen, kreativ, viele Ideen generieren (Out-of-the-box).
+  \item \textbf{Konvergentes Denken:} gezielt, logisch, beste Lösung herausarbeiten.
+\end{itemize}
+
+Zwei Phasen (je ein Diamant = erst divergieren, dann konvergieren):
+\begin{enumerate}
+  \item \textbf{Problemphase:} Entdecken/Verstehen → Definieren (was ist das eigentliche Problem?).
+  \item \textbf{Lösungsphase:} Entwickeln → Finalisieren/Bereitstellen.
+\end{enumerate}
+
+\subsubsection*{Design-Thinking-Prozess (HPI-Academy, 6 Stufen)}
+
+\begin{enumerate}
+  \item \textbf{Verstehen:} Problemraum abstecken.
+  \item \textbf{Beobachten:} Empathie aufbauen — Nutzende im Kontext erleben.
+  \item \textbf{Sichtweise definieren:} Erkenntnisse verdichten, Designherausforderung formulieren.
+  \item \textbf{Ideen finden:} Möglichst viele Lösungsideen generieren, dann fokussieren.
+  \item \textbf{Prototypen entwickeln:} Konkrete Lösungen greifbar machen (Papercraft, LEGO, Storyboard, Wireframe \dots).
+  \item \textbf{Testen:} Prototypen mit Nutzern testen, Feedback für nächste Iteration sammeln.
+\end{enumerate}
+
+\textbf{Phasen \& Methoden} (Explore → Create → Prototype → Evaluate):
+\begin{itemize}
+  \item \textit{Explore:} Research Mindmap, Persona, Customer Journey, Stakeholder Map, \dots
+  \item \textit{Create:} Brainstorming, Brain Writing, Kill your Idea, Matrix Scale, \dots
+  \item \textit{Prototype:} Papercraft, LEGO, Storyboard, Video, Wireframing, \dots
+  \item \textit{Evaluate:} Test Grid Planning, Interview, Brainstorming, „How might we\dots", \dots
+\end{itemize}
+
 \end{document}
