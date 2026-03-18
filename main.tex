@@ -3656,7 +3656,7 @@ Ein Simplex erfüllt die \textbf{Delaunay-Bedingung}, wenn sein Umkreis (2D) bzw
   \item \textbf{Dualität:} Delaunay-Graph = dualer Graph zum Voronoi-Diagramm. Zwei Punkte sind verbunden $\Leftrightarrow$ ihre Voronoi-Zellen teilen eine Kante.
   \item \textbf{Eindeutigkeit:} Existiert immer; eindeutig wenn keine $d+2$ Punkte kosphärisch (auf einer gemeinsamen Kugeloberfläche).
   \item \textbf{Winkelmaximierung (2D):} Unter allen Triangulierungen maximiert Delaunay den kleinsten Winkel — keine unnötig spitzen Dreiecke.
-  \item \textbf{Berechnung:} Delaunay-Triangulierung im $\mathbb{R}^d$ = konvexe Hülle der auf ein Paraboloid projizierten Punkte im $\mathbb{R}^{d+1}$: $T(p) = \bigl(p,\; \textstyle\sum p_i^2\bigr)$.
+  \item \textbf{Berechnung:} Punkte auf Paraboloid projizieren: $T(p) = \bigl(p,\; \textstyle\sum p_i^2\bigr) \in \mathbb{R}^{d+1}$, konvexe Hülle berechnen. Die von \textbf{unten} (aus Richtung der negativen $(d{+}1)$-Achse) sichtbaren Facetten ergeben bei Rückprojektion die Delaunay-Triangulierung.
 \end{itemize}
 
 \begin{notebox}{Klausur: verletzte Delaunay-Bedingung}
