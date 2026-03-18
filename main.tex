@@ -2044,24 +2044,28 @@ Zwei Teilaufgaben:
 
 \subsubsection*{B -- Farbersetzung}
 
+\textit{Aufgabe:} Ersetze jeden Pixel des Originalbildes durch einen der verfügbaren Farben aus der Farbtabelle. Ziel: das Ergebnis soll dem Original visuell möglichst ähnlich sein.
+
 \textbf{Methode 1 -- Nächste-Nachbar-Farbersetzung:}
 
-Wähle für jedes Pixel die \textbf{nächstliegende Farbe} in der Farbtabelle. Einfach und schnell, erzeugt jedoch sichtbares \textit{Banding} (harte Übergänge).
+Wähle für jedes Pixel die \textbf{nächstliegende Farbe} in der Farbtabelle. Einfach und schnell, erzeugt jedoch sichtbares \textit{Banding} -- an glatten Farbverläufen entstehen harte Stufen, weil der Fehler einfach verworfen wird.
 
 \textbf{Methode 2 -- Floyd-Steinberg-Fehlerübertrag:}
 
-Statt den Fehler zu verwerfen, wird er auf die Nachbarpixel \textbf{vorwärts verteilt} -- dadurch kompensieren spätere Pixel den akkumulierten Quantisierungsfehler.
+\textit{Idee:} Wenn ein Pixel auf den nächsten Tabellenwert gerundet wird, entsteht ein \textbf{Quantisierungsfehler} $e = x - k$. Statt ihn zu verwerfen, wird er auf noch nicht verarbeitete Nachbarpixel \textbf{vorwärts verteilt}. Diese werden dadurch korrigiert -- zu hell gerundete Pixel ziehen die Nachbarn dunkler, zu dunkel gerundete heller. Im Durchschnitt einer kleinen Region stimmt die Farbe.
+
+\textit{Analogie:} Du musst 10{,}70\,€ zahlen, hast aber nur Münzen. Du gibst 11\,€ -- Fehler +0{,}30\,€. Diesen Betrag ziehst du von der nächsten Zahlung ab. Über mehrere Transaktionen gleicht sich alles aus.
 
 \begin{definitionbox}
 \textbf{Algorithmus (Floyd-Steinberg):} Gegeben ein $m\times n$-Farbbild $f$ und eine Farbtabelle $F$:
 \begin{enumerate}
-  \item Für jedes Pixel $(i,j)$ (zeilenweise):
+  \item Für jedes Pixel $(i,j)$ (zeilenweise, links nach rechts):
     \begin{enumerate}[label=\alph*.]
-      \item $x \leftarrow f[i][j]$ \hfill (Original-Farbe)
-      \item $k \leftarrow \operatorname{argmin}_{c\in F}\|x - c\|$ \hfill (nächster Repräsentant)
+      \item $x \leftarrow f[i][j]$ \hfill (Original-Farbe lesen)
+      \item $k \leftarrow \operatorname{argmin}_{c\in F}\|x - c\|$ \hfill (nächsten Repräsentanten wählen)
       \item $f'[i][j] \leftarrow k$ \hfill (quantisiertes Pixel ausgeben)
-      \item $e \leftarrow x - k$ \hfill (Quantisierungsfehler)
-      \item Verteile $e$ auf die noch nicht verarbeiteten Nachbarn:
+      \item $e \leftarrow x - k$ \hfill (Fehler berechnen)
+      \item Fehler $e$ auf Nachbarn verteilen:
     \end{enumerate}
 \end{enumerate}
 \[
@@ -2073,11 +2077,11 @@ Statt den Fehler zu verwerfen, wird er auf die Nachbarpixel \textbf{vorwärts ve
   \hline
   \end{array}
 \]
-(rechts: $+\tfrac{3}{8}e$;\quad unten: $+\tfrac{3}{8}e$;\quad diagonal unten-rechts: $+\tfrac{1}{4}e$.)
+Rechts: $+\tfrac{3}{8}e$ \quad Unten: $+\tfrac{3}{8}e$ \quad Diagonal unten-rechts: $+\tfrac{1}{4}e$
 \end{definitionbox}
 
-\begin{notebox}{Effekt des Fehlerübertrags}
-Der Algorithmus verteilt den Quantisierungsfehler auf die Nachbarschaft und \glqq{}korrigiert\grqq{} dadurch spätere Pixel -- das Ergebnis wirkt visuell deutlich weicher als reine Nächste-Nachbar-Ersetzung. Am Bildrand muss der Algorithmus geeignet angepasst werden (keine Nachbarpixel vorhanden).
+\begin{notebox}{Warum funktioniert das?}
+Das Auge mittelt Farben benachbarter Pixel. Indem der Fehler auf die Nachbarschaft verteilt wird, stimmt der \textbf{lokale Farbdurchschnitt} mit dem Original überein -- auch wenn kein einzelner Pixel exakt die richtige Farbe hat. Das Ergebnis wirkt visuell deutlich weicher als reine Nächste-Nachbar-Ersetzung. Am Bildrand muss der Algorithmus angepasst werden (fehlende Nachbarpixel).
 \end{notebox}
 
 % -----------------------------------------
