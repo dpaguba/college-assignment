@@ -2101,4 +2101,88 @@ Reihenfolge der 7 Schritte vom Rohsignal zur Interpretation:
   \item \textbf{Klassifikation/Interpretation:} System trifft Entscheidung.
 \end{enumerate}
 
+% =========================================
+\section{D -- Bilderzeugung}
+% =========================================
+
+% -----------------------------------------
+\subsection{Bilderzeugungs-Pipeline}
+% -----------------------------------------
+
+Die Bilderzeugungs-Pipeline beschreibt, wie aus einer abstrakten 3D-Szenenbeschreibung ein fertiges 2D-Rasterbild auf dem Monitor entsteht.
+
+\textbf{2D- vs.\ 3D-Pipeline:}
+\begin{itemize}
+  \item \textbf{2D-Pipeline:} Transformation $\to$ Clipping $\to$ Verrasterung.
+  \item \textbf{3D-Pipeline:} Ergänzt um \textbf{Beleuchtung}, \textbf{Projektion} und \textbf{Sichtbarkeitsberechnung}.
+\end{itemize}
+
+\subsubsection*{Die 6 Schritte der Pipeline}
+
+\begin{enumerate}
+
+  \item \textbf{Transformation}
+
+  Affine Abbildungen (Verschieben, Drehen, Skalieren) werden auf die Geometrie angewendet. Objekte wandern durch drei Koordinatensysteme:
+  \begin{itemize}
+    \item \textbf{Lokales KS} (Objektraum) $\to$ \textbf{Weltkoordinatensystem} (Platzierung in der Szene) $\to$ \textbf{Kamerakoordinatensystem} (Sicht der Kamera).
+  \end{itemize}
+  \textit{Wie?} Matrizen werden auf die Eckpunkte (Vertices) der Dreiecke angewendet.
+
+  \item \textbf{Beleuchtung (Lighting)}
+
+  Berechnung der Lichtintensität an den Eckpunkten anhand von Materialeigenschaften, Oberflächennormalen und Lichtquellen. Typisches Verfahren: \textbf{Gouraud-Shading} -- die Beleuchtungsfunktion (BSF) wird nur an den Stützstellen (Vertices) berechnet; dazwischen wird interpoliert.
+
+  \item \textbf{Clipping}
+
+  Alles außerhalb des \textbf{View Frustums} (Sichtpyramide) wird abgeschnitten -- sechs Ebenen: links, rechts, oben, unten, nah, fern. Ziel: keine unnötige Berechnung für Objekte, die sowieso nicht sichtbar sind.
+
+  \item \textbf{Projektion}
+
+  Überführung der 3D-Koordinaten in eine 2D-Bildebene. Zwei Arten:
+  \begin{itemize}
+    \item \textbf{Perspektivische Projektion:} Objekte werden mit Abstand kleiner (wie im echten Leben).
+    \item \textbf{Parallelprojektion:} Abstände verändern die Größe nicht.
+  \end{itemize}
+  Ergebnis: normalisierte Projektionskoordinaten (NDC).
+
+  \item \textbf{Sichtbarkeitsberechnung}
+
+  Entfernung verdeckter Flächen. Standardverfahren: \textbf{Tiefenpufferalgorithmus (Z-Buffer)} -- für jeden Pixel wird die Tiefe (Abstand zur Kamera) gespeichert; das nähere Objekt gewinnt.
+
+  \item \textbf{Verrasterung (Rasterization)}
+
+  Umwandlung der Geometrie (Dreiecke, Linien) in diskrete Pixel. Dabei werden Farben zwischen den Eckpunkten interpoliert und \textbf{Texturen} auf Oberflächen aufgebracht.
+
+\end{enumerate}
+
+\subsubsection*{Koordinatentransformations-Pipeline}
+
+\[
+  \underbrace{\text{Lokale KS}}_{\text{Objekt}}
+  \;\to\;
+  \underbrace{\text{Weltkoordinaten}}_{\text{Szene}}
+  \;\to\;
+  \underbrace{\text{Kamera-KS}}_{\text{Viewing}}
+  \;\to\;
+  \underbrace{\text{NDC}}_{\text{Clipping}}
+  \;\to\;
+  \underbrace{\text{Bildschirm-KS}}_{\text{2D}}
+  \;\to\;
+  \underbrace{\text{Raster-KS}}_{\text{Pixel}}
+\]
+
+\begin{notebox}{Zusammenfassung für die Klausur}
+\begin{tabular}{lll}
+  \textbf{Schritt} & \textbf{Kernaufgabe} & \textbf{Schlüsselbegriff} \\
+  \hline
+  Transformation     & Positionierung im Raum          & Affine Abbildung, Matrizen \\
+  Beleuchtung        & Farbwertberechnung              & Gouraud-Shading, BSF \\
+  Clipping           & Unsichtbares abschneiden        & View Frustum \\
+  Projektion         & $3D \to 2D$                     & Perspektivisch / Parallel \\
+  Sichtbarkeit       & Verdeckungen lösen              & Z-Buffer \\
+  Verrasterung       & Pixel füllen                    & Interpolation, Textur \\
+\end{tabular}
+\end{notebox}
+
 \end{document}
