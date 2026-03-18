@@ -2567,7 +2567,8 @@ Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesa
 
 \subsubsection*{Clipping (D.4.2)}
 
-Clipping entscheidet für jedes Objekt: ist es \textbf{komplett sichtbar}, \textbf{komplett unsichtbar} oder \textbf{halb-halb}? Komplett unsichtbare Objekte werden sofort verworfen -- das spart den teuersten Teil der Pipeline. Nur teilweise sichtbare Objekte müssen tatsächlich geschnitten werden.
+Abschneiden von Teilen einer Szene, die außerhalb eines
+gegebenen Bereichs liegen. Clipping entscheidet für jedes Objekt: ist es \textbf{komplett sichtbar}, \textbf{komplett unsichtbar} oder \textbf{halb-halb}? Komplett unsichtbare Objekte werden sofort verworfen -- das spart den teuersten Teil der Pipeline. Nur teilweise sichtbare Objekte müssen tatsächlich geschnitten werden.
 
 Im 3D-Fall definiert das \textbf{View Frustum} (Sichtpyramide) den sichtbaren Bereich durch sechs Ebenen (links, rechts, oben, unten, nah, fern). Alles außerhalb fliegt raus.
 
@@ -2600,8 +2601,7 @@ Für den reinen Vergleich zweier Abstände muss die Wurzel \textit{nicht} berech
 
 \begin{definitionbox}{Point-in-Polygon-Test (Strahlschnitt-Regel)}
 Ungerade Anzahl an Kantenschnitten $\Rightarrow$ Punkt liegt \textbf{im Polygon}.\\
-Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.\\[2pt]
-Nebeneffekt: Genau 1 Schnitt $\Rightarrow$ Polygon ist \textbf{konvex}; mehr als 1 $\Rightarrow$ \textbf{nicht konvex}.
+Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.
 \end{definitionbox}
 
 \textbf{Effizienz-Vortest:} Bei komplexen Objekten zuerst die \textbf{Bounding Box} (kleinstes achsenparalleles Rechteck) testen. Liegt der Punkt schon außerhalb der Box, entfällt der teure Genauigkeitstest.
