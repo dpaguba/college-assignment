@@ -2613,12 +2613,64 @@ Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.
 
   \item \textbf{Projektion}
 
-  Überführung der 3D-Koordinaten in eine 2D-Bildebene. Zwei Arten:
-  \begin{itemize}
-    \item \textbf{Perspektivische Projektion:} Objekte werden mit Abstand kleiner (wie im echten Leben).
-    \item \textbf{Parallelprojektion:} Abstände verändern die Größe nicht.
-  \end{itemize}
-  Ergebnis: normalisierte Projektionskoordinaten (NDC).
+  3D-Szene → 2D-Bildebene. Kernfrage: was ist sichtbar und wie groß erscheint es?
+
+\end{enumerate}
+
+% --- Details zu Schritt 4: Projektion ---
+
+\subsubsection*{Projektion (D.4.4)}
+
+\textbf{Lochkamera} (das Standardmodell in der CG): kein Objektiv, nur ein Punkt (Projektionszentrum, PZ) und eine Bildebene. Kein Unschärfe-Effekt, da alles durch denselben Punkt läuft. In einer echten Lochkamera steht das Bild auf dem Kopf — in der CG schiebt man die Bildebene einfach \textit{vor} das PZ, dann ist es wieder aufrecht.
+
+\textbf{Brennweite $f$} = Abstand zwischen PZ und Bildebene. Sie bestimmt Zoom und Sichtfeld (Field of View):
+\begin{itemize}
+  \item Große $f$ → Bildebene weit vom PZ → kleiner Öffnungswinkel → \textbf{Teleobjektiv} (starker Zoom)
+  \item Kleine $f$ → Bildebene nah am PZ → großer Öffnungswinkel → \textbf{Weitwinkelobjektiv}
+\end{itemize}
+
+\textbf{Parallelprojektion:} Das PZ liegt im Unendlichen — die Kamera ist angenommen unendlich weit weg, daher fallen alle Projektionsstrahlen exakt parallel auf die Bildebene. Die z-Koordinate wird einfach auf 0 gesetzt:
+\[
+  \tilde{\mathbf{P}} = (p_x,\, p_y,\, 0)^\top
+  \qquad \Leftrightarrow \qquad
+  \tilde{\underline{\mathbf{P}}} =
+  \begin{bmatrix}1&0&0&0\\0&1&0&0\\0&0&0&0\\0&0&0&1\end{bmatrix}
+  \underline{\mathbf{P}}
+\]
+Objekte erscheinen gleich groß unabhängig vom Abstand. Geeignet für technische Zeichnungen und CAD.
+
+\textbf{Perspektivische Projektion:} PZ liegt im Endlichen — alle Strahlen laufen in einem Punkt zusammen. Entferntere Objekte erscheinen kleiner, weil sich dieselbe Größe auf einen kleineren Winkel verteilt. Entspricht dem menschlichen Sehen.
+
+Die Formel ergibt sich direkt aus dem \textbf{Strahlensatz}:
+\[
+  \frac{\tilde{p}_x}{f} = \frac{p_x}{p_z}
+  \quad\Rightarrow\quad
+  \tilde{p}_x = f \cdot \frac{p_x}{p_z}
+  \qquad \text{(analog für } \tilde{p}_y\text{)}
+\]
+Je größer $p_z$ (weiter weg), desto kleiner $\tilde{p}_x$ — das ist die Tiefenkürzung. In homogenen Koordinaten:
+\[
+  \tilde{\underline{\mathbf{P}}} =
+  \begin{bmatrix}f&0&0&0\\0&f&0&0\\0&0&f&0\\0&0&1&0\end{bmatrix}
+  \underline{\mathbf{P}}
+\]
+$f$ steht auf der Diagonale als Skalierungsfaktor; die letzte Zeile $(0,0,1,0)$ übernimmt $p_z$ als Nenner (homogene Division). In OpenGL zeigt die Kamera in die negative $z$-Richtung → letzte Zeile wird zu $(0,0,-1,0)$.
+
+\begin{notebox}{Parallel vs. Perspektivisch}
+\begin{tabular}{lll}
+  & \textbf{Parallelprojektion} & \textbf{Perspektivisch} \\
+  \hline
+  PZ & im Unendlichen & im Endlichen \\
+  Strahlen & parallel & konvergieren in PZ \\
+  Größe mit Abstand & gleich & kleiner (Tiefenkürzung) \\
+  Anwendung & CAD, techn. Zeichnung & Spiele, Film, VR \\
+\end{tabular}
+\end{notebox}
+
+% --- Weiter mit Schritten 5–6 ---
+
+\begin{enumerate}
+  \setcounter{enumi}{4}
 
   \item \textbf{Sichtbarkeitsberechnung}
 
