@@ -3261,4 +3261,24 @@ Physikalisch basiertes Verfahren für \textbf{diffuse} Oberflächen (Lambert). D
 
 \textbf{Rendering Equation (Kajiya):} Beschreibt die abgestrahlte Radianz an einem Punkt als Summe aus Eigenleuchten und dem integral über alle einfallenden Richtungen reflektierten Licht. Eine \textbf{exakte Lösung ist im Allgemeinen nicht möglich} — Ray Tracing und Radiosity sind Näherungsverfahren dafür.
 
+% =========================================
+\section{F -- Objektrepräsentation}
+% =========================================
+
+\subsection{Geometrie und Topologie}
+
+Objekte in der Computergrafik werden durch zwei unabhängige Informationsschichten beschrieben:
+
+\textbf{Geometrie} beschreibt \textit{was} ein Objekt ist und \textit{wie groß} — also Form und Abmessungen im Raum: Koordinaten, Radien, Längen.
+
+\textbf{Topologie} beschreibt \textit{wie die Teile zusammenhängen} — Konnektivität und Assoziativität der Objekteinheiten: welche Linie grenzt an welche, wo beginnt ein Kreisbogen, wie sind die Elemente verbunden.
+
+\begin{notebox}{Geometrie $\neq$ Topologie}
+Die beiden Eigenschaften sind unabhängig voneinander:
+\begin{itemize}
+  \item \textbf{Gleiche Geometrie, unterschiedliche Topologie:} Dieselben Maße (gleiche Linienlängen, gleicher Radius), aber andere Verbindungsstruktur — z.\,B.\ der Kreisbogen schließt die Form anders ab.
+  \item \textbf{Gleiche Topologie, unterschiedliche Geometrie:} Dieselbe Verbindungsstruktur (Kreis an drei Linien), aber die Form ist verzerrt — andere Koordinaten, anderer Radius.
+\end{itemize}
+\end{notebox}
+
 \end{document}
