@@ -2356,4 +2356,159 @@ Probe: $T\cdot(1,2,3,1)^T = (8,6,4,1)^T$ \checkmark
 \end{tabular}
 \end{notebox}
 
+
+% ============================================================
+\subsection{Beleuchtungsmodell von Phong (D.3.2)}
+% ============================================================
+
+Das Phong-Modell ist ein \textbf{lokales Beleuchtungsmodell}: Es betrachtet nur die Interaktion zwischen einer Lichtquelle und einem einzelnen Oberflächenpunkt -- keine Reflexionen zwischen Objekten werden berücksichtigt.
+
+\begin{definitionbox}{Phong-Formel (zusammengefasst)}
+\[
+  I(\mathbf{v}) = \underbrace{k_a \cdot I_{amb}}_{I_a}
+  + \sum_{i=1}^{l} \frac{I_i}{f(d_i)} \cdot
+  \Bigl[\underbrace{k_d\,(\mathbf{n} \ast \mathbf{l}_i)}_{I_d}
+  + \underbrace{k_g\,(\mathbf{v} \ast \mathbf{r}_i)^{\gamma}}_{I_g}\Bigr]
+\]
+\end{definitionbox}
+
+\textbf{Bemerkung:} $I(\lambda, v) = \sum_l I_l(\lambda, v)$ wäre physikalisch korrekt (wellenlängenabhängig); $\lambda$ wird zur Vereinfachung weggelassen.
+
+\subsubsection*{Geometrische Parameter}
+
+Ein Oberflächenpunkt $P$ besteht aus: \textbf{Koordinaten}, \textbf{Farbwert}, \textbf{Normalvektor} (wird aus den umliegenden Punkten berechnet).\\
+Eine Lichtquelle hat: \textbf{Einfalls- und Ausfallswinkel}, \textbf{Reflexionsvektor} $\mathbf{r}$; und besteht aus \textbf{Farbe} und \textbf{Intensität/Stärke}.
+
+\begin{itemize}
+  \item $\mathbf{n}$ -- auf Länge 1 normierte Oberflächennormale
+  \item $\mathbf{l}_i$ -- normierter Richtungsvektor zur $i$-ten Lichtquelle
+  \item $\mathbf{v}$ -- normierte Blickrichtung (vom Punkt zum Auge des Betrachters)
+  \item $\mathbf{r}_i$ -- normierter Reflexionsvektor zu $\mathbf{l}_i$ nach dem Reflexionsgesetz (Einfallswinkel = Ausfallswinkel)
+  \item $\gamma > 0$ -- Glanzexponent (Ausdehnung des Glanzlichtes / Shininess)
+\end{itemize}
+
+\begin{notebox}{Notation: Was bedeutet ``$\ast$'' in den Formeln?}
+``$\ast$'' steht für die Transponierung des Vektors. Die Ausdrücke $\mathbf{n} \ast \mathbf{l}_i$ und $\mathbf{v} \ast \mathbf{r}_i$ sind damit \textbf{Skalarprodukte} -- sie ergeben den \textbf{Kosinus des Winkels} zwischen den beiden normierten Vektoren.
+\end{notebox}
+
+\subsubsection*{Die drei Anteile}
+
+\begin{itemize}
+  \item \textbf{Ambienter Anteil} $I_a = k_a \cdot I_{amb}$\\
+    Grundhelligkeit der Szene, simuliert indirekt gestreutes Licht.
+    \textbf{Unabhängig} von Betrachterstandpunkt und Lichtquellenposition.
+
+  \item \textbf{Diffuser Anteil} $I_d = k_d \displaystyle\sum_{i=1}^{l} (\mathbf{n} \ast \mathbf{l}_i) \cdot I_i/f(d_i)$\\
+    Reflexion an \textit{matten} Oberflächen (Lambert'sche Objekte). Licht wird gleichmäßig in alle Richtungen reflektiert -- Helligkeit \textbf{unabhängig vom Betrachterstandpunkt}. Beispiele: Papier, Tafel, unbearbeitetes Holz.
+
+  \item \textbf{Glänzender (spekularer) Anteil} $I_g = k_g \displaystyle\sum_{i=1}^{l} (\mathbf{v} \ast \mathbf{r}_i)^{\gamma} \cdot I_i/f(d_i)$\\
+    Gerichtete Reflexion an spiegelnden Oberflächen. \textbf{Abhängig vom Betrachterstandpunkt} $\mathbf{v}$. Erzeugt Glanzpunkte. Beispiele: Metall, glänzender Kunststoff, Glas.
+\end{itemize}
+
+\subsubsection*{Lambert'sches Kosinus-Gesetz (Grundlage des diffusen Anteils)}
+
+\begin{notebox}{Lambert'sches Gesetz}
+Die Lichtstärke $I_0$ eines flächenhaften Strahls variiert mit dem Kosinus des Winkels $\theta$ zur Normalen:
+\[
+  I = I_0 \cdot (\mathbf{n} \ast \mathbf{l}) = I_0 \cdot \cos\theta
+\]
+Da der Mensch nur die \textbf{Leuchtdichte} $L$ wahrnehmen kann, erscheint ein bestrahlter Körper unabhängig vom Betrachtungswinkel gleich hell: $I = L \cdot A \cdot \cos\theta$.
+
+\textbf{Anschaulich:} Fällt Licht schräg auf eine Fläche, verteilt sich dieselbe Lichtmenge auf eine \textit{größere} Fläche $\Rightarrow$ jeder einzelne Punkt bekommt weniger Licht $\Rightarrow$ die Fläche erscheint dunkler.
+\end{notebox}
+
+\subsubsection*{Einflussfaktoren}
+
+\begin{itemize}
+  \item $k_a, k_d, k_g$ -- Materialeigenschaften (Reflexionskoeffizienten) mit Farbkomponenten R, G, B
+  \item $f(d_i)$ -- Abstandsdämpfung: Licht wird mit zunehmender Entfernung $d_i$ zur Quelle schwächer
+  \item $\gamma$ -- Glanzexponent: kleines $\gamma$ (z.\,B.\ 2) = breiter, verschwommener Glanzfleck; großes $\gamma$ (z.\,B.\ 125) = kleiner, scharfer Glanzpunkt (metallisch wirkend)
+\end{itemize}
+
+\subsubsection*{Schattenberechnung}
+
+Erweiterung der Phong-Formel durch Schattenterm $S_i$:
+\[
+  I(\mathbf{v}) = k_a \cdot I_{amb} + \sum_{i=1}^{l} S_i \cdot \frac{I_i}{f(d_i)} \cdot \bigl[k_d(\mathbf{n} \ast \mathbf{l}_i) + k_g(\mathbf{v} \ast \mathbf{r}_i)^{\gamma}\bigr]
+\]
+\[
+  S_i = \begin{cases} 0 & \text{wenn Licht } i \text{ an diesem Punkt blockiert (Schatten)} \\ 1 & \text{sonst} \end{cases}
+\]
+
+\textbf{Realisierungsmöglichkeiten:}
+\begin{itemize}
+  \item \textbf{Analytischer Sichtbarkeitsalgorithmus}
+  \item \textbf{Pixelbasiert (Shadow-Map):} Berechnet z-Buffer vom Betrachter- und vom Lichtquellen-Standpunkt aus.\\
+    \textit{Algorithmus:} Für alle Pixel des Bildes:
+    \begin{enumerate}
+      \item Bestimme Koordinaten des Pixels aus Sicht der Lichtquelle $(x,y,z)$
+      \item Wenn Tiefe $>$ Wert im z-Buffer der Lichtquelle $\Rightarrow$ Punkt liegt im Schatten ($S_i = 0$)
+    \end{enumerate}
+\end{itemize}
+
+% ============================================================
+\subsection{Shading-Modelle (D.3.3)}
+% ============================================================
+
+\textbf{Beleuchtungsmodell} = Lichtquellenmodell + Reflexions- und Transmissionsmodell (Material) + Lichttransportmodell
+
+\textbf{Ziel:} Zuordnung von Farben zu den Pixeln polygonaler 3D-Modelle. Die Verfahren unterscheiden sich darin, \textit{an welchen Stellen} das Beleuchtungsmodell ausgewertet wird.
+
+\textbf{Einfache Techniken} (interpolative Shading-Verfahren): Über das Beleuchtungsmodell werden Farbwerte an den Eckpunkten berechnet; Farbwerte aller inneren Punkte ergeben sich durch \textbf{lineare Interpolation}.
+
+Jeder Vertex $p_j$ enthält: Koordinaten $(x,y,z)$, Normalenvektor $(n_x, n_y, n_z)$, Farbwert $(r,g,b)$.
+
+\subsubsection*{Flat-Shading}
+
+Keine Interpolation -- es wird \textbf{ein Farbwert pro Polygon} bestimmt:
+\begin{itemize}
+  \item \textbf{Variante 1:} Mittelwert der Farbwerte an allen Eckpunkten (nach dem Beleuchtungsmodell)
+  \item \textbf{Variante 2:} Auswahl eines repräsentativen Punktes; Farbe nur an diesem Punkt berechnet
+\end{itemize}
+Alle vom Polygon überdeckten sichtbaren Pixel werden mit diesem einen Farbwert gefärbt.
+
+Einzelne Polygone sind als klare Flächen \textbf{deutlich sichtbar}. Einfache Implementierung, sehr schnell -- aber \textbf{geringe Qualität} (keine Plastizität).
+
+\subsubsection*{Gouraud-Shading (,,Smooth Shading'')}
+
+\begin{enumerate}
+  \item Berechne die Farbwerte \textbf{an den Eckpunkten (Vertices)} des Polygons nach dem Beleuchtungsmodell.
+  \item \textbf{Lineare Interpolation} der Farbwerte von den Ecken in das Innere des Polygons (entlang der Scanlines).
+\end{enumerate}
+
+Aufwändiger als Flat-Shading, aber qualitativ besser. Kanten zwischen Polygonen sind nicht mehr sichtbar.
+
+\textbf{Problem:} Liegt ein Glanzpunkt physikalisch in der \textbf{Mitte eines Polygons}, liegt er nicht auf einem Vertex -- die Lokalität geht verloren, der Glanzpunkt wird verschluckt (da nur zwischen dunklen Eckwerten interpoliert wird).
+
+\subsubsection*{Phong-Shading}
+
+\begin{enumerate}
+  \item Benötige Material- und \textbf{Normalenattribute} für die Eckpunkte des Polygons.
+  \item \textbf{Interpoliere die Normalenvektoren} der Eckpunkte über die gesamte Fläche des Polygons.
+  \item Berechne an \textbf{jedem Pixel} im Inneren des Polygons einen Farbwert aus der interpolierten Normalen (Beleuchtungsmodell wird pro Pixel ausgewertet).
+\end{enumerate}
+
+Aufwendiger als Gouraud-Shading, aber die \textbf{besten Ergebnisse}. Glanzpunkte im Inneren eines Polygons werden korrekt dargestellt. Hinweis: Es gibt einige Sonderfälle, die auch Phong-Shading nicht korrekt darstellen kann.
+
+\begin{examplebox}{Klausurbeispiel: Rechenaufwand}
+Gegeben: ein Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesamt).
+
+\begin{tabular}{ll}
+  \textbf{Gouraud-Shading:} & 3 Beleuchtungsberechnungen (nur Eckpunkte; Rest = günstige Interpolation) \\
+  \textbf{Phong-Shading:}   & 31 Beleuchtungsberechnungen (3 Eckpunkte + 28 innere Pixel) \\
+\end{tabular}
+\end{examplebox}
+
+\begin{notebox}{Vergleich der Shading-Verfahren}
+\begin{tabular}{lccc}
+  & \textbf{Flat} & \textbf{Gouraud} & \textbf{Phong} \\
+  \hline
+  BSF ausgewertet & 1$\times$/Polygon & 1$\times$/Vertex & 1$\times$/Pixel \\
+  Interpoliert & -- & Farben & Normalenvektoren \\
+  Glanzpunkte & flächig/falsch & können fehlen & korrekt \\
+  Qualität & gering & mittel & hoch \\
+  Rechenaufwand & sehr gering & gering & hoch \\
+\end{tabular}
+\end{notebox}
+
 \end{document}
