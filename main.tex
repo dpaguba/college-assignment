@@ -3637,6 +3637,14 @@ Ein \textbf{$d$-dimensionaler polyedrischer Komplex} ist eine endliche Menge von
 
 Sind alle Elemente Simplexe, heißt der Komplex \textbf{simplizialer Komplex}. Ein typischer Fehler ist die sogenannte \textbf{T-Stelle} (hängender Knoten): ein Punkt liegt im Inneren einer Kante eines anderen Simplex — der Durchschnitt ist dann kein gemeinsames Seiten-Simplex, was die Bedingung verletzt.
 
+\textbf{Kurz gefasst:}
+\begin{itemize}
+  \item Ein \textbf{Simplex} ist die einfachste mögliche Figur in jeder Dimension: Strecke (1D), Dreieck (2D), Tetraeder (3D). Allgemein: $d+1$ Punkte, die nicht alle in einer Hyperebene liegen.
+  \item Eine \textbf{Triangulierung} füllt den Raum zwischen gegebenen Punkten lückenlos und überschneidungsfrei mit Simplexen — in der Praxis: Oberfläche als Dreiecksnetz.
+  \item Ein \textbf{polyedrischer Komplex} ist eine Sammlung von Vielecken/-flächnern mit zwei Regeln: (1) Schnittmengen zweier Elemente sind immer gemeinsame Seiten, nie zufällige Stücke; (2) alle Seiten eines Elements gehören ebenfalls zum Komplex.
+  \item \textbf{T-Stelle:} Ein Punkt liegt mitten auf einer Kante des Nachbarn — verletzt Regel (1) und ist in 3D-Netzen verboten.
+\end{itemize}
+
 \subsection{Polygontriangulierung}
 
 Zerlegung eines einfachen Polygons in Dreiecke durch nicht-schneidende Diagonalen. Notwendig, da Grafik-Algorithmen (Verrasterung, Beleuchtung) primär auf Dreiecken arbeiten.
