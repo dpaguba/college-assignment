@@ -3137,6 +3137,65 @@ Das Phong-Modell ist \textit{lokal} — es betrachtet nur eine Lichtquelle und e
 
 Statt Objekte auf den Bildschirm zu projizieren, wird der Lichtweg \textit{rückwärts} verfolgt — vom Betrachter in die Szene.
 
+\begin{center}
+\begin{tikzpicture}[scale=0.92,
+  parr/.style={->, >=Stealth, ultra thick},
+  sarr/.style={->, >=Stealth, dashed},
+  rarr/.style={->, >=Stealth},
+  tarr/.style={->, >=Stealth, densely dotted},
+  lbl/.style={font=\scriptsize}]
+
+  \coordinate (eye) at (0, 1);
+  \coordinate (h1)  at (4.0, -0.4);
+  \coordinate (h2)  at (7.2, 1.7);
+  \coordinate (sun) at (1.5, 3.5);
+
+  % Sphere 1 (large, bottom)
+  \draw (5, -1.5) circle (1.5);
+  % Sphere 2 (small, top right)
+  \draw (8, 2.5) circle (1.1);
+
+  % Sun
+  \draw (sun) circle (0.22);
+  \foreach \a in {0,45,...,315}
+    \draw (sun) ++(\a:0.25) -- ++(\a:0.18);
+  \node[above=4pt, lbl] at (sun) {Sonne};
+
+  % Eye
+  \fill (eye) circle (0.07);
+  \node[left=3pt, lbl] at (eye) {Auge};
+
+  % Hit point markers
+  \fill (h1) circle (0.07);
+  \fill (h2) circle (0.07);
+
+  % Normal at h1
+  \draw[->, thin] (h1) -- +(-0.5, 0.55) node[above left, lbl] {$\mathbf{n}$};
+
+  % Primary ray: eye → h1
+  \draw[parr] (eye) -- (h1) node[midway, below, lbl] {primary};
+
+  % Shadow ray from h1 → sun
+  \draw[sarr] (h1) -- (sun) node[midway, left, lbl] {shadow};
+
+  % Reflect ray from h1
+  \draw[rarr] (h1) -- +(-1.2, 2.0) node[above, lbl] {reflect};
+
+  % Transmit ray: h1 → h2 (refraction through sphere 1)
+  \draw[tarr] (h1) -- (h2) node[midway, below right, lbl] {transmit};
+
+  % Shadow ray from h2 → sun
+  \draw[sarr] (h2) -- (sun) node[midway, above, lbl] {shadow};
+
+  % Reflect ray from h2
+  \draw[rarr] (h2) -- +(1.5, 1.0) node[right, lbl] {reflect};
+
+  % Transmit ray from h2
+  \draw[tarr] (h2) -- +(1.8, -0.6) node[right, lbl] {transmit};
+
+\end{tikzpicture}
+\end{center}
+
 \textit{Hauptalgorithmus:} Für jedes Pixel $(i,j)$ der Auflösung $m \times n$ wird ein \textbf{Sehstrahl} vom Augenpunkt $a$ durch das Pixelzentrum in die Szene geschickt. Dann wird \texttt{Strahlverfolgung(a, v)} aufgerufen.
 
 \textit{Unteralgorithmus} \texttt{Strahlverfolgung(p, v)}:
