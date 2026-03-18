@@ -2321,20 +2321,35 @@ Fünf Schritte:
 
 \begin{examplebox}{Klausurbeispiel: R1 $\to$ R2}
 Gegeben: R1 mit Zentrum $(1{,}5;\,2)$, Breite~1, Höhe~2 (Hochformat).\\
-Gesucht: R2 mit Zentrum $(4{,}5;\,4{,}5)$, Breite~3, Höhe~1 (Querformat).
+Gesucht: R2 mit Zentrum $(4{,}5;\,4{,}5)$, Breite~3, Höhe~1 (Querformat).\\
+R1 ist Hochformat, R2 Querformat $\Rightarrow$ Rotation um $90°$ nötig.
 
-Schritte (2D, $3\times3$ homogen):
-\begin{enumerate}
-  \item $T_1$: Zentrum von R1 in Ursprung: $(-1{,}5;\,-2)$
-  \item $R_{90°}$: Rotation um $90°$ (Hochformat $\to$ Querformat)
-  \item $S$: Skalierung $s_x = 1{,}5$, $s_y = 1$
-  \item $T_2$: Verschiebung ins Zentrum von R2: $(+4{,}5;\,+4{,}5)$
-\end{enumerate}
+\textbf{Schritt 1 -- $T_1$: Zentrum von R1 in den Ursprung verschieben}
+\[
+  T_1 = \begin{pmatrix} 1 & 0 & -1{,}5 \\ 0 & 1 & -2 \\ 0 & 0 & 1 \end{pmatrix}
+\]
 
-Gesamtmatrix $\mathbf{A}^* = T_2 \cdot S \cdot R_{90°} \cdot T_1$:
+\textbf{Schritt 2 -- $R_{90°}$: Rotation um $90°$ gegen den Uhrzeigersinn}\\
+($\cos 90° = 0$, $\sin 90° = 1$)
+\[
+  R_{90°} = \begin{pmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{pmatrix}
+\]
+
+\textbf{Schritt 3 -- $S$: Skalierung} ($s_x = 1{,}5$ damit Breite $2 \to 3$, $s_y = 1$)
+\[
+  S = \begin{pmatrix} 1{,}5 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}
+\]
+
+\textbf{Schritt 4 -- $T_2$: Ins Zentrum von R2 verschieben}
+\[
+  T_2 = \begin{pmatrix} 1 & 0 & 4{,}5 \\ 0 & 1 & 4{,}5 \\ 0 & 0 & 1 \end{pmatrix}
+\]
+
+\textbf{Gesamtmatrix} $\mathbf{A}^* = T_2 \cdot S \cdot R_{90°} \cdot T_1$:
 \[
   \mathbf{A}^* = \begin{pmatrix} 0 & -1{,}5 & 7{,}5 \\ 1 & 0 & 3 \\ 0 & 0 & 1 \end{pmatrix}
 \]
+Probe mit Ecke $(1,1)$: $\;0{\cdot}1 + (-1{,}5){\cdot}1 + 7{,}5 = 6$,\quad $1{\cdot}1 + 0{\cdot}1 + 3 = 4$ $\Rightarrow (6,4)$ \checkmark
 \end{examplebox}
 
 \begin{examplebox}{Klausurbeispiel: Translation in homogenen Koordinaten}
