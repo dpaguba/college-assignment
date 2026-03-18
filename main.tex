@@ -1838,6 +1838,76 @@ visualisieren.
 \end{itemize}
 
 % -----------------------------------------
+\subsection{Dirac-Funktion und Dirac-Feld}
+% -----------------------------------------
+
+\begin{definitionbox}
+Die \textbf{Dirac-Funktion} (Dirac-Distribution) ist der Grenzwert
+zunehmend schmaler Rechteckimpulse gleicher Fläche:
+\[
+  \delta(x,y) := \lim_{a\to 0} \frac{1}{4a^2}\,\mathrm{rect}_{a,a}(x,y).
+\]
+\end{definitionbox}
+
+\textbf{Eigenschaften:}
+\begin{itemize}
+  \item \textbf{Normierung:}
+        $\displaystyle\int_{-\infty}^{\infty}\!\!\int_{-\infty}^{\infty}
+        \delta(x,y)\,\mathrm{d}x\,\mathrm{d}y = 1$.
+  \item \textbf{Ausblend-/Sieb-Eigenschaft:}
+        \[
+          \int_{-\infty}^{\infty}\!\!\int_{-\infty}^{\infty}
+          f(x,y)\;\delta(x-a,\,y-b)\,\mathrm{d}x\,\mathrm{d}y = f(a,b).
+        \]
+  \item \textbf{Verschiebungseigenschaft (Faltung):}
+        \[ f(x,y) \ast\ast\,\delta(x-a,\,y-b) = f(x-a,\,y-b). \]
+\end{itemize}
+
+\textbf{Interpretation:} Modell eines \textbf{idealen Punktsensors} -- Grenzfall eines rechteckigen Sensors mit Fläche $\to 0$ und Empfindlichkeit $\to \infty$ bei gleicher Gesamtempfindlichkeit. Analogie: Punktmasse als Grenzfall eines ausgedehnten Körpers.
+
+\begin{definitionbox}
+Das \textbf{Dirac-Feld} (Dirac-Kamm, Shah-Funktion) ist ein regelmäßiges 2D-Gitter aus Dirac-Impulsen mit den Abständen $\Delta x$ und $\Delta y$:
+\[
+  s(x,y) := \sum_{m=-\infty}^{\infty}\sum_{n=-\infty}^{\infty}
+  \delta\bigl(x - m\Delta x,\; y - n\Delta y\bigr), \quad m,n\in\mathbb{Z}.
+\]
+\end{definitionbox}
+
+\textbf{Fouriertransformierte des Dirac-Feldes:}
+
+Die FT des Dirac-Feldes ist wiederum ein Dirac-Feld im Frequenzbereich:
+\[
+  S(u,v) = \Delta u\,\Delta v
+  \sum_{k=-\infty}^{\infty}\sum_{l=-\infty}^{\infty}
+  \delta\bigl(u - k\Delta u,\; v - l\Delta v\bigr),
+  \qquad
+  \Delta u := \tfrac{2\pi}{\Delta x},\quad
+  \Delta v := \tfrac{2\pi}{\Delta y}.
+\]
+
+\begin{notebox}{Dualität Orts-/Frequenzgitter}
+Je \textbf{feiner} das Ortsgitter (kleines $\Delta x$), desto \textbf{gröber} das Frequenzgitter (großes $\Delta u = 2\pi/\Delta x$) -- und umgekehrt. Ein dichtes Abtastnetz $\Rightarrow$ weit auseinanderliegende Spektralkopien $\Rightarrow$ keine Überlappung.
+\end{notebox}
+
+\textbf{Modell der diskreten Abtastung:}
+
+Das abgetastete Bild entsteht als Produkt des Signals mit dem Dirac-Feld:
+\[
+  f_\Delta(x,y) = f(x,y)\cdot s(x,y)
+  = \sum_{m,n} f(m\Delta x,\,n\Delta y)\;\delta(x-m\Delta x,\,y-n\Delta y).
+\]
+
+Im Frequenzbereich ergibt der Faltungssatz:
+\[
+  F_\Delta(u,v)
+  = \frac{1}{4\pi^2}\,F(u,v)\ast\!\ast S(u,v)
+  = \frac{\Delta u\,\Delta v}{4\pi^2}
+    \sum_{k,l} F(u - k\Delta u,\; v - l\Delta v).
+\]
+
+Das Spektrum $F_\Delta(u,v)$ besteht also aus \textbf{periodisch verschobenen Kopien} von $F(u,v)$ mit Abstand $\Delta u$ bzw.\ $\Delta v$.
+
+% -----------------------------------------
 \subsection{Abtasttheorem (Whittaker-Shannon)}
 % -----------------------------------------
 
@@ -1869,14 +1939,36 @@ visualisieren.
 \]
 (Hälfte der kleinsten Periode der höchsten vorkommenden Frequenz.)
 
+\textbf{Rekonstruktion (wenn Theorem erfüllt):}
+
+Wenn $\Delta u > 2b_u$ und $\Delta v > 2b_v$, lässt sich das Original durch einen \textbf{idealen Rechtecktiefpassfilter} $H_{TP}$ exakt rekonstruieren:
+\[
+  F(u,v) = F_\Delta(u,v)\cdot H_{TP}(u,v)
+  \quad\Longrightarrow\quad
+  f(x,y) = f_\Delta(x,y)\ast\!\ast\,h_{TP}(x,y).
+\]
+
+Explizit (Rücktransformation):
+\[
+  f(x,y) = \frac{\Delta x\,\Delta y\,\xi\,\eta}{\pi^2}
+  \sum_{m,n} f(m\Delta x,\,n\Delta y)\;
+  \operatorname{si}\!\bigl(\xi(x - m\Delta x)\bigr)\;
+  \operatorname{si}\!\bigl(\eta(y - n\Delta y)\bigr),
+\]
+wobei $\xi$, $\eta$ die Grenzfrequenzen des Tiefpassfilters sind.
+
 \textbf{Aliasing-Effekte bei Verletzung des Theorems:}
 \begin{itemize}
   \item \textbf{Moiré-Muster:} Falsche Streifenmuster auf fein
-        strukturierten Flächen.
+        strukturierten Flächen -- entstehen durch Überlappung der Spektralkopien.
   \item \textbf{Lösung:} Vor der Abtastung einen Tiefpassfilter
-        anwenden -- das Bild wird leicht unscharf, aber Aliasing
-        verschwindet.
+        anwenden ($\Rightarrow$ Bild wird leicht unscharf, aber Aliasing
+        verschwindet).
 \end{itemize}
+
+\begin{notebox}{Bemerkung: Hinreichende, nicht notwendige Bedingung}
+Das Whittaker-Shannon-Abtasttheorem liefert nur eine \textbf{hinreichende} Bedingung für Rekonstruierbarkeit, keine notwendige. Signale mit bestimmten Spektraleigenschaften (z.\,B.\ Bandpasssignale) können mitunter auch bei gröberer Abtastung rekonstruiert werden.
+\end{notebox}
 
 % -----------------------------------------
 \subsection{Quantisierung}
@@ -1893,16 +1985,77 @@ eine \textbf{endliche Menge diskreter Stufen}.
         unterscheidet bei dunklen Tönen feinere Abstufungen als bei
         hellen $\Rightarrow$ logarithmische Stufenverteilung ist
         effizienter als eine lineare.
-  \item \textbf{Dithering:} Für Displays mit wenig Farben werden Pixel
-        verschiedener Farben so gemischt, dass das Auge aus der
-        Distanz einen neuen Farbton wahrnimmt (Punktmuster).
-    \begin{itemize}
-      \item \textbf{Farbquantisierung:} Erstellung einer optimalen
-            Farbtabelle.
-      \item \textbf{Farbersetzung:} Berechnung des Ergebnisbildes aus
-            dem Eingabebild anhand der Tabelle.
-    \end{itemize}
+  \item \textbf{Dithering:} Pixel verschiedener Farben werden so verteilt,
+        dass das Auge aus der Distanz einen neuen Farbton wahrnimmt
+        (siehe Abschnitt~\ref{sec:dithering}).
 \end{itemize}
+
+% -----------------------------------------
+\subsection{Dithering}
+\label{sec:dithering}
+% -----------------------------------------
+
+\textbf{Dithering} ist eine Methode zur verbesserten Bilddarstellung auf Ausgabegeräten mit \textbf{beschränkter Farbpalette}: Durch geeignete räumliche Verteilung der verfügbaren Farben in Punktmustern wird dem menschlichen Auge ein größerer Farbreichtum suggeriert.
+
+Zwei Teilaufgaben:
+\begin{itemize}
+  \item \textbf{Farbquantisierung (A):} Berechnung einer optimalen kleinen Farbtabelle.
+  \item \textbf{Farbersetzung (B):} Berechnung des Ergebnisbildes mithilfe dieser Tabelle.
+\end{itemize}
+
+\subsubsection*{A -- Farbquantisierung: Medianschnitt-Algorithmus}
+
+\textbf{Idee:} Die im Bild vorkommenden Farben liegen als Punkte im Farbraum. Durch iteratives Halbieren des Hüllquaders beim Median der längsten Achse entsteht ein binärer Baum; jedes Blatt liefert genau eine Repräsentationsfarbe (gewichtetes Mittel der darin enthaltenen Farben).
+
+\textbf{Algorithmus (Medianschnitt auf $k$ Farben):}
+\begin{enumerate}
+  \item Initialisiere eine Liste mit dem \textbf{Hüllquader} aller Bildfarben im Farbraum.
+  \item Wiederhole, bis die Liste $k$ Quader enthält:
+    \begin{enumerate}[label=\alph*.]
+      \item Entferne den Quader mit den \textbf{meisten Farben} aus der Liste.
+      \item Unterteile ihn beim \textbf{Median seiner längsten Achse} in zwei Teilmengen.
+      \item Füge die \textbf{Hüllquader} der beiden Hälften in die Liste ein.
+    \end{enumerate}
+  \item Füge das \textbf{gewichtete Mittel} der Farben jedes Quaders in die Farbtabelle ein.
+\end{enumerate}
+
+\subsubsection*{B -- Farbersetzung}
+
+\textbf{Methode 1 -- Nächste-Nachbar-Farbersetzung:}
+
+Wähle für jedes Pixel die \textbf{nächstliegende Farbe} in der Farbtabelle. Einfach und schnell, erzeugt jedoch sichtbares \textit{Banding} (harte Übergänge).
+
+\textbf{Methode 2 -- Floyd-Steinberg-Fehlerübertrag:}
+
+Statt den Fehler zu verwerfen, wird er auf die Nachbarpixel \textbf{vorwärts verteilt} -- dadurch kompensieren spätere Pixel den akkumulierten Quantisierungsfehler.
+
+\begin{definitionbox}
+\textbf{Algorithmus (Floyd-Steinberg):} Gegeben ein $m\times n$-Farbbild $f$ und eine Farbtabelle $F$:
+\begin{enumerate}
+  \item Für jedes Pixel $(i,j)$ (zeilenweise):
+    \begin{enumerate}[label=\alph*.]
+      \item $x \leftarrow f[i][j]$ \hfill (Original-Farbe)
+      \item $k \leftarrow \operatorname{argmin}_{c\in F}\|x - c\|$ \hfill (nächster Repräsentant)
+      \item $f'[i][j] \leftarrow k$ \hfill (quantisiertes Pixel ausgeben)
+      \item $e \leftarrow x - k$ \hfill (Quantisierungsfehler)
+      \item Verteile $e$ auf die noch nicht verarbeiteten Nachbarn:
+    \end{enumerate}
+\end{enumerate}
+\[
+  \begin{array}{|c|c|}
+  \hline
+  \text{aktuell} & +\tfrac{3}{8}\,e \\
+  \hline
+  +\tfrac{3}{8}\,e & +\tfrac{1}{4}\,e \\
+  \hline
+  \end{array}
+\]
+(rechts: $+\tfrac{3}{8}e$;\quad unten: $+\tfrac{3}{8}e$;\quad diagonal unten-rechts: $+\tfrac{1}{4}e$.)
+\end{definitionbox}
+
+\begin{notebox}{Effekt des Fehlerübertrags}
+Der Algorithmus verteilt den Quantisierungsfehler auf die Nachbarschaft und \glqq{}korrigiert\grqq{} dadurch spätere Pixel -- das Ergebnis wirkt visuell deutlich weicher als reine Nächste-Nachbar-Ersetzung. Am Bildrand muss der Algorithmus geeignet angepasst werden (keine Nachbarpixel vorhanden).
+\end{notebox}
 
 % -----------------------------------------
 \subsection{Signalverarbeitungspipeline}
