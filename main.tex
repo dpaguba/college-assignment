@@ -2552,18 +2552,6 @@ Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesa
 \end{itemize}
 \end{examplebox}
 
-\begin{notebox}{Vergleich der Shading-Verfahren}
-\begin{tabular}{lp{3.2cm}p{3.8cm}p{4.2cm}}
-  \textbf{Merkmal} & \textbf{Flat} & \textbf{Gouraud} & \textbf{Phong} \\
-  \hline
-  BSF ausgewertet & 1$\times$ pro Polygon & 1$\times$ pro Vertex & 1$\times$ pro Pixel \\
-  Interpoliert & nichts & Farben (linear) & Normalenvektoren \\
-  Glanzpunkte & flächig / falsch & können fehlen & korrekt \\
-  Qualität & gering & mittel & hoch \\
-  Rechenaufwand & sehr gering & gering & hoch \\
-\end{tabular}
-\end{notebox}
-
 % --- Weiter mit Schritten 3–6 ---
 
 \begin{enumerate}
@@ -2571,7 +2559,57 @@ Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesa
 
   \item \textbf{Clipping}
 
-  Alles außerhalb des \textbf{View Frustums} (Sichtpyramide) wird abgeschnitten -- sechs Ebenen: links, rechts, oben, unten, nah, fern. Ziel: keine unnötige Berechnung für Objekte, die sowieso nicht sichtbar sind.
+  Alles außerhalb des View Frustums abschneiden, damit nur sichtbare Geometrie weiterberechnet wird.
+
+\end{enumerate}
+
+% --- Details zu Schritt 3: Clipping + Picking ---
+
+\subsubsection*{Clipping (D.4.2)}
+
+Clipping entscheidet für jedes Objekt: ist es \textbf{komplett sichtbar}, \textbf{komplett unsichtbar} oder \textbf{halb-halb}? Komplett unsichtbare Objekte werden sofort verworfen -- das spart den teuersten Teil der Pipeline. Nur teilweise sichtbare Objekte müssen tatsächlich geschnitten werden.
+
+Im 3D-Fall definiert das \textbf{View Frustum} (Sichtpyramide) den sichtbaren Bereich durch sechs Ebenen (links, rechts, oben, unten, nah, fern). Alles außerhalb fliegt raus.
+
+\textbf{Arten des Clippings:}
+\begin{itemize}
+  \item \textbf{Punkt-Clipping} -- trivialer Vergleich mit den Grenzen des Bereichs
+  \item \textbf{Strecken-Clipping} -- z.\,B. Cohen-Sutherland: Endpunkte werden mit Bit-Codes klassifiziert, um Linien schnell zu akzeptieren oder zu verwerfen \textit{(nicht prüfungsrelevant)}
+  \item \textbf{Polygon-Clipping} -- z.\,B. Sutherland-Hodgman \textit{(nicht prüfungsrelevant)}
+  \item \textbf{Kreis-Clipping} -- erst das achsenparallele Hüllquadrat (Bounding Box) testen; nur bei Überschneidung den Kreis in Quadranten zerlegen und genauer untersuchen
+\end{itemize}
+
+\subsubsection*{Picking (D.4.3)}
+
+Picking ist das Rückproblem: Klick auf dem 2D-Bildschirm → welches 3D-Objekt ist gemeint? Man muss am Ende herausfinden, wo der Punkt im Szenenraum liegt.
+
+\textbf{Problem 1 -- Dünne Objekte (Punkte, Linien):} Ein einzelner Pixel lässt sich kaum exakt treffen. Lösung: Ein Objekt gilt als getroffen, wenn der Klick \textit{hinreichend nah} dran liegt. Dafür braucht man ein Abstandsmaß.
+
+\textbf{Abstandsmaße zwischen Klick $q$ und Objekt $p$:}
+\begin{itemize}
+  \item \textbf{Euklidischer Abstand:} $d = \sqrt{(q_x-p_x)^2 + (q_y-p_y)^2}$ -- exakt, aber teuer (Wurzel)
+  \item \textbf{Manhattan-Abstand:} $d = |q_x-p_x| + |q_y-p_y|$ -- schnell, geeignete Näherung
+  \item \textbf{Maximum-Metrik:} $d = \max\{|q_x-p_x|,\, |q_y-p_y|\}$ -- noch einfacher
+\end{itemize}
+
+\begin{notebox}{Tipp: Wurzel sparen}
+Für den reinen Vergleich zweier Abstände muss die Wurzel \textit{nicht} berechnet werden: $d_1 < d_2 \iff d_1^2 < d_2^2$. Man vergleicht einfach die Quadrate.
+\end{notebox}
+
+\textbf{Problem 2 -- Punkt im Polygon (Ray-Casting):} Um zu testen, ob der Klick im Inneren eines Polygons liegt, schickt man einen Strahl vom Klickpunkt in eine beliebige Richtung und zählt die Kantenschnitte.
+
+\begin{definitionbox}{Point-in-Polygon-Test (Strahlschnitt-Regel)}
+Ungerade Anzahl an Kantenschnitten $\Rightarrow$ Punkt liegt \textbf{im Polygon}.\\
+Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.\\[2pt]
+Nebeneffekt: Genau 1 Schnitt $\Rightarrow$ Polygon ist \textbf{konvex}; mehr als 1 $\Rightarrow$ \textbf{nicht konvex}.
+\end{definitionbox}
+
+\textbf{Effizienz-Vortest:} Bei komplexen Objekten zuerst die \textbf{Bounding Box} (kleinstes achsenparalleles Rechteck) testen. Liegt der Punkt schon außerhalb der Box, entfällt der teure Genauigkeitstest.
+
+% --- Weiter mit Schritten 4–6 ---
+
+\begin{enumerate}
+  \setcounter{enumi}{3}
 
   \item \textbf{Projektion}
 
