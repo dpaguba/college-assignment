@@ -3124,15 +3124,26 @@ Das Phong-Modell ist \textit{lokal} — es betrachtet nur eine Lichtquelle und e
 \medskip
 \textbf{Ray Tracing (Strahlverfolgung)} — „From Eye to Light":
 
+Statt Objekte auf den Bildschirm zu projizieren, wird der Lichtweg \textit{rückwärts} verfolgt — vom Betrachter in die Szene.
+
+\textit{Hauptalgorithmus:} Für jedes Pixel $(i,j)$ der Auflösung $m \times n$ wird ein \textbf{Sehstrahl} vom Augenpunkt $a$ durch das Pixelzentrum in die Szene geschickt. Dann wird \texttt{Strahlverfolgung(a, v)} aufgerufen.
+
+\textit{Unteralgorithmus} \texttt{Strahlverfolgung(p, v)}:
 \begin{enumerate}
-  \item Für jeden Pixel: \textbf{Sehstrahl} vom Augenpunkt in die Szene schicken.
-  \item \textbf{Schnittpunkt} mit dem nächsten Objekt bestimmen.
-  \item Lokale Beleuchtung (Phong) am Schnittpunkt berechnen.
-  \item \textbf{Rekursion}: weitere Strahlen in Reflexions- und Brechungsrichtung verfolgen.
-  \item Pixelfarbe = gewichtete Summe aller Beiträge.
+  \item \textbf{FindeSchnitt:} nächsten Schnittpunkt $q$ des Strahls mit einem Objekt bestimmen.
+  \item \textbf{Lokale Beleuchtung} (Phong) am Punkt $q$ berechnen.
+  \item \textbf{Schattenstrahlen:} für jede Lichtquelle $L_i$ einen Strahl von $q$ nach $L_i$ schicken — trifft er kein Objekt, trägt $L_i$ zur Farbe bei (kein Schatten); trifft er ein Objekt, liegt $q$ im Schatten.
+  \item \textbf{Rekursion:}
+  \begin{itemize}
+    \item spiegelnde Oberfläche → Reflexionsrichtung $r$ berechnen, \texttt{Strahlverfolgung(q, r)} aufrufen
+    \item transparente Oberfläche → Brechungsrichtung $b$ berechnen, \texttt{Strahlverfolgung(q, b)} aufrufen
+  \end{itemize}
+  \item \textbf{Pixelfarbe} = gewichtete Summe aus lokalem Beitrag + Reflexion + Brechung.
 \end{enumerate}
 
-Abbruch: maximale Rekursionstiefe erreicht oder Intensität unter Schwellenwert. Effekte: Spiegelungen, Transparenz, \textbf{implizite Schatten} (Schattenstrahl zur Lichtquelle).
+\textit{Abbruchbedingungen:} maximale Rekursionstiefe erreicht \textbf{oder} Intensität unter Schwellenwert (zu schwach um sichtbar zu sein).
+
+\textit{Eingabegrößen:} 3D-Szene (Geometrie), Lichtquellenpositionen, Oberflächenattribute (Reflexionsgrad), Augenpunkt + Projektionsebene, Bildauflösung.
 
 \medskip
 \textbf{Radiosity (Strahlungsverfahren)} — „From Light to Surface":
