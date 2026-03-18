@@ -3539,4 +3539,32 @@ Keine explizite Topologie — Nachbarschaft muss bei Bedarf berechnet werden. Ha
 \end{tabular}
 \end{notebox}
 
+\subsection{Simplex, Triangulierung und polyedrische Komplexe}
+
+\subsubsection*{Simplex}
+
+Ein \textbf{Simplex} ist der einfachste geometrische Baustein in $d$ Dimensionen: die \textbf{konvexe Hülle} von $d+1$ Punkten, die nicht alle in einer Hyperebene liegen.
+
+\begin{center}
+\begin{tabular}{ll}
+  $d=1$ & Strecke \\
+  $d=2$ & Dreieck \\
+  $d=3$ & Tetraeder \\
+\end{tabular}
+\end{center}
+
+\subsubsection*{Triangulierung}
+
+Für eine Punktmenge $\{p_1, \dots, p_n\} \subset \mathbb{R}^d$ ist eine \textbf{Triangulierung} eine simpliziale Zerlegung der konvexen Hülle dieser Punkte — das Ergebnis ist ein lückenloses Netz aus Simplexen, das genau die gegebenen Punkte als Eckpunkte verwendet.
+
+\subsubsection*{Polyedrischer Komplex}
+
+Ein \textbf{$d$-dimensionaler polyedrischer Komplex} ist eine endliche Menge von Polyedern mit zwei Bedingungen:
+\begin{enumerate}
+  \item \textbf{Durchschnittseigenschaft:} Der Schnitt zweier Polyeder ist entweder leer oder ein gemeinsames \textbf{Seitenpolyeder} beider.
+  \item \textbf{Vollständigkeit:} Mit jedem Polyeder gehören auch alle seine Seitenpolyeder zum Komplex.
+\end{enumerate}
+
+Sind alle Elemente Simplexe, heißt der Komplex \textbf{simplizialer Komplex}. Ein typischer Fehler ist die sogenannte \textbf{T-Stelle} (hängender Knoten): ein Punkt liegt im Inneren einer Kante eines anderen Simplex — der Durchschnitt ist dann kein gemeinsames Seiten-Simplex, was die Bedingung verletzt.
+
 \end{document}
