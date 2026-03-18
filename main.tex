@@ -3635,4 +3635,48 @@ Zerlegung eines einfachen Polygons in Dreiecke durch nicht-schneidende Diagonale
 
 Ein Polygon heißt \textbf{$y$-monoton}, wenn jede horizontale Linie es in höchstens zwei Punkten schneidet. Solche Polygone lassen sich durch einen \textbf{Sweepline-Algorithmus} effizienter triangulieren: Punkte nach $y$ sortieren, mit einem Stack abarbeiten und Diagonalen zu bereits besuchten Punkten ziehen.
 
+\subsection{Voronoi-Diagramm}
+
+Für eine Punktmenge $P = \{p_1, \dots, p_n\}$ enthält die \textbf{Voronoi-Zelle} $V(p_i)$ alle Punkte der Ebene, die näher an $p_i$ liegen als an jedem anderen Punkt aus $P$.
+
+\textbf{Eigenschaften:}
+\begin{itemize}
+  \item Voronoi-Zellen sind immer \textbf{konvex}.
+  \item \textbf{Empty Circle Property:} Jeder Voronoi-Knoten ist Mittelpunkt eines leeren Kreises durch genau drei Punkte aus $P$; jeder Punkt auf einer Voronoi-Kante liegt auf einem leeren Kreis durch zwei Punkte.
+  \item Komplexität: $n_v \leq 2n-5$ Knoten, $n_e \leq 3n-6$ Kanten.
+  \item Eulerformel: $(n_v + 1) - n_e + n = 2$.
+\end{itemize}
+
+\subsection{Delaunay-Triangulierung}
+
+Ein Simplex erfüllt die \textbf{Delaunay-Bedingung}, wenn sein Umkreis (2D) bzw.\ seine Umkugel (3D) keinen anderen Punkt der Menge im Inneren enthält.
+
+\textbf{Eigenschaften:}
+\begin{itemize}
+  \item \textbf{Dualität:} Delaunay-Graph = dualer Graph zum Voronoi-Diagramm. Zwei Punkte sind verbunden $\Leftrightarrow$ ihre Voronoi-Zellen teilen eine Kante.
+  \item \textbf{Eindeutigkeit:} Existiert immer; eindeutig wenn keine $d+2$ Punkte kosphärisch (auf einer gemeinsamen Kugeloberfläche).
+  \item \textbf{Winkelmaximierung (2D):} Unter allen Triangulierungen maximiert Delaunay den kleinsten Winkel — keine unnötig spitzen Dreiecke.
+  \item \textbf{Berechnung:} Delaunay-Triangulierung im $\mathbb{R}^d$ = konvexe Hülle der auf ein Paraboloid projizierten Punkte im $\mathbb{R}^{d+1}$: $T(p) = \bigl(p,\; \textstyle\sum p_i^2\bigr)$.
+\end{itemize}
+
+\begin{notebox}{Klausur: verletzte Delaunay-Bedingung}
+Liegt ein Punkt im Inneren des Umkreises eines Dreiecks, ist die Delaunay-Bedingung verletzt. Heilmittel: \textbf{Kantenflip} (Edge Flip) — die gemeinsame Kante der beiden betroffenen Dreiecke durch die andere Diagonale ersetzen.
+\end{notebox}
+
+\subsection{Beneath-Beyond-Algorithmus}
+
+Inkrementeller Algorithmus zur Konstruktion der \textbf{konvexen Hülle}, Grundlage für die Delaunay-Berechnung.
+
+\textbf{Vorgehen:}
+\begin{enumerate}
+  \item Punkte \textbf{lexikographisch sortieren}.
+  \item Punkte nacheinander zur bestehenden Hülle hinzufügen:
+  \begin{itemize}
+    \item \textbf{Pyramidal:} Punkt liegt außerhalb der affinen Hülle → Pyramide mit bisheriger Hülle als Basis und $p_i$ als Spitze.
+    \item \textbf{Nichtpyramidal:} Punkt liegt im gleichen Raum → alle von $p_i$ sichtbaren Facetten entfernen, $p_i$ mit den Silhouettenfacetten verbinden.
+  \end{itemize}
+\end{enumerate}
+
+\textbf{Zeitaufwand:} $O(n \log n)$ (dominiert durch die Sortierung).
+
 \end{document}
