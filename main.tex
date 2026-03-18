@@ -67,7 +67,7 @@
 
 % ---------- TikZ ----------
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, decorations.pathreplacing}
 
 % ---------- Math ----------
 \usepackage{amsmath, amssymb}
@@ -3360,6 +3360,52 @@ Hält man einen Parameter fest (z.\,B.\ $u = u^*$), beschreibt $\mathbf{f}(u^*, 
 \begin{notebox}{Prüfungshinweis}
 Für einfache Polynomkurven bestimmen die Koeffizienten die Form — aber das ist wenig intuitiv. In der Praxis und in der Klausur stehen deshalb \textbf{Bézier-Kurven und Splines} im Vordergrund.
 \end{notebox}
+
+\subsection{Interpolation, Approximation, Extrapolation}
+
+\begin{itemize}
+  \item \textbf{Interpolation} — die Kurve geht \textit{exakt durch} die gegebenen Punkte. Man verlässt den maximalen Definitionsbereich nicht.
+  \item \textbf{Approximation} — grobe Beschreibung der Punktmenge durch \textit{Fehlerminimierung}. Die Kurve muss nicht durch die Punkte gehen, liegt aber möglichst nah dran. Ebenfalls innerhalb des Definitionsbereichs.
+  \item \textbf{Extrapolation} — wenn man \textit{über die Grenzen} des Definitionsbereichs hinausgeht: Verlängerung der Kurve über die bekannten Punkte hinaus. Unsicher, da keine Datenbasis.
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.05]
+  % Axes
+  \draw[->] (-0.2, 0) -- (4.8, 0) node[right] {\scriptsize $t$};
+  \draw[->] (0, -0.2) -- (0, 3.2);
+
+  % Definition domain boundary
+  \draw[dashed, thin] (3.2, -0.15) -- (3.2, 3.0);
+  \node[below, font=\scriptsize] at (3.2, 0) {$t_{\max}$};
+
+  % Data points
+  \foreach \x/\y in {1.0/0.6, 2.5/2.1} {
+    \draw[thick] (\x-0.12,\y-0.12) -- (\x+0.12,\y+0.12);
+    \draw[thick] (\x-0.12,\y+0.12) -- (\x+0.12,\y-0.12);
+  }
+
+  % Interpolation: goes exactly through data points
+  \draw[thick] plot[smooth, tension=1.0]
+    coordinates {(0.2,1.6)(1.0,0.6)(1.7,1.3)(2.5,2.1)(3.1,2.5)};
+  \node[right, font=\scriptsize] at (3.1,2.55) {Interpolation};
+
+  % Approximation: near but not through, stays in domain
+  \draw[thick, densely dashed] plot[smooth, tension=0.7]
+    coordinates {(0.2,0.5)(1.0,0.9)(1.8,1.0)(2.5,1.8)(3.1,2.2)};
+  \node[right, font=\scriptsize] at (3.1,2.2) {Approximation};
+
+  % Extrapolation: continues past t_max
+  \draw[thick, dotted] plot[smooth, tension=1.0]
+    coordinates {(0.2,0.2)(1.0,0.6)(2.5,2.1)(3.5,2.8)(4.5,2.4)};
+  \node[right, font=\scriptsize] at (4.0,2.65) {Extrapolation};
+
+  % Brace annotation
+  \draw [decorate, decoration={brace, amplitude=5pt, mirror}]
+    (3.25, 0.05) -- (4.55, 0.05)
+    node[midway, below=6pt, font=\scriptsize] {außerhalb DF};
+\end{tikzpicture}
+\end{center}
 
 \subsection{Bézier-Kurven}
 
