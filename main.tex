@@ -2838,13 +2838,55 @@ Das \textbf{View Frustum} (Sichtpyramide) ist der Bereich, den die Kamera tatsä
 
   \item \textbf{Sichtbarkeitsberechnung}
 
-  Entfernung verdeckter Flächen. Standardverfahren: \textbf{Tiefenpufferalgorithmus (Z-Buffer)} -- für jeden Pixel wird die Tiefe (Abstand zur Kamera) gespeichert; das nähere Objekt gewinnt.
+  Welche Polygone sind vom Augenpunkt aus sichtbar, welche werden verdeckt? Ziel: nur das vorderste Objekt pro Pixel zeichnen.
 
   \item \textbf{Verrasterung (Rasterization)}
 
   Umwandlung der Geometrie (Dreiecke, Linien) in diskrete Pixel. Dabei werden Farben zwischen den Eckpunkten interpoliert und \textbf{Texturen} auf Oberflächen aufgebracht.
 
 \end{enumerate}
+
+% --- Details zu Schritt 5: Sichtbarkeit ---
+
+\subsubsection*{Sichtbarkeit (D.5)}
+
+\textbf{Back-face Culling} (Vorverarbeitungsschritt): Polygone, deren Normalenvektor vom Betrachter \textit{wegzeigt}, sind Rückseiten — sie können niemals sichtbar sein und werden sofort verworfen. Das halbiert im Schnitt die Anzahl zu verarbeitender Polygone.
+
+\medskip
+Die verbleibenden Verfahren teilen sich in zwei Klassen:
+
+\medskip
+\textbf{Szenenbasierte Verfahren (D.5.2)} — arbeiten auf der Geometrie, unabhängig von der Auflösung.
+
+\begin{itemize}
+  \item \textbf{Painter's Algorithm:} Polygone werden von hinten nach vorne sortiert und in dieser Reihenfolge gezeichnet — spätere Polygone übermalen frühere. Einfach, aber falsch bei \textbf{zyklischen Überlagerungen} (A verdeckt B, B verdeckt C, C verdeckt A) oder sich durchdringenden Polygonen, weil keine eindeutige Sortierung existiert.
+
+  \item \textbf{BSP-Baum (Binary Space Partition):} In einer Vorverarbeitung wird der Raum rekursiv durch Ebenen in zwei Hälften zerlegt — es entsteht ein Binärbaum. Zur Laufzeit wird der Baum so traversiert, dass die Polygone automatisch in korrekter Reihenfolge geliefert werden. Aufwand: $O(n)$ pro Frame. Ideal für \textbf{statische Szenen} (Baum einmal bauen, beliebig oft nutzen).
+\end{itemize}
+
+\medskip
+\textbf{Rasterbildbasierte Verfahren (D.5.3)} — arbeiten pixelweise, auflösungsabhängig.
+
+\begin{itemize}
+  \item \textbf{Z-Buffer (Tiefenpuffer):} Für jeden Pixel wird neben der Farbe auch die Tiefe (Abstand zum Augenpunkt) gespeichert. Beim Zeichnen jedes Polygons: ist das neue Pixel näher als das gespeicherte? Ja → überschreiben. Nein → ignorieren. Einfach, schnell, in Hardware implementiert — \textbf{Standardverfahren} in moderner CG.
+
+  \item \textbf{Scan-Line-Verfahren:} Das Bild wird zeilenweise abgearbeitet. Für jede Zeile werden die Schnittpunkte mit allen Polygonkanten bestimmt und die sichtbaren Abschnitte dazwischen berechnet. Bei sich durchdringenden Polygonen müssen Tiefen an den Abschnittsenden verglichen werden.
+
+  \item \textbf{Warnock-Algorithmus:} Die Bildebene wird rekursiv durch Vierteilung zerlegt, bis jeder Teilbereich einfach genug ist, um die Sichtbarkeit direkt zu bestimmen (z.\,B.\ nur ein Polygon im Bereich). Selten in der Praxis, aber konzeptuell elegant.
+\end{itemize}
+
+\begin{notebox}{Verfahren im Vergleich}
+\begin{tabular}{lll}
+  \textbf{Verfahren} & \textbf{Typ} & \textbf{Merkmal} \\
+  \hline
+  Back-face Culling & Vorverarbeitung & Rückseiten sofort verwerfen \\
+  Painter's Algorithm & szenenbasiert & einfach, scheitert an Zyklen \\
+  BSP-Baum & szenenbasiert & statische Szenen, $O(n)$ pro Frame \\
+  Z-Buffer & bildbasiert & Hardware-Standard, pixelweise Tiefe \\
+  Scan-Line & bildbasiert & zeilenweise Verarbeitung \\
+  Warnock & bildbasiert & rekursive Vierteilung \\
+\end{tabular}
+\end{notebox}
 
 \subsubsection*{Koordinatentransformations-Pipeline}
 
