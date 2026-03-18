@@ -3490,4 +3490,53 @@ Der Knotenvektor $x_0 \leq x_1 \leq \cdots$ steuert den Verlauf der Basisfunktio
 Ist die Ordnung $k$ gleich der Anzahl der Kontrollpunkte $n$ und wird ein offener Knotenvektor verwendet, reduziert sich die B-Spline-Basis zur \textbf{Bernstein-Basis} — die B-Spline-Kurve wird zur Bézier-Kurve.
 \end{notebox}
 
+\subsection{Datenstrukturen für Netze}
+
+Polygonale Netze speichern sowohl \textbf{Geometrie} (Koordinaten) als auch \textbf{Topologie} (Nachbarschaftsbeziehungen). Es gibt vier wesentliche Verfahren:
+
+\subsubsection*{1. Zellinzidenzgraph}
+
+Umfassende topologische Repräsentation als Graph $I = (V, E)$. Die Knotenmenge $V$ ist nach Dimension aufgeteilt: $V_0$ = Eckpunkte, $V_1$ = Kanten, $V_2$ = Flächen. Kanten im Graphen verbinden nur Knoten benachbarter Dimensionen — ein Knoten $v \in V_i$ ist mit $w \in V_{i+1}$ verbunden, wenn $v$ eine Randzelle von $w$ ist. Zusätzlich gibt es Hilfsknoten $V_{-1}$ (verbunden mit allen Eckpunkten) und $V_{d+1}$ (verbunden mit allen Flächen).
+
+\subsubsection*{2. Winged-Edge-Datenstruktur}
+
+Drei Klassen: \textbf{Vertex}, \textbf{Face}, \textbf{Edge}. Das Herzstück ist die Kante — sie speichert:
+\begin{itemize}
+  \item Start- und Endknoten (\textit{VStart}, \textit{VEnde})
+  \item linke und rechte angrenzende Fläche (\textit{FLinks}, \textit{FRechts})
+  \item jeweils Vorgänger- und Nachfolgerkante links und rechts (\textit{PELinks}, \textit{PERechts}, \textit{NELinks}, \textit{NERechts})
+\end{itemize}
+Vertex und Face speichern nur einen Verweis auf \textit{irgendeine} ihrer inzidenten Kanten. Navigation durch „Weiterhangeln" über Nachbarkanten — linearer Zeitaufwand.
+
+\subsubsection*{3. Halbkantendatenstruktur (Half-Edge)}
+
+Reduzierte Version der Winged-Edge. Jede Kante wird in \textbf{zwei gerichtete Halbkanten} aufgeteilt — eine pro angrenzender Fläche. Jede Halbkante speichert:
+\begin{itemize}
+  \item Zielknoten
+  \item zugehörige Fläche
+  \item nächste Halbkante im Flächenumlauf (\textit{next})
+  \item Gegenkante in Gegenrichtung (\textit{twin/opposite})
+\end{itemize}
+Vertex speichert eine ausgehende Halbkante, Face speichert eine ihrer Halbkanten. Effiziente Nachbarschaftsabfragen durch Hopsen über \textit{next} und \textit{twin}. Bekannte Implementierung: \textbf{OpenMesh}.
+
+\subsubsection*{4. Facetten-Knoten-Inzidenzliste}
+
+Einfachste Struktur — zwei Listen:
+\begin{itemize}
+  \item \textbf{Punktliste:} Koordinaten jedes Eckpunkts (einmal gespeichert).
+  \item \textbf{Facettenliste:} Pro Fläche die Indizes ihrer Eckpunkte, z.\,B.\ „1 2 3".
+\end{itemize}
+Keine explizite Topologie — Nachbarschaft muss bei Bedarf berechnet werden. Hauptanwendung: \textbf{Dateispeicherung}. Bekannte Formate: \textbf{STL} (3D-Druck), \textbf{Geomview}.
+
+\begin{notebox}{Vergleich}
+\begin{tabular}{lll}
+  \textbf{Struktur} & \textbf{Topologie} & \textbf{Anwendung} \\
+  \hline
+  Zellinzidenzgraph & vollständig & theoretische Basis \\
+  Winged-Edge & vollständig & Modellierung \\
+  Half-Edge & vollständig & Modellierung (Standard) \\
+  Facetten-Knoten-Liste & keine & Dateiaustausch \\
+\end{tabular}
+\end{notebox}
+
 \end{document}
