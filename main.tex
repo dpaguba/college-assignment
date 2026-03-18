@@ -2842,9 +2842,41 @@ Das \textbf{View Frustum} (Sichtpyramide) ist der Bereich, den die Kamera tatsä
 
   \item \textbf{Verrasterung (Rasterization)}
 
-  Umwandlung der Geometrie (Dreiecke, Linien) in diskrete Pixel. Dabei werden Farben zwischen den Eckpunkten interpoliert und \textbf{Texturen} auf Oberflächen aufgebracht.
+  Umwandlung von Dreiecken und Linien in diskrete Pixel. Welche Pixel liegen im Inneren eines Polygons?
 
 \end{enumerate}
+
+% --- Details zu Schritt 6: Verrasterung ---
+
+\subsubsection*{Verrasterung (D.6)}
+
+\textbf{Bresenham-Algorithmus} (Strecken-Verrasterung):
+
+Gegeben eine Linie zwischen zwei Punkten — welche Pixel soll man zeichnen? Der Bresenham-Algorithmus entscheidet dies ohne Fließkomma-Division, nur mit ganzzahligen Additionen.
+
+\textbf{Idee:} Pro Schritt in $x$-Richtung gibt es zwei Kandidaten in $y$: bleib bei $j$ oder geh auf $j+1$. Die Entscheidung trifft eine Testgröße $F(i,\,j+0.5)$ — der Funktionswert der Geradengleichung am \textbf{Mittelpunkt} zwischen den zwei Kandidaten:
+\begin{itemize}
+  \item $F(i,\,j+0.5) > 0$ → $j := j+1$ (oberer Pixel ist näher an der Linie)
+  \item $F(i,\,j+0.5) \leq 0$ → $j$ bleibt (unterer Pixel ist näher)
+\end{itemize}
+Die Testgröße wird \textbf{inkrementell} aktualisiert — kein Neuberechnen, nur Addition. Dadurch ist der Algorithmus sehr effizient.
+
+\textit{Besonderheit in OpenGL:} Linien werden „halboffen" gezeichnet — der \textbf{Endpunkt wird nicht mitgezeichnet}, damit bei zusammengesetzten Linienzügen kein Punkt doppelt gerendert wird.
+
+\medskip
+\textbf{Polygon-Verrasterung (Scan-Line-Verfahren):}
+
+Ziel: alle Pixel im Inneren eines Polygons finden. Das Scan-Line-Verfahren arbeitet zeilenweise:
+
+\begin{enumerate}
+  \item Alle Kanten des Polygons nach ihrem \textbf{maximalen $y$-Wert} sortieren.
+  \item Die Scan-Line läuft von oben nach unten durch jede Zeile.
+  \item Pro Zeile: \textbf{aktive Kanten} bestimmen — welche Kanten schneidet die aktuelle Zeile? Die Schnittpunkte werden nach $x$ sortiert.
+  \item Zwischen den Schnittpunkten abwechselnd füllen/nicht füllen (\textbf{Paritätsregel}): erstes Intervall innen, zweites außen, usw.
+  \item Die $x$-Koordinaten für die nächste Zeile werden \textbf{inkrementell} aus der Kantensteigung berechnet — kein Neuberechnen nötig.
+\end{enumerate}
+
+\textit{Spezialfall:} Horizontale Kanten werden ignoriert. Pixel auf der linken/unteren Kante eines Polygons gehören dazu, auf der rechten/oberen nicht — so entstehen keine Lücken oder Doppelbelegungen bei benachbarten Polygonen.
 
 % --- Details zu Schritt 5: Sichtbarkeit ---
 
