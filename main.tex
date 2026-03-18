@@ -4057,10 +4057,40 @@ Traveling (motorisch: Fortbewegung) + Wayfinding (kognitiv: Orientierung, Planun
 
 Haptische Systeme übertragen Kräfte (Force Feedback) via Aktuatoren — z.\,B.\ Simulation des Greifens. Virtuelle Hand wird durch Kontrollpunkte abstrahiert, Bewegungen folgen mechanischen Gesetzen.
 
-\textbf{Kollisionsdetektion:} bestimmt Wechselwirkung zwischen Manipulator und Szene:
+\subsubsection*{Haptische Interaktionsschleife}
+
+Position des virtuellen Manipulators bestimmen → Szene aktualisieren (Kollisionsbehandlung) → Reaktionskraft ans Eingabegerät zurückgeben. Diese Schleife muss mit sehr hoher Rate ($\sim$1\,kHz) laufen, da der Tastsinn sehr empfindlich auf Latenz reagiert.
+
+\subsubsection*{Kollisionsdetektion}
+
+Bestimmt, ob und wie der Manipulator ein Szenenobjekt berührt. Drei Dimensionen der Fallunterscheidung:
+
+\textbf{1. Anzahl der Körper}
 \begin{itemize}
-  \item Kollision feststellen, minimalen Abstand berechnen, Kollisionszeitpunkt bestimmen.
-  \item \textbf{Suchstrukturen} reduzieren die Anzahl notwendiger Schnitttests zwischen polygonalen Objekten.
+  \item \textbf{Paarweise:} Wechselwirkung zwischen zwei komplexen Objekten (Manipulator $\leftrightarrow$ Szene).
+  \item \textbf{$n$-Körper:} viele einfache Objekte (z.\,B.\ Partikel) — quadratische Komplexität ohne Optimierung.
 \end{itemize}
+
+\textbf{2. Bewegungszustand}
+\begin{itemize}
+  \item \textbf{Statisch:} beide Körper in Ruhe.
+  \item \textbf{Dynamisch:} beide Körper in Bewegung.
+  \item \textbf{Pseudo-dynamisch:} Näherung — dynamische Bewegung als Folge sehr kleiner statischer Schritte.
+\end{itemize}
+
+\textbf{3. Materialeigenschaften}
+\begin{itemize}
+  \item \textbf{Rigid (starr):} keine Verformung bei Kollision.
+  \item \textbf{Deformable (weich):} Objekte ändern ihre Form — deutlich aufwändiger.
+\end{itemize}
+
+\textbf{Geometrische Kernaufgaben:}
+\begin{itemize}
+  \item \textbf{Schnitt-Test:} Existenz einer Kollision feststellen (schneiden sich zwei Dreiecke?) oder alle schneidenden Dreieckspaare ausgeben.
+  \item \textbf{Abstandsberechnung:} minimaler Abstand zwischen Manipulator und Szene — Grundlage für Kraftberechnung.
+  \item \textbf{Kollisionszeitpunkt:} exakter Zeitpunkt des Erstkontakts.
+\end{itemize}
+
+\textbf{Suchstrukturen} (z.\,B.\ OBB-Bäume, kd-Bäume) reduzieren die Anzahl nötiger Schnitttests: Zunächst schnelle Grobprüfung auf Hüllkörper-Ebene, dann nur bei Überlappung Feinprüfung auf Dreiecksebene.
 
 \end{document}
