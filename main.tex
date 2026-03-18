@@ -3055,8 +3055,13 @@ Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung o
 \begin{itemize}
   \item \textbf{Immediate Mode (veraltet):} Vertices einzeln mit \texttt{glVertex} senden — GPU wartet auf CPU, extrem ineffizient.
   \item \textbf{VBO (Vertex Buffer Object):} Großer Speicherblock direkt auf der GPU — Vertex-Daten (Positionen, Farben, Normalen) werden einmal hochgeladen und dann beliebig oft genutzt.
+  \item \textbf{Element Array Buffer (Index Buffer):} Speichert Indizes in das VBO — ermöglicht, gemeinsame Vertices zwischen Dreiecken nur einmal zu speichern (spart Speicher).
   \item \textbf{VAO (Vertex Array Object):} Speichert den Zustand der Vertex-Attribute und deren Verknüpfung mit VBOs — ein einziger Bind-Befehl aktiviert die gesamte Geometrie.
+  \item \textbf{Texture Object:} Speichert Bilddaten auf der GPU. Zugriff aus dem Fragment Shader erfolgt über \textbf{Sampler Objects}, die das Sampling (Filterung, Wrapping) steuern.
+  \item \textbf{FBO (Frame Buffer Object):} Die digitale Leinwand — wohin OpenGL das fertige Bild schreibt. Kann auch als Zwischenziel für Offscreen-Rendering verwendet werden (z.\,B.\ Schatten, Post-Processing).
 \end{itemize}
+
+\textit{Fensterverwaltung:} Die OpenGL-API selbst hat kein Fenster- oder Eingabe-System. Hilfsbibliotheken wie \textbf{GLUT} oder \textbf{GLFW} übernehmen die Fenstererstellung und Benutzerinteraktion.
 
 \textbf{Ablauf der GPU-Pipeline:}
 \begin{enumerate}
