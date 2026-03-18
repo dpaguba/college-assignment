@@ -1853,21 +1853,31 @@ zunehmend schmaler Rechteckimpulse gleicher Fläche:
 \]
 \end{definitionbox}
 
+\textit{Anschaulich:} Ein Rechteckimpuls der Breite $2a$ und Höhe $\frac{1}{4a^2}$ hat immer die Fläche~1. Lässt man $a\to 0$, wird der Impuls unendlich schmal und unendlich hoch -- die Fläche bleibt dabei stets~1. Das Ergebnis ist ein \glqq{}unendlich dünner Stich\grqq{} an der Stelle $(0,0)$.
+
 \textbf{Eigenschaften:}
 \begin{itemize}
-  \item \textbf{Normierung:}
-        $\displaystyle\int_{-\infty}^{\infty}\!\!\int_{-\infty}^{\infty}
-        \delta(x,y)\,\mathrm{d}x\,\mathrm{d}y = 1$.
-  \item \textbf{Ausblend-/Sieb-Eigenschaft:}
+  \item \textbf{Normierung} -- die Fläche unter $\delta$ ist immer 1:
+        \[
+          \int_{-\infty}^{\infty}\!\!\int_{-\infty}^{\infty}
+          \delta(x,y)\,\mathrm{d}x\,\mathrm{d}y = 1.
+        \]
+
+  \item \textbf{Sieb-Eigenschaft} -- $\delta$ liest einen einzigen Funktionswert aus:
         \[
           \int_{-\infty}^{\infty}\!\!\int_{-\infty}^{\infty}
           f(x,y)\;\delta(x-a,\,y-b)\,\mathrm{d}x\,\mathrm{d}y = f(a,b).
         \]
-  \item \textbf{Verschiebungseigenschaft (Faltung):}
-        \[ f(x,y) \ast\ast\,\delta(x-a,\,y-b) = f(x-a,\,y-b). \]
+        \textit{Warum?} $\delta(x-a,y-b)$ ist überall 0, außer genau bei $(a,b)$ -- das Integral \glqq{}siebt\grqq{} deshalb nur den Wert $f(a,b)$ heraus.
+
+  \item \textbf{Verschiebungseigenschaft} -- Faltung mit $\delta$ verschiebt die Funktion:
+        \[
+          f(x,y) \ast\ast\,\delta(x-a,\,y-b) = f(x-a,\,y-b).
+        \]
+        \textit{Warum?} $\delta$ ist das neutrale Element der Faltung. Genau wie Multiplikation mit~1 die Zahl unverändert lässt, lässt Faltung mit $\delta$ die Form unverändert -- nur verschoben.
 \end{itemize}
 
-\textbf{Interpretation:} Modell eines \textbf{idealen Punktsensors} -- Grenzfall eines rechteckigen Sensors mit Fläche $\to 0$ und Empfindlichkeit $\to \infty$ bei gleicher Gesamtempfindlichkeit. Analogie: Punktmasse als Grenzfall eines ausgedehnten Körpers.
+\textbf{Interpretation:} Modell eines \textbf{idealen Punktsensors} -- Grenzfall eines rechteckigen Sensors, dessen Fläche gegen 0 schrumpft, während die Empfindlichkeit proportional wächst (Gesamtempfindlichkeit bleibt konstant). Analogie in der Physik: Punktmasse als Grenzfall eines ausgedehnten Körpers.
 
 \begin{definitionbox}
 Das \textbf{Dirac-Feld} (Dirac-Kamm, Shah-Funktion) ist ein regelmäßiges 2D-Gitter aus Dirac-Impulsen mit den Abständen $\Delta x$ und $\Delta y$:
@@ -1877,9 +1887,11 @@ Das \textbf{Dirac-Feld} (Dirac-Kamm, Shah-Funktion) ist ein regelmäßiges 2D-Gi
 \]
 \end{definitionbox}
 
+\textit{Anschaulich:} Das Dirac-Feld ist das mathematische Modell eines \textbf{Pixelrasters}: In jedem Rasterpunkt sitzt ein $\delta$-Impuls -- genau wie jeder Pixel einer Kamera nur an einem einzigen Ort misst.
+
 \textbf{Fouriertransformierte des Dirac-Feldes:}
 
-Die FT des Dirac-Feldes ist wiederum ein Dirac-Feld im Frequenzbereich:
+Die FT des Dirac-Feldes ist wiederum ein Dirac-Feld -- diesmal im Frequenzbereich:
 \[
   S(u,v) = \Delta u\,\Delta v
   \sum_{k=-\infty}^{\infty}\sum_{l=-\infty}^{\infty}
@@ -1889,19 +1901,21 @@ Die FT des Dirac-Feldes ist wiederum ein Dirac-Feld im Frequenzbereich:
   \Delta v := \tfrac{2\pi}{\Delta y}.
 \]
 
-\begin{notebox}{Dualität Orts-/Frequenzgitter}
-Je \textbf{feiner} das Ortsgitter (kleines $\Delta x$), desto \textbf{gröber} das Frequenzgitter (großes $\Delta u = 2\pi/\Delta x$) -- und umgekehrt. Ein dichtes Abtastnetz $\Rightarrow$ weit auseinanderliegende Spektralkopien $\Rightarrow$ keine Überlappung.
+\begin{notebox}{Dualität: Orts- und Frequenzgitter sind umgekehrt proportional}
+Je \textbf{feiner} das Ortsgitter (kleines $\Delta x$), desto \textbf{gröber} das Frequenzgitter (großes $\Delta u = 2\pi/\Delta x$) -- und umgekehrt. Dichtes Abtastnetz $\Rightarrow$ weit auseinanderliegende Spektralkopien $\Rightarrow$ keine Überlappung $\Rightarrow$ kein Aliasing.
 \end{notebox}
 
 \textbf{Modell der diskreten Abtastung:}
 
-Das abgetastete Bild entsteht als Produkt des Signals mit dem Dirac-Feld:
+Um ein Signal $f(x,y)$ an den Gitterpunkten abzutasten, multipliziert man es mit dem Dirac-Feld:
 \[
   f_\Delta(x,y) = f(x,y)\cdot s(x,y)
   = \sum_{m,n} f(m\Delta x,\,n\Delta y)\;\delta(x-m\Delta x,\,y-n\Delta y).
 \]
 
-Im Frequenzbereich ergibt der Faltungssatz:
+\textit{Warum funktioniert das?} Dank der Sieb-Eigenschaft \glqq{}liest\grqq{} jeder $\delta$-Impuls genau den Wert $f(m\Delta x, n\Delta y)$ aus. Zwischen den Gitterpunkten ist das Ergebnis null -- das Signal ist diskretisiert.
+
+Im Frequenzbereich liefert der Faltungssatz ($\cdot$ im Ort $\Leftrightarrow$ $\ast\!\ast$ in der Frequenz):
 \[
   F_\Delta(u,v)
   = \frac{1}{4\pi^2}\,F(u,v)\ast\!\ast S(u,v)
@@ -1909,7 +1923,7 @@ Im Frequenzbereich ergibt der Faltungssatz:
     \sum_{k,l} F(u - k\Delta u,\; v - l\Delta v).
 \]
 
-Das Spektrum $F_\Delta(u,v)$ besteht also aus \textbf{periodisch verschobenen Kopien} von $F(u,v)$ mit Abstand $\Delta u$ bzw.\ $\Delta v$.
+Das Spektrum $F_\Delta(u,v)$ besteht aus \textbf{unendlich vielen periodischen Kopien} von $F(u,v)$, die im Abstand $\Delta u$ bzw.\ $\Delta v$ aneinandergereiht sind. Überlappen sich diese Kopien, entsteht \textbf{Aliasing} -- der Grund, warum das Abtasttheorem existiert.
 
 % -----------------------------------------
 \subsection{Abtasttheorem (Whittaker-Shannon)}
