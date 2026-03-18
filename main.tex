@@ -1327,80 +1327,52 @@ $C,M,Y,K \in [0,\,1]$ (bzw.\ $0\%$--$100\%$).
         abgestuft (sauberstes Grau in der Praxis).
 \end{itemize}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=2, line width=0.7pt, >=Stealth, font=\small]
-  % CMY-Würfel (axonometrisch): Ursprung = Weiß (0,0,0,0)
-  % C→rechts, M→schräg oben-rechts, Y→oben
-  \coordinate (W)  at (0,    0   );
-  \coordinate (vC) at (1,    0   );
-  \coordinate (vM) at (0.35, 0.5 );
-  \coordinate (vY) at (0,    1   );
-  \coordinate (CM) at (1.35, 0.5 );
-  \coordinate (CY) at (1,    1   );
-  \coordinate (MY) at (0.35, 1.5 );
-  \coordinate (B)  at (1.35, 1.5 );
-
-  % Versteckte Kanten (gestrichelt)
-  \draw[dashed] (W) -- (vC);
-  \draw[dashed] (W) -- (vM);
-  \draw[dashed] (W) -- (vY);
-
-  % Sichtbare Kanten
-  \draw (vC) -- (CM) -- (vM);
-  \draw (vC) -- (CY);
-  \draw (vM) -- (MY);
-  \draw (vY) -- (CY);
-  \draw (vY) -- (MY);
-  \draw (CM) -- (B);
-  \draw (CY) -- (B);
-  \draw (MY) -- (B);
-
-  % Achsenpfeile
-  \draw[->, thin] (vC) -- ++(0.25, 0)    node[right]       {$C$};
-  \draw[->, thin] (vM) -- ++(0.18, 0.22) node[above right] {$M$};
-  \draw[->, thin] (vY) -- ++(0, 0.25)    node[above]       {$Y$};
-
-  % Weißpunkt (Ursprung)
-  \fill (W) circle (1.5pt)
-    node[below left, font=\scriptsize, align=right]
-      {\textbf{Weiß}\\$(0,0,0,0)$};
-
-  % Theoretisches CMY-Schwarz
-  \fill (B) circle (1.5pt)
-    node[above right, font=\scriptsize, align=left]
-      {\textbf{CMY-Schwarz}\\$(1,1,1,0)$\\(in Praxis: braun)};
-
-  % Graudiagonale (CMY-Weg)
-  \draw[dotted, line width=1pt] (W) -- (B)
-    node[midway, right, font=\scriptsize, xshift=4pt]
-      {$(\alpha,\alpha,\alpha,0)$};
-
-  % K-Achse: separate Schwarztinte
-  \draw[->, dashed, line width=0.8pt] (W) -- ++(-0.5, -0.4)
-    node[below left, font=\scriptsize, align=center]
-      {\textbf{Schwarz}\\$(0,0,0,1)$\\$K$-Achse};
-\end{tikzpicture}
-\caption{CMYK: CMY-Würfel mit Weißpunkt im Ursprung $(0,0,0,0)$.
-Die $K$-Achse liefert reines Schwarz $(0,0,0,1)$; die Raumdiagonale
-$(\alpha,\alpha,\alpha,0)$ ergibt theoretisches, aber unreines Grau/Schwarz.}
-\end{figure}
-
 
 % =========================================
 \section{Kapitel C.4: Diskretisierung}
 % =========================================
 
-Diskretisierung = Umwandlung eines orts- und intensitätskontinuierlichen
-Signals (z.\,B. ein reales Bild) in \textbf{diskrete digitale Größen}.
+\textbf{Diskretisierung} (= Abtastung = Digitalisierung = Digitierung =
+Sampling) bezeichnet die Umwandlung eines kontinuierlichen Signals in ein
+\textbf{digitales (diskretes) Signal}.
 
-Zwei Hauptschritte:
+\textit{Beispiel:} Temperatur ist kontinuierlich (ändert sich jede
+Millisekunde). Diskret: wir messen nur jede Stunde und runden auf ganze
+Zahlen.
+
+\textbf{Zwei Hauptschritte:}
 \begin{enumerate}
   \item \textbf{Abtastung (Sampling):} Diskretisierung des \textbf{Ortes}
-        -- Festlegen der Pixelpositionen.
+        -- wir wählen, wo wir Werte nehmen (z.\,B.\ jede Stunde).
+        Das Ergebnis: eine Folge von Werten, die nur an bestimmten
+        Punkten definiert sind.
   \item \textbf{Quantisierung:} Diskretisierung der \textbf{Intensität}
-        -- Festlegen der Helligkeits-/Farbwerte.
+        -- wir runden, welchen Wert wir speichern
+        ($16{,}5°\to 17°$). Dadurch geht Information verloren:
+        \textbf{Quantisierungsrauschen}.
 \end{enumerate}
+
+\textbf{2D-Fall (Bild/Foto):} Abtastgitter mit Abständen $\Delta x$
+(Spalten) und $\Delta y$ (Zeilen). Die diskretisierte Funktion:
+\[
+  f_{\Delta}(m,n) :=
+  \begin{cases}
+    f(x,y) & \text{für } x = m\,\Delta x,\; y = n\,\Delta y \\
+    0       & \text{sonst}
+  \end{cases}
+\]
+($m$ = Spaltenindex, $n$ = Zeilenindex.) Zwischen den Gitterpunkten ist
+der Wert 0 (nicht definiert). Bei reiner Abtastung ohne Quantisierung
+bleiben die Werte reelle Zahlen.
+
+\textbf{Abtastabstand und Abtastfrequenz} (umgekehrt proportional):
+\begin{itemize}
+  \item \textbf{Abtastabstand} $\Delta x$: räumlicher Abstand zwischen
+        zwei Messpunkten.
+  \item \textbf{Abtastfrequenz} $b_x$: Anzahl der Abtastpunkte pro
+        Einheit: $b_x = \dfrac{2\pi}{\Delta x}$,\quad
+        $b_y = \dfrac{2\pi}{\Delta y}$.
+\end{itemize}
 
 % -----------------------------------------
 \subsection{Mathematische Grundlagen: Komplexe Zahlen}
@@ -1421,9 +1393,20 @@ beschreiben.
 \subsection{Fouriertransformation (FT)}
 % -----------------------------------------
 
-\textbf{Kernidee:} Jedes Signal lässt sich als \textbf{gewichtete Summe
-periodischer Sinus-/Cosinuswellen} unterschiedlicher Frequenzen darstellen
-(Überlagerung von Basisfunktionen).
+\textbf{Kernidee:} FT ist eine mathematische Operation, die ein Signal in
+seine \textbf{Frequenzkomponenten zerlegt}. Jedes Signal (Ton, Bild,
+beliebiges Signal) kann als Summe von Sinuswellen dargestellt werden
+mit unterschiedlichen:
+\begin{enumerate}
+  \item \textbf{Frequenzen} -- wie schnell schwingt die Welle,
+  \item \textbf{Amplituden} -- wie stark schwingt sie,
+  \item \textbf{Phasen} -- wo beginnt sie.
+\end{enumerate}
+
+\textit{Anschauliches Beispiel:} Ein musikalischer Akkord ist die Summe
+einzelner Noten: $\mathrm{C} + \mathrm{E} + \mathrm{G} =
+\mathrm{C\text{-}Dur\text{-}Akkord}$. Die FT macht dasselbe für jedes
+beliebige Signal.
 
 \subsubsection{Eindimensionale FT}
 
@@ -1433,17 +1416,98 @@ Für eine integrierbare Funktion $f(x),\; f:\mathbb{R}\to\mathbb{R}$:
   \quad u \in \mathbb{R},\quad i := \sqrt{-1}.
 \]
 
-\textbf{Komponenten einer Schwingung:}
+\textbf{Was bedeutet die Formel intuitiv?} Für jede Frequenz $u$ prüfen
+wir, wie gut das Signal $f(x)$ mit einer Sinuswelle der Frequenz $u$
+\glqq{}übereinstimmt\grqq{}. Das Ergebnis $F(u)$:
 \begin{itemize}
-  \item \textbf{Frequenz} $u$: Wie schnell schwingt die Welle?
-        Feine Details $\leftrightarrow$ hohe Frequenz;
-        grobe Flächen $\leftrightarrow$ niedrige Frequenz.
-  \item \textbf{Amplitude} $|F(u)|$: Wie stark ist dieser Detailgrad
-        im Signal vertreten?
-  \item \textbf{Phase} $\phi(u)$: Wie ist die Welle räumlich verschoben?
+  \item $|F(u)|$ \textbf{groß} $\Rightarrow$ Frequenz $u$ ist
+        \textbf{stark vorhanden} im Signal.
+  \item $|F(u)|$ \textbf{klein} $\Rightarrow$ Frequenz $u$ ist
+        \textbf{kaum vorhanden} im Signal.
 \end{itemize}
 
-$F(u)$ ist üblicherweise \textbf{komplexwertig}: $F(u) = |F(u)|\cdot\exp[i\phi(u)]$.
+\textbf{Bedeutung der Variablen:}
+\begin{itemize}
+  \item $f(x)$ -- ursprüngliches Signal (Ortsbereich); $x$ = Position
+        (Bild) oder Zeit (Audio).
+  \item $F(u)$ -- Ergebnis der FT (Frequenzbereich): zeigt, wie viel
+        von jeder Frequenz $u$ im Signal enthalten ist.
+  \item $u \in \mathbb{R}$ -- Frequenz (kann $+$, $-$, $0$ sein).
+  \item $\exp[-iux] = e^{-iux}$ -- komplexe Exponentialfunktion;
+        Kombination aus Sinus und Kosinus nach der
+        \textbf{Euler-Formel}:
+        \[ \exp[iy] = \cos y + i\sin y. \]
+\end{itemize}
+
+\textbf{$F(u)$ ist komplexwertig} und hat zwei Teile:
+\begin{itemize}
+  \item \textbf{Betrag (Amplitude):}
+        $|F(u)| = \sqrt{\operatorname{Re}^2(F(u)) +
+        \operatorname{Im}^2(F(u))}$ \\ -- wie stark ist die
+        Frequenz $u$ im Signal vorhanden?
+  \item \textbf{Phase} $\phi(u)$ -- an welcher Stelle (Zeitpunkt)
+        beginnt die Sinuswelle der Frequenz $u$?
+\end{itemize}
+
+\textbf{Polarform:}
+\[
+  F(u) = |F(u)| \cdot \exp[i\phi(u)]
+       = |F(u)|(\cos\phi + i\sin\phi).
+\]
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[line width=0.7pt, >=Stealth, font=\small]
+  % Achsen
+  \draw[->] (-0.4, 0) -- (3.6, 0) node[right] {Re};
+  \draw[->] (0, -0.4) -- (0, 2.8) node[above] {Im\quad (Amplitude)};
+
+  % F(u) Punkt
+  \coordinate (O) at (0, 0);
+  \coordinate (F) at (2.8, 2.0);
+
+  % |F(u)| Linie
+  \draw (O) -- (F);
+  \fill (F) circle (2pt) node[above right] {$F(u)$};
+  \node[above left, font=\scriptsize] at (1.3, 1.0) {$|F(u)|$};
+
+  % Phasenwinkel
+  \draw[->] (0.9, 0) arc (0:35.5:0.9);
+  \node[font=\scriptsize] at (1.15, 0.22) {$\phi$};
+
+  % gestrichelte Projektionen
+  \draw[dotted] (F) -- (2.8, 0)
+    node[below, font=\scriptsize] {$\operatorname{Re}(F(u))$};
+  \draw[dotted] (F) -- (0, 2.0)
+    node[left, font=\scriptsize] {$\operatorname{Im}(F(u))$};
+
+  % -phi Konjugat (gestrichelt)
+  \draw[dashed] (O) -- (2.8, -2.0)
+    node[below right, font=\scriptsize] {$\overline{F(u)}$};
+  \draw[->] (0.9, 0) arc (0:-35.5:0.9);
+  \node[font=\scriptsize] at (1.15, -0.22) {$-\phi$};
+\end{tikzpicture}
+\caption{Komplexe Ebene: $F(u)$ als Punkt mit Betrag $|F(u)|$
+(Amplitude) und Phase $\phi$ (Phasenverschiebung).
+Polarform: $F(u) = |F(u)|\cdot e^{i\phi(u)}$.}
+\end{figure}
+
+\textbf{Vorwärts- und Rücktransformation:}
+\begin{itemize}
+  \item \textbf{Vorwärts (FT):}
+        $F(u) := \displaystyle\int_{-\infty}^{\infty}
+        f(x)\exp[-iux]\,\mathrm{d}x$
+        \hfill Signal $f(x) \to$ Frequenzen $F(u)$
+  \item \textbf{Rückwärts (iFT):}
+        $f(x) = \dfrac{1}{2\pi}\displaystyle\int_{-\infty}^{\infty}
+        F(u)\exp[+iux]\,\mathrm{d}u$
+        \hfill Frequenzen $F(u) \to$ Signal $f(x)$
+\end{itemize}
+
+\[
+  f(x)\;\xrightarrow{\;\mathrm{FT}\;}\;F(u)
+       \;\xrightarrow{\;\mathrm{iFT}\;}\;f(x).
+\]
 
 \textbf{Rücktransformation -- Frequenz im Signal:}
 \[
@@ -1451,6 +1515,8 @@ $F(u)$ ist üblicherweise \textbf{komplexwertig}: $F(u) = |F(u)|\cdot\exp[i\phi(
   |F(u)|\,\cos\bigl(\underbrace{u}_{\text{Frequenz}}x
   + \underbrace{\phi(u)}_{\text{Phase}}\bigr)\,\mathrm{d}u.
 \]
+Wir rekonstruieren $f(x)$, indem wir alle Sinuswellen aufaddieren mit:
+(1) Frequenz $u$, (2) Amplitude $|F(u)|$, (3) Phase $\phi(u)$.
 
 Je dichter die Stützstellen $F(u)$ (höhere Auflösung), desto besser wird
 $f(x)$ approximiert.
