@@ -2979,6 +2979,14 @@ Ziel: alle Pixel im Inneren eines Polygons finden. Das Scan-Line-Verfahren arbei
 
 \textbf{Lösung:} Statt einem Pixel entweder ganz zu zeichnen oder nicht, werden \textbf{Graustufen/Intensitäten} genutzt. Die Helligkeit eines Pixels ist proportional zum Anteil seiner Fläche, der von der (leicht verbreiterten) Linie überdeckt wird — Pixel direkt auf der Linie = hell, Pixel am Rand = halb-transparent. Bei Farbdarstellung: Überblendung zwischen Streckenfarbe und Hintergrundfarbe entsprechend dem Überdeckungsanteil.
 
+\begin{notebox}{Supersampling}
+\textbf{Supersampling} ist eine konkrete Methode für Anti-Aliasing: Jedes Pixel wird in ein feines Untergitter unterteilt (z.\,B.\ $4\times4 = 16$ Subpixel), jeder Subpixel einzeln berechnet, und die Farben anschließend \textbf{gemittelt} (Downsampling). Das Ergebnis: weiche Übergänge an Kanten, weil die Subpixel unterschiedlich stark von der Geometrie überdeckt werden.
+
+\textit{Intuition:} Man rendert das Bild intern in höherer Auflösung und skaliert es dann herunter — das Auge sieht keine Stufen mehr, sondern einen glatten Übergang.
+
+\textit{Nachteil:} Rechenaufwand steigt quadratisch mit dem Upsampling-Faktor. \textbf{MSAA} (Multisample AA) ist eine GPU-optimierte Variante, die nur an Kanten abtastet.
+\end{notebox}
+
 \subsubsection*{Koordinatentransformations-Pipeline}
 
 \[
