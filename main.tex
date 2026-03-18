@@ -2876,9 +2876,16 @@ Die verbleibenden Verfahren teilen sich in zwei Klassen — mit einem wichtigen 
 \textbf{Rasterbildbasierte Verfahren (D.5.3)}
 
 \begin{itemize}
-  \item \textbf{Z-Buffer (Tiefenpuffer):} Für jeden Pixel wird neben der Farbe auch die Tiefe (Abstand zum Augenpunkt) in einem Array gespeichert (initialisiert mit $\infty$). Beim Zeichnen jedes Polygons: ist das neue Pixel näher als der gespeicherte Wert? Ja → Farbe und Tiefe überschreiben. Nein → ignorieren. Einfach, schnell, in Hardware implementiert — \textbf{Standardverfahren} in moderner CG. Visualisierung: dunkel = nah, hell = weit.
+  \item \textbf{Z-Buffer (Tiefenpuffer):} Der PC verwaltet zwei Arrays der Größe $n \times m$ (Bildauflösung):
+  \begin{itemize}
+    \item \textbf{Bildbuffer (Color-Buffer):} speichert die Farbe jedes Pixels — das, was am Ende auf dem Monitor zu sehen ist.
+    \item \textbf{Tiefenpuffer (Z-Buffer):} speichert für jeden Pixel die Tiefe $z$ (Distanz zur Kamera) des Objekts, das diesen Pixel gerade „besitzt".
+  \end{itemize}
+  \textit{Algorithmus:} (1) Initialisierung: Bildbuffer mit Hintergrundfarbe füllen, Tiefenpuffer überall mit $\infty$. (2) Verrasterung: alle Polygone nacheinander auf die Bildebene projizieren; für jeden Bildpunkt $[i,j]$ die exakte Tiefe $z$ berechnen. (3) Tiefentest: ist $z < \text{Tiefenpuffer}[i,j]$? Ja → Farbe und Tiefenwert überschreiben. Nein → ignorieren. Einfach, schnell, in Hardware implementiert — \textbf{Standardverfahren} in moderner CG. Visualisierung: dunkel = nah, hell = weit.
 
-  \item \textbf{Scan-Line-Verfahren:} Das Bild wird zeilenweise abgearbeitet. Pro Zeile werden aktive Polygonkanten bestimmt, deren Schnittpunkte nach $x$ sortiert, und die sichtbaren Abschnitte pixelweise gezeichnet. Bei sich durchdringenden Polygonen müssen Tiefen an den Abschnittsenden verglichen werden.
+  \textbf{Z-Fighting:} Störender visueller Fehler — zwei Polygone liegen in der 3D-Welt exakt an derselben Stelle oder extrem nah beieinander. Farben und Texturen flackern ineinander, weil der Z-Buffer nicht entscheiden kann, welches Polygon vorne liegt. Ursache: begrenzter Speicher + Rundungsfehler bei der Tiefenberechnung → beide Tiefen sind gleich, keine deterministische Lösung. \textit{Vorbeugen:} Geometrie physisch trennen; Near- und Far-Plane enger setzen (verbessert Z-Buffer-Auflösung).
+
+  \item \textbf{Scan-Line-Verfahren:} Das Bild wird zeilenweise abgearbeitet. Pro Zeile: Schnittpunkte mit aktiven Polygonkanten bestimmen, nach $x$ sortieren, dann mit dem \textbf{In/Out-Prinzip} füllen: von links nach rechts laufen — trifft man die erste Kante eines Polygons, geht man \textit{hinein} (In); trifft man die nächste Kante desselben Polygons, geht man \textit{hinaus} (Out). Alle Pixel im In-Intervall gehören zum Inneren und werden eingefärbt. Bei \textbf{überlagernden Polygonen}: PC hält eine Liste aktiver Polygone; an jedem Schnittpunkt wird geprüft, welches Polygon an dieser Stelle die geringste Tiefe (= am nächsten zur Kamera) hat — das gewinnt das Intervall.
 
   \item \textbf{Warnock-Algorithmus:} Die Bildebene wird rekursiv durch Vierteilung in Teilbilder zerlegt. Pro Teilbild werden Polygone in vier Kategorien eingeteilt:
   \begin{itemize}
@@ -2940,6 +2947,13 @@ Ziel: alle Pixel im Inneren eines Polygons finden. Das Scan-Line-Verfahren arbei
 \end{enumerate}
 
 \textit{Spezialfall:} Horizontale Kanten werden ignoriert. Pixel auf der linken/unteren Kante eines Polygons gehören dazu, auf der rechten/oberen nicht — so entstehen keine Lücken oder Doppelbelegungen bei benachbarten Polygonen.
+
+\medskip
+\textbf{Anti-Aliasing (D.6.3):}
+
+\textbf{Problem (Aliasing):} Verasterte Linien sehen treppenartig aus — „Zerfallen" der Strecke in einzelne Pixelstufen. Ursache: zu grobe Abtastung (das Pixelraster ist zu grob für die ideale Linie).
+
+\textbf{Lösung:} Statt einem Pixel entweder ganz zu zeichnen oder nicht, werden \textbf{Graustufen/Intensitäten} genutzt. Die Helligkeit eines Pixels ist proportional zum Anteil seiner Fläche, der von der (leicht verbreiterten) Linie überdeckt wird — Pixel direkt auf der Linie = hell, Pixel am Rand = halb-transparent. Bei Farbdarstellung: Überblendung zwischen Streckenfarbe und Hintergrundfarbe entsprechend dem Überdeckungsanteil.
 
 \subsubsection*{Koordinatentransformations-Pipeline}
 
