@@ -2844,25 +2844,50 @@ Das \textbf{View Frustum} (Sichtpyramide) ist der Bereich, den die Kamera tatsä
 
 \textbf{Back-face Culling} (Vorverarbeitungsschritt): Polygone, deren Normalenvektor vom Betrachter \textit{wegzeigt}, sind Rückseiten — sie können niemals sichtbar sein und werden sofort verworfen. Das halbiert im Schnitt die Anzahl zu verarbeitender Polygone.
 
-\medskip
-Die verbleibenden Verfahren teilen sich in zwei Klassen:
+Kriterium: \textbf{Vorzeichen des Skalarprodukts} zwischen Blickrichtungsvektor $\mathbf{v}$ und Normalenvektor $\mathbf{n}$ des Polygons:
+\[
+  \mathbf{v} \cdot \mathbf{n} > 0 \;\Rightarrow\; \text{Rückseite (verwerfen)}
+  \qquad
+  \mathbf{v} \cdot \mathbf{n} \leq 0 \;\Rightarrow\; \text{Vorderseite (behalten)}
+\]
 
-\textbf{Szenenbasierte Verfahren (D.5.2)} — arbeiten auf der Geometrie, unabhängig von der Auflösung.
+\medskip
+Die verbleibenden Verfahren teilen sich in zwei Klassen — mit einem wichtigen architektonischen Unterschied:
 
 \begin{itemize}
-  \item \textbf{Painter's Algorithm:} Polygone werden von hinten nach vorne sortiert und in dieser Reihenfolge gezeichnet — spätere Polygone übermalen frühere. Einfach, aber falsch bei \textbf{zyklischen Überlagerungen} (A verdeckt B, B verdeckt C, C verdeckt A) oder sich durchdringenden Polygonen, weil keine eindeutige Sortierung existiert.
-
-  \item \textbf{BSP-Baum (Binary Space Partition):} In einer Vorverarbeitung wird der Raum rekursiv durch Ebenen in zwei Hälften zerlegt — es entsteht ein Binärbaum. Zur Laufzeit wird der Baum so traversiert, dass die Polygone automatisch in korrekter Reihenfolge geliefert werden. Aufwand: $O(n)$ pro Frame. Ideal für \textbf{statische Szenen} (Baum einmal bauen, beliebig oft nutzen).
+  \item \textbf{Szenenbasiert:} erst Sichtbarkeit berechnen (Polygone sortieren), dann verastern. Reihenfolge: Sichtbarkeit $\to$ Verrasterung.
+  \item \textbf{Rasterbildbasiert:} erst verastern (alle Polygone auf die Bildebene projizieren), dann pixelweise Sichtbarkeit entscheiden. Reihenfolge: Verrasterung $\to$ Sichtbarkeit.
 \end{itemize}
 
-\textbf{Rasterbildbasierte Verfahren (D.5.3)} — arbeiten pixelweise, auflösungsabhängig.
+\textbf{Szenenbasierte Verfahren (D.5.2)}
 
 \begin{itemize}
-  \item \textbf{Z-Buffer (Tiefenpuffer):} Für jeden Pixel wird neben der Farbe auch die Tiefe (Abstand zum Augenpunkt) gespeichert. Beim Zeichnen jedes Polygons: ist das neue Pixel näher als das gespeicherte? Ja → überschreiben. Nein → ignorieren. Einfach, schnell, in Hardware implementiert — \textbf{Standardverfahren} in moderner CG.
+  \item \textbf{Painter's Algorithm:} Polygone werden nach fallender Entfernung sortiert und von hinten nach vorne gezeichnet — nähere übermalen fernere. Einfach, aber falsch bei \textbf{zyklischen Überlagerungen} (A verdeckt B, B verdeckt C, C verdeckt A) oder sich durchdringenden Polygonen, weil keine eindeutige Sortierung existiert.
 
-  \item \textbf{Scan-Line-Verfahren:} Das Bild wird zeilenweise abgearbeitet. Für jede Zeile werden die Schnittpunkte mit allen Polygonkanten bestimmt und die sichtbaren Abschnitte dazwischen berechnet. Bei sich durchdringenden Polygonen müssen Tiefen an den Abschnittsenden verglichen werden.
+  \item \textbf{BSP-Baum (Binary Space Partition):}
 
-  \item \textbf{Warnock-Algorithmus:} Die Bildebene wird rekursiv durch Vierteilung zerlegt, bis jeder Teilbereich einfach genug ist, um die Sichtbarkeit direkt zu bestimmen (z.\,B.\ nur ein Polygon im Bereich). Selten in der Praxis, aber konzeptuell elegant.
+  \textit{Aufbau (einmalig):} Wähle ein Polygon $P$ — seine Ebene teilt die Szene in zwei Hälften. Polygone, die diese Ebene schneiden, werden in Teilpolygone zerlegt. $P$ wird Wurzel des Baums; die beiden Teilszenen werden rekursiv als linker und rechter Teilbaum aufgebaut.
+
+  \textit{Traversal (pro Frame):} Durchlaufe zuerst den Teilbaum, dessen Halbraum den Augenpunkt \textit{nicht} enthält (= weiter entfernte Seite). Füge dann das Polygon des aktuellen Knotens vorne an die Prioritätsliste. Durchlaufe dann den anderen Teilbaum. Das Ergebnis ist eine korrekte Back-to-Front-Reihenfolge in $O(n)$.
+
+  Vorteil: Baum nur einmal bauen, beliebig oft für verschiedene Augenpunkte nutzen — ideal für \textbf{statische Szenen}.
+\end{itemize}
+
+\textbf{Rasterbildbasierte Verfahren (D.5.3)}
+
+\begin{itemize}
+  \item \textbf{Z-Buffer (Tiefenpuffer):} Für jeden Pixel wird neben der Farbe auch die Tiefe (Abstand zum Augenpunkt) in einem Array gespeichert (initialisiert mit $\infty$). Beim Zeichnen jedes Polygons: ist das neue Pixel näher als der gespeicherte Wert? Ja → Farbe und Tiefe überschreiben. Nein → ignorieren. Einfach, schnell, in Hardware implementiert — \textbf{Standardverfahren} in moderner CG. Visualisierung: dunkel = nah, hell = weit.
+
+  \item \textbf{Scan-Line-Verfahren:} Das Bild wird zeilenweise abgearbeitet. Pro Zeile werden aktive Polygonkanten bestimmt, deren Schnittpunkte nach $x$ sortiert, und die sichtbaren Abschnitte pixelweise gezeichnet. Bei sich durchdringenden Polygonen müssen Tiefen an den Abschnittsenden verglichen werden.
+
+  \item \textbf{Warnock-Algorithmus:} Die Bildebene wird rekursiv durch Vierteilung in Teilbilder zerlegt. Pro Teilbild werden Polygone in vier Kategorien eingeteilt:
+  \begin{itemize}
+    \item \textbf{außerhalb:} komplett außerhalb des Teilbilds → ignorieren
+    \item \textbf{innerhalb:} komplett innerhalb → direkt zeichnen
+    \item \textbf{schneidend:} schneidet den Rand des Teilbilds
+    \item \textbf{umfassend:} umschließt das gesamte Teilbild
+  \end{itemize}
+  Abbruch (kein weiteres Unterteilen) wenn: alle Polygone außerhalb / nur ein Polygon vorhanden / ein umfassendes Polygon verdeckt alle anderen / Teilbild hat Pixelgröße.
 \end{itemize}
 
 \begin{notebox}{Verfahren im Vergleich}
