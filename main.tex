@@ -3058,12 +3058,36 @@ Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung o
   \item \texttt{buffer} — globaler GPU-Speicher, les- und schreibbar
 \end{itemize}
 
-\textbf{Weitere Shader-Typen:}
+\textbf{Stufen der GPU-Pipeline (in Reihenfolge):}
+
+\begin{center}
+\begin{tikzpicture}[
+  cbox/.style={rectangle, draw=black, minimum height=1.3cm, minimum width=2.0cm, align=center, font=\footnotesize},
+  pbox/.style={rectangle, draw=black, line width=1.4pt, minimum height=1.3cm, minimum width=2.0cm, align=center, font=\footnotesize},
+  arr/.style={->, >=Stealth, thick}]
+  \node[cbox] (cpu) {CPU};
+  \node[pbox, right=0.45cm of cpu] (vs) {\textbf{Vertex}\\Shader};
+  \node[pbox, right=0.45cm of vs] (pa) {Primitive\\Assembly,\\Tessellation\\Shaders};
+  \node[pbox, right=0.45cm of pa] (gs) {Geometry\\Shader,\\Clipping,\\Rasterization};
+  \node[pbox, right=0.45cm of gs] (fs) {\textbf{Fragment}\\Shader,\\Per-Fragment\\Operations};
+  \node[cbox, right=0.45cm of fs] (fb) {Frame-\\buffer};
+  \draw[arr] (cpu) -- (vs);
+  \draw[arr] (vs) -- (pa);
+  \draw[arr] (pa) -- (gs);
+  \draw[arr] (gs) -- (fs);
+  \draw[arr] (fs) -- (fb);
+\end{tikzpicture}
+\end{center}
+
 \begin{itemize}
-  \item \textbf{Tessellation Shader:} Unterteilt grobe Geometrie (Patches) in feinere Primitive — für LOD (Level of Detail).
-  \item \textbf{Geometry Shader:} Kann Primitive ändern, löschen oder neue erzeugen (z.\,B.\ Punkt → Dreieck).
-  \item \textbf{Compute Shader:} Allgemeine GPU-Berechnungen außerhalb der Grafik-Pipeline (z.\,B.\ Physik, KI).
+  \item \textbf{Vertex Shader} (programmierbar): Transformation (MVP) und Beleuchtung pro Vertex.
+  \item \textbf{Primitive Assembly + Tessellation:} Punkte zu Dreiecken zusammenfügen; Tessellation Shader unterteilt grobe Geometrie (Patches) in feinere Primitive — für LOD.
+  \item \textbf{Geometry Shader + Clipping + Rasterization:} Geometry Shader kann Primitive ändern/erzeugen (optional); Clipping verwirft unsichtbare Geometrie; Rasterizer wandelt Dreiecke in Fragmente um.
+  \item \textbf{Fragment Shader} (programmierbar): Texturierung + Phong-Beleuchtung pro Fragment. Kann Fragmente mit \texttt{discard} verwerfen.
+  \item \textbf{Framebuffer:} Ziel aller fertigen Pixel nach Z-Test und Blending.
 \end{itemize}
+
+\textbf{Compute Shader:} Allgemeine GPU-Berechnungen \textit{außerhalb} der Grafik-Pipeline (z.\,B.\ Physik, KI) — kein fester Platz in der Pipeline-Kette.
 
 \textbf{Shader-Lebenszyklus} (Laufzeit-Kompilierung):
 \begin{enumerate}
