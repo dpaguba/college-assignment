@@ -2975,7 +2975,19 @@ Ziel: alle Pixel im Inneren eines Polygons finden. Das Scan-Line-Verfahren arbei
 
 Die abstrakte 6-Schritte-Pipeline (Kapitel D) beschreibt \textit{was} berechnet wird. Die GPU-Pipeline beschreibt \textit{wie} es in Hardware umgesetzt wird.
 
-\textbf{Client-Server-Prinzip:} OpenGL trennt CPU (Client) und GPU (Server). Die CPU verwaltet die Szene und schickt Befehle; die GPU verarbeitet alles parallel und schreibt das fertige Bild in den Framebuffer.
+\textbf{Client-Server-Prinzip:} OpenGL trennt CPU (Client) und GPU (Server). Die CPU verwaltet die Szene und schickt Befehle; die GPU verarbeitet alles parallel und schreibt das fertige Bild in den Framebuffer. Vorteil: OpenGL ist dadurch \textbf{netzwerktransparent} — Client und Server können auf verschiedenen Rechnern laufen.
+
+\medskip
+\textbf{Zustandsmaschine (State Machine):} Die GPU befindet sich immer in einem definierten Zustand (aktive Textur, Shader, Transformationsmatrix usw.). Ein gesetzter Zustand bleibt erhalten, bis er explizit geändert wird — jede Zeichenoperation wird durch den aktuellen Zustand beeinflusst. Zustände können mit \texttt{glGet*} / \texttt{glIsEnabled} gelesen werden, was aber die Pipeline zum Stillstand bringen und die Performance beeinträchtigen kann.
+
+\medskip
+\textbf{Objektkonzept:} OpenGL kapselt Ressourcen (Texturen, Puffer, Shader) in Objekten — kein OOP, sondern ein \textbf{Handle-System}. Arbeitszyklus:
+\begin{enumerate}
+  \item \texttt{glGen*} — Objekt erzeugen, Server liefert einen eindeutigen Handle (Name).
+  \item \texttt{glBind*} — Objekt aktivieren (zum aktuellen Ziel für nachfolgende Befehle machen).
+  \item Daten übertragen / Objekt konfigurieren.
+  \item \texttt{glDelete*} — Ressourcen auf dem Server wieder freigeben.
+\end{enumerate}
 
 \medskip
 \textbf{Feste vs. programmierbare Pipeline:}
