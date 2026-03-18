@@ -2971,4 +2971,55 @@ Ziel: alle Pixel im Inneren eines Polygons finden. Das Scan-Line-Verfahren arbei
   \underbrace{\text{Raster-KS}}_{\text{Pixel}}
 \]
 
+\subsection*{E. GPU-basierte Graphik-Pipeline}
+
+Die abstrakte 6-Schritte-Pipeline (Kapitel D) beschreibt \textit{was} berechnet wird. Die GPU-Pipeline beschreibt \textit{wie} es in Hardware umgesetzt wird.
+
+\textbf{Client-Server-Prinzip:} OpenGL trennt CPU (Client) und GPU (Server). Die CPU verwaltet die Szene und schickt Befehle; die GPU verarbeitet alles parallel und schreibt das fertige Bild in den Framebuffer.
+
+\medskip
+\textbf{Feste vs. programmierbare Pipeline:}
+
+Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung oder Texturierung möglich. Moderne GPUs (OpenGL 2.0+) erlauben programmierbare Stufen via \textbf{GLSL-Shader}:
+
+\begin{itemize}
+  \item \textbf{Vertex Shader} (programmierbar): verarbeitet jeden Eckpunkt einzeln — Transformation (Model-View-Projektion) und Beleuchtung pro Vertex (Gouraud).
+  \item \textbf{Rasterizer} (fest): wandelt Dreiecke in Fragmente um und interpoliert Werte (Farben, Normalen) zwischen Eckpunkten. Nicht programmierbar.
+  \item \textbf{Fragment Shader} (programmierbar): berechnet die endgültige Farbe pro Fragment — Texturierung, Phong-Shading pro Pixel.
+\end{itemize}
+
+\textbf{SIMD-Prinzip:} Derselbe Shader-Code läuft gleichzeitig auf Tausende von Vertices/Fragmenten (Single Instruction, Multiple Data). Deshalb hat die GPU viele kleine parallele Kerne.
+
+\medskip
+\textbf{Datenübertragung CPU → GPU:}
+
+\begin{itemize}
+  \item \textbf{Immediate Mode (veraltet):} Vertices einzeln mit \texttt{glVertex} senden — GPU wartet auf CPU, extrem ineffizient.
+  \item \textbf{VBO (Vertex Buffer Object):} Großer Speicherblock direkt auf der GPU — Vertex-Daten (Positionen, Farben, Normalen) werden einmal hochgeladen und dann beliebig oft genutzt.
+  \item \textbf{VAO (Vertex Array Object):} Speichert den Zustand der Vertex-Attribute und deren Verknüpfung mit VBOs — ein einziger Bind-Befehl aktiviert die gesamte Geometrie.
+\end{itemize}
+
+\textbf{Ablauf der GPU-Pipeline:}
+\begin{enumerate}
+  \item Vertex-Daten aus VBOs → \textbf{Vertex Shader} (Transformation + Beleuchtung pro Vertex)
+  \item \textbf{Primitive Assembly \& Clipping}: Punkte zu Dreiecken zusammenfügen; alles außerhalb des View Frustums verwerfen
+  \item \textbf{Rasterizer}: Dreiecke → Fragmente; Werte zwischen Eckpunkten interpolieren
+  \item \textbf{Fragment Shader}: Texturierung + Phong-Beleuchtung pro Fragment
+  \item \textbf{Output Merging}: Z-Buffer-Test + Blending → Ergebnis in Framebuffer
+\end{enumerate}
+
+\begin{notebox}{GPU-Pipeline vs. abstrakte Pipeline}
+\begin{tabular}{ll}
+  \textbf{Abstrakte Pipeline (D)} & \textbf{GPU-Pipeline (E)} \\
+  \hline
+  Transformation & Vertex Shader \\
+  Beleuchtung (Gouraud) & Vertex Shader \\
+  Projektion & Vertex Shader \\
+  Clipping & Primitive Assembly \& Clipping \\
+  Verrasterung & Rasterizer \\
+  Beleuchtung (Phong) / Textur & Fragment Shader \\
+  Sichtbarkeit (Z-Buffer) & Output Merging \\
+\end{tabular}
+\end{notebox}
+
 \end{document}
