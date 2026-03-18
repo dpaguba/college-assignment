@@ -3086,4 +3086,35 @@ Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung o
 \end{tabular}
 \end{notebox}
 
+\subsection*{E.2. Szenengraphen}
+
+Ein Szenengraph ist eine hierarchische Datenstruktur zur Verwaltung komplexer 3D-Szenen. Grundstruktur: \textbf{gerichteter azyklischer Graph (DAG)} — keine Zyklen, Beziehungen nur in eine Richtung. In der einfachsten Form ein Baum.
+
+\textbf{Knotentypen:}
+\begin{itemize}
+  \item \textbf{Wurzelknoten:} Ausgangspunkt der gesamten Szene.
+  \item \textbf{Gruppenknoten (innere Knoten):} Fassen Kindknoten zusammen. Enthalten \textbf{Transformationen} (Translation, Rotation, Skalierung als homogene Matrix), die auf den gesamten darunterliegenden Teilbaum wirken.
+  \item \textbf{Blattknoten:} Enthalten die eigentliche \textbf{Geometrie} (Primitive: Punkte, Strecken, Polygone) oder andere Eigenschaften (Klang, Verhalten). \textbf{Geometrie steht immer in den Blättern.}
+\end{itemize}
+
+\textbf{Wichtige Konzepte:}
+\begin{itemize}
+  \item \textbf{Attributvererbung:} Farbe, Textur, Reflexion usw. werden vom Elternknoten an Kindknoten vererbt, sofern nicht explizit überschrieben.
+  \item \textbf{Lichtquellen und Kameras} sind ebenfalls Knoten — sie können an Geometrien geheftet werden und bewegen sich mit ihnen (z.\,B.\ Autoscheinwerfer).
+  \item \textbf{Wiederverwendung:} Derselbe Teilbaum kann mehrfach referenziert werden — vier identische Räder = ein Knoten, viermal eingebunden.
+  \item \textbf{Zustandspfad:} Der Pfad von Wurzel zu einem Blatt definiert den vollständigen Zustand (alle kumulierten Transformationen + Materialien) dieses Objekts.
+\end{itemize}
+
+\textbf{Java 3D (Implementierungsbeispiel):}
+\begin{itemize}
+  \item \textbf{VirtualUniverse} → \textbf{Locale} (Referenzkoordinatensystem)
+  \item \textbf{Inhaltsgraph (Content Branch):} Geometrie, Licht, Klang, Transformationen.
+  \item \textbf{Ansichtsgraph (View Branch):} Kameraparameter (Ort, Blickrichtung).
+  \item \textbf{Node} = Knoten im Graphen; \textbf{NodeComponent} = Geometrie/Aussehen, wird von Knoten referenziert, ist aber selbst kein Knoten.
+\end{itemize}
+
+\begin{notebox}{Prüfungshinweis}
+\textbf{Geometrie steht immer in den Blättern.} Transformationen stehen in den inneren Gruppenknoten und wirken auf alle darunter liegenden Knoten.
+\end{notebox}
+
 \end{document}
