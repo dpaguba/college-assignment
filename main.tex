@@ -3809,4 +3809,71 @@ Selektierbar, aktivierbar (öffnet z.\,B.\ Fenster), per Drag-and-Drop bewegbar.
   \item \textbf{Atlas:} Karten, Legenden, Zoom.
 \end{itemize}
 
+\subsection{Zeigegeräte}
+
+\textbf{Direkt vs. indirekt:}
+\begin{itemize}
+  \item \textbf{Direkt:} Benutzer zeigt unmittelbar auf das Display (z.\,B.\ Touchscreen).
+  \item \textbf{Indirekt:} Bewegung findet woanders statt und wird transformiert (z.\,B.\ Maus, Trackball, Joystick).
+\end{itemize}
+
+\textbf{Absolut vs. relativ:}
+\begin{itemize}
+  \item \textbf{Absolut:} Position des Geräts ist fest an ein Koordinatensystem gebunden — Cursor springt immer zur korrespondierenden Stelle (z.\,B.\ Grafiktablett).
+  \item \textbf{Relativ:} Cursor bewegt sich relativ zu seiner aktuellen Position — Abheben und Wiederaufsetzen der Maus ändert den Cursor nicht.
+\end{itemize}
+
+\textbf{Control/Display-Ratio (C/D-Ratio):} Verhältnis zwischen physischer Handbewegung und Cursorbewegung. Großes C/D → Cursor bewegt sich langsam → hohe Präzision. \textbf{Adaptives C/D:} bei schneller Bewegung großes Verhältnis (weite Strecken), bei langsamer Bewegung kleines Verhältnis (Feinpositionierung).
+
+\subsection{Dialoge und Formulare}
+
+\textbf{Dialoge} lösen zusammengesetzte Interaktionsaufgaben; \textbf{Formulare} sind Dialoge mit Fokus auf Texteingabe.
+
+\textbf{Widgets:}
+\begin{itemize}
+  \item Dialogkopf (Titel), Textfelder, Rollbalken, Buttons (OK / Abbrechen / Übernehmen)
+  \item \textbf{Togglebutton:} Zustand setzen/zurücksetzen; \textbf{Radiobutton:} genau eine Option aus einer Gruppe
+  \item \textbf{Listbox:} Listenauswahl; \textbf{Combobox:} ausklappbare Liste + Textfeld
+  \item \textbf{Paletten:} grafische Auswahl bei sich ausschließenden Optionen
+  \item Numerische Eingabe: Pfeiltasten-Felder, \textbf{Slider}, analoge Anzeigen
+  \item \textbf{Tabs/Karteikarten:} logische Gruppierung zusammengehöriger Elemente
+\end{itemize}
+
+\textbf{Modalität:}
+\begin{itemize}
+  \item \textbf{Modal:} muss abgeschlossen werden bevor weitere Aktionen möglich sind.
+    \begin{itemize}
+      \item \textit{Applikationsmodal:} blockiert nur die aktuelle Anwendung.
+      \item \textit{Systemmodal:} blockiert das gesamte System (z.\,B.\ kritische Fehlermeldung).
+    \end{itemize}
+  \item \textbf{Nicht-modal:} kann jederzeit unterbrochen werden.
+\end{itemize}
+
+\subsection{Fat Finger Problem}
+
+Zwei Kernprobleme bei Touch-Interfaces:
+\begin{itemize}
+  \item \textbf{Verdeckungsproblem:} Finger verdeckt das Zielobjekt während der Interaktion.
+  \item \textbf{Präzisionsproblem:} Fingerabdruck ist flächig und winkelabhängig — exakter Berührpunkt ist schwer zu definieren.
+\end{itemize}
+
+\textbf{Lösungen für Verdeckung:}
+\begin{itemize}
+  \item Große Bedienelemente (iOS/Android: 7–9\,mm, Mindestabstand 2\,mm).
+  \item \textbf{SHIFT-Technik:} Inhalt unter dem Finger wird oberhalb als Kopie eingeblendet; Bestätigung erst beim Abheben.
+  \item \textbf{Buchstabenvergrößerung} bei virtuellen Tastaturen.
+  \item Eingabe auf der \textbf{Geräterückseite} mit Cursor-Einblendung vorne.
+\end{itemize}
+
+\textbf{Lösungen für Präzision:}
+\begin{itemize}
+  \item \textbf{Cursor Offset:} Cursor wird leicht oberhalb des Berührpunkts angezeigt.
+  \item Vergrößerte sensitive Fläche (größer als visuelle Darstellung).
+  \item \textbf{Swype-Tastatur:} kontinuierliche Wischbewegung statt einzelner Tastenanschläge — Wörterbuch erkennt den Pfad.
+  \item \textbf{Sliding Widgets:} kleine Elemente per Wischgeste in vorgegebener Richtung aktivieren.
+  \item \textbf{Adaptives C/D bei Slidern:} Finger weit vom Zentrum → großes C/D → Feineinstellung.
+\end{itemize}
+
+Jede Berührung soll sofort \textbf{Feedback} auslösen (visuell, akustisch oder haptisch).
+
 \end{document}
