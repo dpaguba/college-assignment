@@ -2995,9 +2995,17 @@ Die abstrakte 6-Schritte-Pipeline (Kapitel D) beschreibt \textit{was} berechnet 
 Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung oder Texturierung möglich. Moderne GPUs (OpenGL 2.0+) erlauben programmierbare Stufen via \textbf{GLSL-Shader}:
 
 \begin{itemize}
-  \item \textbf{Vertex Shader} (programmierbar): verarbeitet jeden Eckpunkt einzeln — Transformation (Model-View-Projektion) und Beleuchtung pro Vertex (Gouraud).
-  \item \textbf{Rasterizer} (fest): wandelt Dreiecke in Fragmente um und interpoliert Werte (Farben, Normalen) zwischen Eckpunkten. Nicht programmierbar.
-  \item \textbf{Fragment Shader} (programmierbar): berechnet die endgültige Farbe pro Fragment — Texturierung, Phong-Shading pro Pixel.
+  \item \textbf{Vertex Shader} (programmierbar): verarbeitet jeden Eckpunkt einzeln — Transformation (Model-View-Projektion) und Beleuchtung pro Vertex (Gouraud). Kann keine Vertices löschen oder neu erzeugen.
+  \item \textbf{Rasterizer} (fest): wandelt Dreiecke in Fragmente um und interpoliert Vertex-Attribute (Farben, Normalen) über die Fläche. Nicht programmierbar.
+  \item \textbf{Fragment Shader} (programmierbar): berechnet die endgültige Farbe pro Fragment — Texturierung, Phong-Shading pro Pixel. Kann Fragmente mit \texttt{discard} verwerfen (→ werden nicht gezeichnet).
+\end{itemize}
+
+\textbf{Zentrale Begriffe:}
+\begin{itemize}
+  \item \textbf{Vertex:} Enthält alle Attribute eines Punktes: 3D-Koordinaten, Farbe, Normale, Texturkoordinaten.
+  \item \textbf{Fragment:} Ein „potenzieller Pixel" mit Farbe, Tiefe, Alpha — entsteht durch Verrasterung. Noch nicht endgültig sichtbar (kann im Z-Test scheitern).
+  \item \textbf{Pixel:} Die tatsächlich sichtbare Information auf dem Bildschirm — das Ergebnis nach allen Tests.
+  \item \textbf{Framebuffer:} Die digitale Leinwand (Rastergrafik), in die OpenGL die fertigen Pixel schreibt.
 \end{itemize}
 
 \textbf{SIMD-Prinzip:} Derselbe Shader-Code läuft gleichzeitig auf Tausende von Vertices/Fragmenten (Single Instruction, Multiple Data). Deshalb hat die GPU viele kleine parallele Kerne.
