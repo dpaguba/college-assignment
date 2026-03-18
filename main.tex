@@ -1540,6 +1540,20 @@ wir, wie gut das Signal $f(x)$ mit einer Sinuswelle der Frequenz $u$
 Polarform: $F(u) = |F(u)|\cdot e^{i\phi(u)}$.}
 \end{figure}
 
+\begin{notebox}{Hermitesche Symmetrie (reellwertige Signale)}
+Für ein reellwertiges Signal $f(x,y)$ gilt:
+\[
+  F(u,v) = \overline{F(-u,-v)}
+\]
+d.\,h.\ konjugiert-symmetrisches Spektrum. Daraus folgt:
+\begin{itemize}
+  \item $|F(u,v)| = |F(-u,-v)|$ -- das Amplitudenspektrum ist punktsymmetrisch.
+  \item Die Quadranten III und IV enthalten nur die konjugierten Punkte der Quadranten I und II.
+  \item Es gibt daher höchstens $N/2$ unabhängige Frequenzen.
+  \item Die FFT reellwertiger Signale muss daher nur die Hälfte des Spektrums berechnen.
+\end{itemize}
+\end{notebox}
+
 \textbf{Vorwärts- und Rücktransformation:}
 \begin{itemize}
   \item \textbf{Vorwärts (FT):}
