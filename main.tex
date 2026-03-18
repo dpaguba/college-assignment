@@ -2302,64 +2302,13 @@ Probe: $T\cdot(1,2,3,1)^T = (8,6,4,1)^T$ \checkmark
 
   \item \textbf{Beleuchtung (Lighting)}
 
-  Berechnung der Lichtintensität an den Eckpunkten anhand von Materialeigenschaften, Oberflächennormalen und Lichtquellen. Typisches Verfahren: \textbf{Gouraud-Shading} -- die Beleuchtungsfunktion (BSF) wird nur an den Stützstellen (Vertices) berechnet; dazwischen wird interpoliert.
-
-  \item \textbf{Clipping}
-
-  Alles außerhalb des \textbf{View Frustums} (Sichtpyramide) wird abgeschnitten -- sechs Ebenen: links, rechts, oben, unten, nah, fern. Ziel: keine unnötige Berechnung für Objekte, die sowieso nicht sichtbar sind.
-
-  \item \textbf{Projektion}
-
-  Überführung der 3D-Koordinaten in eine 2D-Bildebene. Zwei Arten:
-  \begin{itemize}
-    \item \textbf{Perspektivische Projektion:} Objekte werden mit Abstand kleiner (wie im echten Leben).
-    \item \textbf{Parallelprojektion:} Abstände verändern die Größe nicht.
-  \end{itemize}
-  Ergebnis: normalisierte Projektionskoordinaten (NDC).
-
-  \item \textbf{Sichtbarkeitsberechnung}
-
-  Entfernung verdeckter Flächen. Standardverfahren: \textbf{Tiefenpufferalgorithmus (Z-Buffer)} -- für jeden Pixel wird die Tiefe (Abstand zur Kamera) gespeichert; das nähere Objekt gewinnt.
-
-  \item \textbf{Verrasterung (Rasterization)}
-
-  Umwandlung der Geometrie (Dreiecke, Linien) in diskrete Pixel. Dabei werden Farben zwischen den Eckpunkten interpoliert und \textbf{Texturen} auf Oberflächen aufgebracht.
+  Berechnung der Lichtintensität an den Eckpunkten anhand von Materialeigenschaften, Oberflächennormalen und Lichtquellen.
 
 \end{enumerate}
 
-\subsubsection*{Koordinatentransformations-Pipeline}
+% --- Details zu Schritt 2: Beleuchtung ---
 
-\[
-  \underbrace{\text{Lokale KS}}_{\text{Objekt}}
-  \;\to\;
-  \underbrace{\text{Weltkoordinaten}}_{\text{Szene}}
-  \;\to\;
-  \underbrace{\text{Kamera-KS}}_{\text{Viewing}}
-  \;\to\;
-  \underbrace{\text{NDC}}_{\text{Clipping}}
-  \;\to\;
-  \underbrace{\text{Bildschirm-KS}}_{\text{2D}}
-  \;\to\;
-  \underbrace{\text{Raster-KS}}_{\text{Pixel}}
-\]
-
-\begin{notebox}{Zusammenfassung für die Klausur}
-\begin{tabular}{lll}
-  \textbf{Schritt} & \textbf{Kernaufgabe} & \textbf{Schlüsselbegriff} \\
-  \hline
-  Transformation     & Positionierung im Raum          & Affine Abbildung, Matrizen \\
-  Beleuchtung        & Farbwertberechnung              & Gouraud-Shading, BSF \\
-  Clipping           & Unsichtbares abschneiden        & View Frustum \\
-  Projektion         & $3D \to 2D$                     & Perspektivisch / Parallel \\
-  Sichtbarkeit       & Verdeckungen lösen              & Z-Buffer \\
-  Verrasterung       & Pixel füllen                    & Interpolation, Textur \\
-\end{tabular}
-\end{notebox}
-
-
-% ============================================================
-\subsection{Beleuchtungsmodell von Phong (D.3.2)}
-% ============================================================
+\textbf{Beleuchtungsmodell von Phong (D.3.2)}
 
 Das Phong-Modell ist ein \textbf{lokales Beleuchtungsmodell}: Es betrachtet nur die Interaktion zwischen einer Lichtquelle und einem einzelnen Oberflächenpunkt -- keine Reflexionen zwischen Objekten werden berücksichtigt.
 
@@ -2503,9 +2452,7 @@ Erweiterung der Phong-Formel durch Schattenterm $S_i$:
     \end{enumerate}
 \end{itemize}
 
-% ============================================================
-\subsection{Shading-Modelle (D.3.3)}
-% ============================================================
+\subsubsection*{Shading-Modelle (D.3.3)}
 
 \textbf{Beleuchtungsmodell} = Lichtquellenmodell + Reflexions- und Transmissionsmodell (Material) + Lichttransportmodell
 
@@ -2515,45 +2462,34 @@ Erweiterung der Phong-Formel durch Schattenterm $S_i$:
 
 Jeder Vertex $p_j$ enthält: Koordinaten $(x,y,z)$, Normalenvektor $(n_x, n_y, n_z)$, Farbwert $(r,g,b)$.
 
-\subsubsection*{Flat-Shading}
-
-Keine Interpolation -- es wird \textbf{ein Farbwert pro Polygon} bestimmt:
+\textbf{Flat-Shading:} Keine Interpolation -- ein \textbf{Farbwert pro Polygon}:
 \begin{itemize}
-  \item \textbf{Variante 1:} Mittelwert der Farbwerte an allen Eckpunkten (nach dem Beleuchtungsmodell)
-  \item \textbf{Variante 2:} Auswahl eines repräsentativen Punktes; Farbe nur an diesem Punkt berechnet
+  \item Variante 1: Mittelwert der Farbwerte an allen Eckpunkten (nach dem Beleuchtungsmodell)
+  \item Variante 2: Auswahl eines repräsentativen Punktes; Farbe nur an diesem Punkt berechnet
 \end{itemize}
-Alle vom Polygon überdeckten sichtbaren Pixel werden mit diesem einen Farbwert gefärbt.
+Einzelne Polygone sind als klare Flächen deutlich sichtbar. Schnell, aber \textbf{geringe Qualität} (keine Plastizität).
 
-Einzelne Polygone sind als klare Flächen \textbf{deutlich sichtbar}. Einfache Implementierung, sehr schnell -- aber \textbf{geringe Qualität} (keine Plastizität).
-
-\subsubsection*{Gouraud-Shading (,,Smooth Shading'')}
-
+\textbf{Gouraud-Shading (,,Smooth Shading''):}
 \begin{enumerate}
-  \item Berechne die Farbwerte \textbf{an den Eckpunkten (Vertices)} des Polygons nach dem Beleuchtungsmodell.
-  \item \textbf{Lineare Interpolation} der Farbwerte von den Ecken in das Innere des Polygons (entlang der Scanlines).
+  \item Berechne die Farbwerte \textbf{an den Eckpunkten (Vertices)} nach dem Beleuchtungsmodell.
+  \item \textbf{Lineare Interpolation} der Farbwerte von den Ecken ins Innere des Polygons (entlang der Scanlines).
 \end{enumerate}
+Kanten zwischen Polygonen sind nicht mehr sichtbar. \textbf{Problem:} Liegt ein Glanzpunkt in der Mitte eines Polygons, wird er verschluckt -- die Lokalität geht verloren.
 
-Aufwändiger als Flat-Shading, aber qualitativ besser. Kanten zwischen Polygonen sind nicht mehr sichtbar.
-
-\textbf{Problem:} Liegt ein Glanzpunkt physikalisch in der \textbf{Mitte eines Polygons}, liegt er nicht auf einem Vertex -- die Lokalität geht verloren, der Glanzpunkt wird verschluckt (da nur zwischen dunklen Eckwerten interpoliert wird).
-
-\subsubsection*{Phong-Shading}
-
+\textbf{Phong-Shading:}
 \begin{enumerate}
-  \item Benötige Material- und \textbf{Normalenattribute} für die Eckpunkte des Polygons.
-  \item \textbf{Interpoliere die Normalenvektoren} der Eckpunkte über die gesamte Fläche des Polygons.
-  \item Berechne an \textbf{jedem Pixel} im Inneren des Polygons einen Farbwert aus der interpolierten Normalen (Beleuchtungsmodell wird pro Pixel ausgewertet).
+  \item Benötige Material- und \textbf{Normalenattribute} für die Eckpunkte.
+  \item \textbf{Interpoliere die Normalenvektoren} der Eckpunkte über die Fläche des Polygons.
+  \item Berechne an \textbf{jedem Pixel} einen Farbwert aus der interpolierten Normalen.
 \end{enumerate}
-
-Aufwendiger als Gouraud-Shading, aber die \textbf{besten Ergebnisse}. Glanzpunkte im Inneren eines Polygons werden korrekt dargestellt. Hinweis: Es gibt einige Sonderfälle, die auch Phong-Shading nicht korrekt darstellen kann.
+Beste Ergebnisse, Glanzpunkte korrekt. Aufwendiger -- das Beleuchtungsmodell wird pro Pixel ausgewertet.
 
 \begin{examplebox}{Klausurbeispiel: Rechenaufwand}
-Gegeben: ein Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesamt).
-
-\begin{tabular}{ll}
-  \textbf{Gouraud-Shading:} & 3 Beleuchtungsberechnungen (nur Eckpunkte; Rest = günstige Interpolation) \\
-  \textbf{Phong-Shading:}   & 31 Beleuchtungsberechnungen (3 Eckpunkte + 28 innere Pixel) \\
-\end{tabular}
+Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesamt):
+\begin{itemize}
+  \item \textbf{Gouraud:} 3 Beleuchtungsberechnungen (nur Eckpunkte)
+  \item \textbf{Phong:} 31 Beleuchtungsberechnungen (3 Eckpunkte + 28 innere Pixel)
+\end{itemize}
 \end{examplebox}
 
 \begin{notebox}{Vergleich der Shading-Verfahren}
@@ -2568,4 +2504,59 @@ Gegeben: ein Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (3
 \end{tabular}
 \end{notebox}
 
+% --- Weiter mit Schritten 3–6 ---
+
+\begin{enumerate}[resume]
+
+  \item \textbf{Clipping}
+
+  Alles außerhalb des \textbf{View Frustums} (Sichtpyramide) wird abgeschnitten -- sechs Ebenen: links, rechts, oben, unten, nah, fern. Ziel: keine unnötige Berechnung für Objekte, die sowieso nicht sichtbar sind.
+
+  \item \textbf{Projektion}
+
+  Überführung der 3D-Koordinaten in eine 2D-Bildebene. Zwei Arten:
+  \begin{itemize}
+    \item \textbf{Perspektivische Projektion:} Objekte werden mit Abstand kleiner (wie im echten Leben).
+    \item \textbf{Parallelprojektion:} Abstände verändern die Größe nicht.
+  \end{itemize}
+  Ergebnis: normalisierte Projektionskoordinaten (NDC).
+
+  \item \textbf{Sichtbarkeitsberechnung}
+
+  Entfernung verdeckter Flächen. Standardverfahren: \textbf{Tiefenpufferalgorithmus (Z-Buffer)} -- für jeden Pixel wird die Tiefe (Abstand zur Kamera) gespeichert; das nähere Objekt gewinnt.
+
+  \item \textbf{Verrasterung (Rasterization)}
+
+  Umwandlung der Geometrie (Dreiecke, Linien) in diskrete Pixel. Dabei werden Farben zwischen den Eckpunkten interpoliert und \textbf{Texturen} auf Oberflächen aufgebracht.
+
+\end{enumerate}
+
+\subsubsection*{Koordinatentransformations-Pipeline}
+
+\[
+  \underbrace{\text{Lokale KS}}_{\text{Objekt}}
+  \;\to\;
+  \underbrace{\text{Weltkoordinaten}}_{\text{Szene}}
+  \;\to\;
+  \underbrace{\text{Kamera-KS}}_{\text{Viewing}}
+  \;\to\;
+  \underbrace{\text{NDC}}_{\text{Clipping}}
+  \;\to\;
+  \underbrace{\text{Bildschirm-KS}}_{\text{2D}}
+  \;\to\;
+  \underbrace{\text{Raster-KS}}_{\text{Pixel}}
+\]
+
+\begin{notebox}{Zusammenfassung für die Klausur}
+\begin{tabular}{lll}
+  \textbf{Schritt} & \textbf{Kernaufgabe} & \textbf{Schlüsselbegriff} \\
+  \hline
+  Transformation     & Positionierung im Raum          & Affine Abbildung, Matrizen \\
+  Beleuchtung        & Farbwertberechnung              & Gouraud-Shading, BSF \\
+  Clipping           & Unsichtbares abschneiden        & View Frustum \\
+  Projektion         & $3D \to 2D$                     & Perspektivisch / Parallel \\
+  Sichtbarkeit       & Verdeckungen lösen              & Z-Buffer \\
+  Verrasterung       & Pixel füllen                    & Interpolation, Textur \\
+\end{tabular}
+\end{notebox}
 \end{document}
