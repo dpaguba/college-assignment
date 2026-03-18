@@ -1833,8 +1833,12 @@ visualisieren.
         \[ f(x,y) \ast\ast h(x,y) \;\circ\!=\!\bullet\; F(u,v)\cdot H(u,v). \]
         $\Rightarrow$ Rechenaufwand erheblich geringer.
 
-  \item \textbf{FFT (Fast Fourier Transform):} Divide-\&-Conquer-Algorithmus;
-        reduziert den Aufwand von $O(M^2)$ auf $O(M\log M)$.
+  \item \textbf{FFT (Fast Fourier Transform):} Divide-\&-Conquer-Algorithmus
+        zur effizienten Berechnung der diskreten Fouriertransformation.
+        Sie nutzt die Symmetrien der DFT aus, um den Rechenaufwand von
+        $O(N^2)$ auf $O(N\log N)$ zu reduzieren, indem das Signal
+        rekursiv in zwei Hälften geteilt und die Zwischenergebnisse
+        wiederverwendet werden.
 \end{itemize}
 
 % -----------------------------------------
