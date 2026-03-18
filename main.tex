@@ -3465,11 +3465,26 @@ Eine B-Spline-Kurve $P(t)$ wird durch \textbf{de Boor-Punkte} $B_i$ (Kontrollpun
 
 \subsubsection*{Knotenvektor}
 
-Der Knotenvektor $x_0 \leq x_1 \leq \cdots$ steuert, wie die Parameter auf die Segmente verteilt werden:
+Der Knotenvektor $x_0 \leq x_1 \leq \cdots$ steuert den Verlauf der Basisfunktionen. Einzige Bedingung: \textbf{Monotonie} ($x_i \leq x_{i+1}$), keine strikte Monotonie nötig — Mehrfachknoten sind erlaubt. Wird in der Cox-de Boor-Formel der Nenner null, gilt per Definition: $0/0 := 0$.
+
+\textbf{Typen:}
 \begin{itemize}
-  \item \textbf{Uniform:} gleichabständige Knoten, z.\,B.\ $0, 1, 2, 3, \dots$
-  \item \textbf{Offen (Open Knot Vector):} Mehrfachknoten an den Enden — die Kurve interpoliert den ersten und letzten Kontrollpunkt (wie Bézier).
+  \item \textbf{Periodisch uniform:} gleichabständige Knoten über den gesamten Bereich. Die Basisfunktionen sind lediglich verschobene Kopien voneinander: $N_{i,k}(t) = N_{i-1,k}(t-1)$. Kurve interpoliert die Endpunkte \textit{nicht}.
+  \item \textbf{Offen uniform:} je $k$ Mehrfachknoten an beiden Enden, z.\,B.\ $[0,0,0,1,2,3,3,3]$ für $k=3$. Die Kurve interpoliert den ersten und letzten Kontrollpunkt (wie Bézier).
+  \item \textbf{Nichtuniform:} ungleiche Abstände oder Mehrfachknoten im Inneren — erlaubt gezielte lokale Formgebung oder Knicke.
 \end{itemize}
+
+\begin{center}
+\begin{tabular}{lll}
+  & \textbf{Periodisch uniform} & \textbf{Offen uniform} \\
+  \hline
+  Anzahl Knoten & $n + k$ & $n + k$ \\
+  Parameterbereich & $[k-1,\; n]$ & $[0,\; n-k+1]$ \\
+  Endpunkte interpoliert & nein & ja \\
+\end{tabular}
+\end{center}
+
+\textit{Geschlossene Splines:} Um eine B-Spline-Kurve zu schließen, periodischen Knotenvektor verwenden und $k-2$ Kontrollpunkte vom Anfang am Ende wiederholen.
 
 \begin{notebox}{Spezialfall: B-Spline = Bézier}
 Ist die Ordnung $k$ gleich der Anzahl der Kontrollpunkte $n$ und wird ein offener Knotenvektor verwendet, reduziert sich die B-Spline-Basis zur \textbf{Bernstein-Basis} — die B-Spline-Kurve wird zur Bézier-Kurve.
