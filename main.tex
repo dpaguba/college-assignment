@@ -2309,8 +2309,6 @@ Probe: $T\cdot(1,2,3,1)^T = (8,6,4,1)^T$ \checkmark
 
 % --- Details zu Schritt 2: Beleuchtung ---
 
-\textbf{Beleuchtungsmodell von Phong (D.3.2)}
-
 Das Phong-Modell ist ein \textbf{lokales Beleuchtungsmodell}: Es betrachtet nur die Interaktion zwischen einer Lichtquelle und einem einzelnen Oberflächenpunkt -- keine Reflexionen zwischen Objekten werden berücksichtigt.
 
 \begin{definitionbox}{Phong-Formel (zusammengefasst)}
@@ -2565,10 +2563,7 @@ Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesa
 
 % --- Details zu Schritt 3: Clipping + Picking ---
 
-\subsubsection*{Clipping (D.4.2)}
-
-Abschneiden von Teilen einer Szene, die außerhalb eines
-gegebenen Bereichs liegen. Clipping entscheidet für jedes Objekt: ist es \textbf{komplett sichtbar}, \textbf{komplett unsichtbar} oder \textbf{halb-halb}? Komplett unsichtbare Objekte werden sofort verworfen -- das spart den teuersten Teil der Pipeline. Nur teilweise sichtbare Objekte müssen tatsächlich geschnitten werden.
+Clipping entscheidet für jedes Objekt: ist es \textbf{komplett sichtbar}, \textbf{komplett unsichtbar} oder \textbf{halb-halb}? Komplett unsichtbare Objekte werden sofort verworfen -- das spart den teuersten Teil der Pipeline. Nur teilweise sichtbare Objekte müssen tatsächlich geschnitten werden.
 
 Im 3D-Fall definiert das \textbf{View Frustum} (Sichtpyramide) den sichtbaren Bereich durch sechs Ebenen (links, rechts, oben, unten, nah, fern). Alles außerhalb fliegt raus.
 
@@ -2618,8 +2613,6 @@ Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.
 \end{enumerate}
 
 % --- Details zu Schritt 4: Projektion ---
-
-\subsubsection*{Projektion (D.4.4)}
 
 \textbf{Lochkamera} (das Standardmodell in der CG): kein Objektiv, nur ein Punkt (Projektionszentrum, PZ) und eine Bildebene. Kein Unschärfe-Effekt, da alles durch denselben Punkt läuft. In einer echten Lochkamera steht das Bild auf dem Kopf — in der CG schiebt man die Bildebene einfach \textit{vor} das PZ, dann ist es wieder aufrecht.
 
