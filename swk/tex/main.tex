@@ -1,0 +1,1157 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------- Encoding & Language ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+% ---------- Fonts ----------
+\usepackage{lmodern}
+
+% ---------- Layout ----------
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+]{geometry}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ---------- Header / Footer ----------
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Sections styling ----------
+\usepackage{titlesec}
+
+% Section: groß, fett, mit Linie darunter
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection}{1em}{}
+  [\vspace{2pt}\hrule height 0.8pt\vspace{4pt}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+% Subsection: normal fett, deutlich sichtbar
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+  [\vspace{1pt}\hrule height 0.3pt\vspace{2pt}]
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% Subsubsection: normalsize, fett
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% ---------- Boxes ----------
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{definitionbox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Definition}, #1
+}
+\newtcolorbox{notebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Hinweis}, #1
+}
+\newtcolorbox{examplebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Beispiel}, #1
+}
+
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, decorations.pathreplacing}
+
+% ---------- Math ----------
+\usepackage{amsmath, amssymb}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt}
+
+% ---------- Figures ----------
+\usepackage{float}
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Misc ----------
+\usepackage{microtype}
+
+% =========================================
+%                DOCUMENT
+% =========================================
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries SWK}\\[6pt]
+  {\large Vorlesungsnotizen}\\[4pt]
+  {\small Stand: \today}
+\end{center}
+
+\vspace{1em}
+\tableofcontents
+\newpage
+
+% =========================================
+
+% =========================================
+\section{Software Konstruktion}
+% =========================================
+
+Softwarekonstruktion ist ingenieurmäßiges Vorgehen bei der Erstellung von Software:
+planbar, überprüfbar und wiederholbar statt handwerklich und personenabhängig.
+
+\begin{definitionbox}
+\textbf{Ingenieurmäßiges Vorgehen} heißt: Anforderungen werden erhoben und
+spezifiziert, eine Lösung wird entworfen und dokumentiert, die Umsetzung wird
+gemessen und geprüft, und jede dieser Tätigkeiten hinterlässt ein nachvollziehbares
+Ergebnis.
+\end{definitionbox}
+
+\subsection{Strukturelle und funktionale Qualität}
+
+\begin{itemize}
+  \item \textbf{Funktionale Qualität:} Tut die Software das Richtige?
+        Merkmale: Korrektheit, Zuverlässigkeit, Sicherheit, Performanz.
+        Sichtbar für den Nutzer, prüfbar durch Tests gegen Anforderungen.
+  \item \textbf{Strukturelle Qualität:} Ist die Software gut gebaut?
+        Merkmale: Wartbarkeit, Verständlichkeit, Testbarkeit, Wiederverwendbarkeit.
+        Unsichtbar für den Nutzer, prüfbar durch Metriken, Reviews und statische
+        Analyse.
+\end{itemize}
+
+Der Unterschied ist prüfungsrelevant: funktionale Qualität wird gegen die
+Spezifikation getestet, strukturelle Qualität gegen Standards und Metriken gemessen.
+
+\begin{notebox}
+Schlechte strukturelle Qualität kostet nicht sofort. Sie kostet bei jeder Änderung,
+und der Effekt ist kumulativ. Genau deshalb braucht sie automatisierte Messung: sie
+meldet sich nicht von allein.
+\end{notebox}
+
+% =========================================
+\section{Anforderungen und Spezifikation}
+% =========================================
+
+\subsection{Arten von Anforderungen}
+
+\begin{itemize}
+  \item \textbf{Funktionale Anforderungen:} Was das System tun soll.
+        \glqq{}Das System berechnet den Rabatt aus Warenkorbwert und Kundenstatus.\grqq{}
+  \item \textbf{Nichtfunktionale Anforderungen (Qualitätsattribute):} Wie gut es das
+        tun soll. Antwortzeit, Verfügbarkeit, Skalierbarkeit, Sicherheit.
+  \item \textbf{Randbedingungen (Constraints):} Vorgaben, die nicht verhandelbar sind.
+        Zielplattform, gesetzliche Auflagen, vorhandene Systeme.
+\end{itemize}
+
+Nichtfunktionale Anforderungen treiben die Architektur; funktionale Anforderungen
+treiben die Implementierung. Deshalb beginnt ADD (Abschnitt~\ref{sec:add}) mit den
+Qualitätsattributen und nicht mit den Use Cases.
+
+\subsection{Gute Anforderungen}
+
+Eine Anforderung ist brauchbar, wenn sie \textbf{überprüfbar} ist. Die übliche
+Checkliste:
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+\textbf{Kriterium} & \textbf{Gegenbeispiel} \\
+\hline
+eindeutig      & \glqq{}Das System soll schnell sein.\grqq{} \\
+vollständig    & \glqq{}Fehler werden behandelt.\grqq{} (welche? wie?) \\
+widerspruchsfrei & zwei Anforderungen fordern Gegenteiliges \\
+überprüfbar    & \glqq{}benutzerfreundlich\grqq{} ohne Messvorschrift \\
+verfolgbar     & Anforderung ohne Quelle und ohne Test \\
+\hline
+\end{tabular}
+\end{center}
+
+Aus \glqq{}schnell\grqq{} wird überprüfbar: \emph{95\,\% der Suchanfragen werden in
+unter 200\,ms beantwortet, gemessen serverseitig bei 100 gleichzeitigen Nutzern.}
+
+\subsection{User Stories und Use Cases}
+
+\textbf{User Story:} \emph{Als \textless{}Rolle\textgreater{} möchte ich
+\textless{}Ziel\textgreater{}, um \textless{}Nutzen\textgreater{}.}
+Kurz, verhandelbar, mit Akzeptanzkriterien. Sie ist eine Erinnerung an ein Gespräch,
+keine Spezifikation.
+
+\textbf{Use Case:} Ablauf mit Akteur, Vorbedingung, Standardablauf, Alternativabläufen
+und Nachbedingung. Deutlich formaler und geeignet, wenn das Zusammenspiel vieler
+Schritte das Schwierige ist.
+
+\subsection{Logik: Erfüllbarkeit, Widerspruch, Implikation}
+\label{sec:logik}
+
+Anforderungen lassen sich als aussagenlogische Formeln über Booleschen Variablen
+schreiben. Drei Begriffe, die in der Verifikation wiederkehren:
+
+\begin{definitionbox}
+Seien $\varphi, \psi$ Formeln in KNF.
+\begin{itemize}
+  \item \textbf{Erfüllbarkeit (SAT):} $\varphi$ ist erfüllbar, wenn eine Belegung
+        $v$ existiert mit $\beta[\varphi, v] = 1$.
+  \item \textbf{Widerspruch:} $\varphi$ und $\psi$ sind widersprüchlich, wenn
+        $(\varphi \wedge \psi)$ nicht erfüllbar ist.
+  \item \textbf{Implikation:} $\varphi \models \psi$ gilt, wenn
+        $(\varphi \wedge \neg\psi)$ nicht erfüllbar ist.
+\end{itemize}
+\end{definitionbox}
+
+\begin{notebox}
+Der letzte Punkt ist der Schlüssel zum gesamten Verifikationsteil der Vorlesung.
+\emph{Jede} Implikationsfrage wird beantwortet, indem man ein Modell der Negation
+sucht. Findet man eines, ist es ein Gegenbeispiel; findet man keines, gilt die
+Implikation.
+\end{notebox}
+
+% =========================================
+\section{Vorgehensmodelle und Prozessreife}
+% =========================================
+
+\subsection{Wasserfall und V-Modell}
+
+Das \textbf{Wasserfallmodell} ordnet die Phasen streng sequenziell: Anforderungen,
+Entwurf, Implementierung, Test, Betrieb. Jede Phase endet mit einem Dokument, und
+Rücksprünge sind teuer.
+
+Das \textbf{V-Modell} biegt den Wasserfall zu einem V und ordnet jeder
+konstruktiven Phase eine Teststufe zu.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, minimum width=3.1cm, minimum height=0.75cm, align=center,
+              font=\small},
+  >=Stealth, node distance=0.35cm
+]
+  \node[box] (anf)  at (0, 4.2)  {Anforderungen};
+  \node[box] (grob) at (1.5, 2.8){Grobentwurf};
+  \node[box] (fein) at (3.0, 1.4){Feinentwurf};
+  \node[box] (impl) at (4.5, 0.1){Implementierung};
+
+  \node[box] (unit) at (6.0, 1.4){Modultest};
+  \node[box] (integ)at (7.5, 2.8){Integrationstest};
+  \node[box] (abn)  at (9.0, 4.2){Abnahmetest};
+
+  \draw[->] (anf) -- (grob);
+  \draw[->] (grob) -- (fein);
+  \draw[->] (fein) -- (impl);
+  \draw[->] (impl) -- (unit);
+  \draw[->] (unit) -- (integ);
+  \draw[->] (integ) -- (abn);
+
+  \draw[dashed, <->] (anf)  -- node[above, font=\scriptsize] {validiert} (abn);
+  \draw[dashed, <->] (grob) -- node[above, font=\scriptsize] {validiert} (integ);
+  \draw[dashed, <->] (fein) -- node[above, font=\scriptsize] {validiert} (unit);
+\end{tikzpicture}
+\caption{V-Modell: jede Entwurfsstufe hat ihre Teststufe}
+\end{figure}
+
+Die waagerechten Linien sind der eigentliche Inhalt: der Abnahmetest prüft gegen die
+Anforderungen, der Integrationstest gegen den Grobentwurf, der Modultest gegen den
+Feinentwurf. Ein Test ohne zugehöriges Dokument prüft gegen nichts.
+
+\subsection{Agiles Vorgehen und Scrum}
+
+Scrum ersetzt die lange Phasenkette durch kurze, vollständige Zyklen.
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+\textbf{Rollen} & \textbf{Artefakte} & \textbf{Ereignisse} \\
+\hline
+Product Owner & Product Backlog & Sprint Planning \\
+Scrum Master  & Sprint Backlog  & Daily Scrum \\
+Entwicklungsteam & Increment    & Sprint Review \\
+              & Definition of Done & Sprint Retrospective \\
+\hline
+\end{tabular}
+\end{center}
+
+Der Product Owner verantwortet \emph{was}, das Team verantwortet \emph{wie}, der
+Scrum Master verantwortet, dass der Prozess funktioniert. Diese Trennung ist der
+häufigste Prüfungspunkt.
+
+\begin{notebox}
+Scrum ist kein Vorgehensmodell für Entwurf, sondern für Steuerung. Was gebaut wird,
+entscheidet der Backlog; \emph{wie} es strukturiert wird, sagt Scrum nicht. Deshalb
+schließen sich Scrum und Architekturarbeit nicht aus.
+\end{notebox}
+
+\subsection{CMMI: Prozessreife}
+
+CMMI misst nicht die Software, sondern den \emph{Prozess}, der sie herstellt. Fünf
+Reifegrade:
+
+\begin{center}
+\begin{tabular}{clp{7.4cm}}
+\hline
+\textbf{Grad} & \textbf{Name} & \textbf{Kennzeichen} \\
+\hline
+1 & Initial     & Erfolg hängt an einzelnen Personen, Prozesse ad hoc \\
+2 & Managed     & Projekte werden geplant, verfolgt und gesteuert \\
+3 & Defined     & Ein organisationsweiter Standardprozess existiert \\
+4 & Quantitatively Managed & Der Prozess wird quantitativ gemessen und gesteuert \\
+5 & Optimizing  & Der Prozess wird auf Basis der Messung systematisch verbessert \\
+\hline
+\end{tabular}
+\end{center}
+
+Der Sprung von 3 auf 4 ist der interessante: ab dort wird der Prozess mit Zahlen
+gesteuert, was ohne Grad 3 nicht geht, weil es vorher keinen gemeinsamen Prozess
+gibt, über den man Zahlen bilden könnte.
+
+% =========================================
+\section{Schätzen und Messen}
+% =========================================
+
+\subsection{Zwei- und Dreipunktschätzung}
+
+Der Aufwand eines Arbeitspakets ist eine Zufallsgröße mit unbekannter Dichte. Man
+schätzt drei Werte und \emph{nimmt eine Verteilung an}:
+
+\begin{definitionbox}
+Mit kleinstem Wert $a$, mittlerem Wert $c$ und größtem Wert $b$:
+\[
+E(x) = \frac{a + r\cdot c + b}{2 + r}, \qquad
+V(x) = \frac{(b-a)^2}{u^2}, \qquad
+S(x) = \frac{b-a}{u}
+\]
+\end{definitionbox}
+
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\textbf{Annahme} & $r$ & $u$ \\
+\hline
+Zweipunktschätzung & 0 & 6 \\
+PERT (Beta-Näherung) & 4 & 6 \\
+Beta ($p=q=3$, quadratisch) & 4 & 5{,}29 \\
+Beta ($p=q=4$, kubisch) & 6 & 6 \\
+Beta ($p=4$, $q=2$) & 4 & 5{,}6 \\
+\hline
+\end{tabular}
+\end{center}
+
+Damit ist die Zweipunktschätzung $E = \frac{a+b}{2}$ und die Dreipunktschätzung
+$E = \frac{a + 4c + b}{6}$, beide mit $S = \frac{b-a}{6}$.
+
+\subsection{Aggregation über Arbeitspakete}
+
+\[
+E = \sum_i E_i, \qquad S = \sqrt{\sum_i S_i^2}
+\]
+
+Erwartungswerte addieren sich, Standardabweichungen \emph{nicht}: es addieren sich die
+Varianzen. Fünf Pakete mit je $S_i = 6$ ergeben zusammen $S = 13{,}4$ und nicht $30$.
+
+\begin{notebox}
+Das gilt nur bei \textbf{unabhängigen} Paketen. Ein gemeinsamer Engpass, ein
+gemeinsamer Zulieferer oder eine Person, die in allen Paketen steckt, zerstört die
+Annahme, und keine Formel bemerkt das.
+\end{notebox}
+
+\subsubsection*{Beispiel: Spieleprojekt (Übungsblatt 2)}
+
+\begin{center}
+\begin{tabular}{lrrr|rr}
+\hline
+\textbf{Komponente} & $a$ & $c$ & $b$ & $E$ (3-Pkt.) & $S$ \\
+\hline
+Datenverwaltung   &  8 &  20 &  25 &  18{,}83 &  2{,}83 \\
+Gamelogik         & 30 &  64 & 128 &  69{,}00 & 16{,}33 \\
+Grafikengine      & 42 & 121 & 180 & 117{,}67 & 23{,}00 \\
+Gamepad-Interface &  8 &  16 &  20 &  15{,}33 &  2{,}00 \\
+Security          & 10 &  30 &  45 &  29{,}17 &  5{,}83 \\
+\hline
+\textbf{Summe}    &    &     &     & \textbf{250{,}00} & \textbf{29{,}01} \\
+\hline
+\end{tabular}
+\end{center}
+
+Zweipunktschätzung: $E = 248{,}00$ bei identischem $S = 29{,}01$. Das ist kein Zufall:
+$S$ hängt nur von der Spannweite ab, nicht vom mittleren Wert.
+
+\subsection{Velocity}
+
+\begin{definitionbox}
+\textbf{Velocity} ist die Anzahl Story Points, die ein Team pro Sprint
+\emph{fertigstellt}. Story Points messen Umfang, nicht Zeit; Velocity ist die einzige
+Brücke zwischen beiden, und sie wird gemessen, nicht geschätzt.
+\end{definitionbox}
+
+Regeln aus der Vorlesung:
+
+\begin{itemize}
+  \item Nur \textbf{fertige} Stories zählen. Halb fertige Arbeit bringt null Punkte.
+  \item Nach etwa drei Sprints pendelt sich die Velocity ein.
+  \item Danach plant man mit dem \textbf{Median} der letzten Sprints, nicht mit dem
+        Mittelwert: der Median ist robust gegen einen einzelnen schlechten Sprint.
+\end{itemize}
+
+\subsubsection*{Beispiel (Übungsblatt 2, Aufgabe 2.2)}
+
+\begin{center}
+\begin{tabular}{crrl}
+\hline
+\textbf{Sprint} & \textbf{geplant} & \textbf{tatsächlich} & \textbf{fertiggestellt} \\
+\hline
+1 & 15 & 11 & U2, U3, U4 \\
+2 & 16 & 11 & U1, U5, U7 \\
+3 & 15 & 10 & U6, U8 \\
+4 &  9 &  5 & U9 \\
+5 &  4 &  4 & U10 \\
+\hline
+\end{tabular}
+\end{center}
+
+Median der letzten drei Sprints: $5$. Insgesamt wurden $41$ von $59$ zugesagten
+Punkten geliefert, das Team übernimmt sich also systematisch. Zwei typische Ursachen
+für sinkende Velocity: wachsende technische Schulden und Aufgaben, die nicht im
+Sprint Backlog stehen (Support, Störungen).
+
+\subsection{Planning Poker}
+
+Alle schätzen gleichzeitig, die Extreme begründen sich, es wird neu geschätzt. Das
+Ergebnis ist der Konsens, das Produkt ist die Diskussion.
+
+Die Kartenfolge ist bewusst nicht linear: $1, 2, 3, 5, 8, 13, 21$. Große Stories
+lassen sich nicht genauer schätzen als kleine, und die wachsenden Abstände sagen
+das ehrlich, statt eine Unterscheidung zwischen 17 und 18 anzubieten.
+
+\textbf{Triangulation:} Schätzungen werden gegeneinander geprüft, nicht gegen Stunden.
+Ist die 2-Punkte-Story wirklich doppelt so groß wie die 1-Punkte-Story? Sind beide
+5-Punkte-Stories ähnlich groß?
+
+\subsection{Messen im Betrieb: GQM und KPI}
+
+\begin{definitionbox}
+\textbf{GQM (Goal -- Question -- Metric)} nach Basili und Rombach: erst das Ziel, dann
+die Fragen, die man beantworten muss, und erst dann die Metriken, die diese Fragen
+beantworten. Nie in der umgekehrten Richtung.
+\end{definitionbox}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node/.style={draw, rounded corners, minimum height=0.7cm, align=center,
+               font=\small, inner sep=4pt},
+  >=Stealth
+]
+  \node[node] (g) at (0, 2.4) {\textbf{Goal:} Conversion Rate im Onboarding erhöhen};
+  \node[node] (q1) at (-4.2, 1.1) {Q1: Wie viele\\ schließen ab?};
+  \node[node] (q2) at (0, 1.1)    {Q2: Wie lange\\ dauert es?};
+  \node[node] (q3) at (4.2, 1.1)  {Q3: Wo brechen\\ sie ab?};
+  \node[node] (m1) at (-4.2, -0.4){M: Abschlussquote};
+  \node[node] (m2) at (0, -0.4)   {M: Median-Dauer};
+  \node[node] (m3) at (4.2, -0.4) {M: Schritt mit\\ größtem Abbruch};
+
+  \draw[->] (g) -- (q1);  \draw[->] (g) -- (q2);  \draw[->] (g) -- (q3);
+  \draw[->] (q1) -- (m1); \draw[->] (q2) -- (m2); \draw[->] (q3) -- (m3);
+\end{tikzpicture}
+\caption{GQM-Baum: die Pfeilrichtung ist die Methode}
+\end{figure}
+
+Ein \textbf{KPI} ist eine Kennzahl, an die eine \emph{Entscheidung} gekoppelt ist.
+Eine Kennzahl, bei der niemand anders handeln würde, ist Dekoration.
+
+\begin{notebox}
+\textbf{Goodharts Gesetz:} Sobald eine Kennzahl zum Ziel wird, hört sie auf, ein gutes
+Maß zu sein. Typisches Muster: die Kennzahl steigt stetig, das eigentliche Ergebnis
+bewegt sich nicht.
+\end{notebox}
+
+\subsection{A/B-Tests}
+
+Monitoring sagt, \emph{was} passiert ist. Ein Experiment sagt, ob die eigene Änderung
+es \emph{verursacht} hat.
+
+Der Stichprobenumfang wird \textbf{vorher} bestimmt, aus Basisrate, kleinstem
+relevanten Effekt, Signifikanzniveau $\alpha$ und Power. Bei Basisrate 10\,\%:
+
+\begin{center}
+\begin{tabular}{lr}
+\hline
+\textbf{Zu erkennender Effekt} & \textbf{Nutzer je Gruppe} \\
+\hline
+$+20\,\%$ & 3\,841 \\
+$+10\,\%$ & 14\,751 \\
+$+5\,\%$  & 57\,763 \\
+\hline
+\end{tabular}
+\end{center}
+
+Halbiert man den Effekt, vervierfacht sich die Stichprobe.
+
+\begin{notebox}
+\textbf{Der p-Wert ist nicht die Wahrscheinlichkeit, dass die Änderung wirkt.} Er sagt:
+wenn die Änderung nichts bewirkt, wie oft erzeugt der Zufall allein einen so großen
+Unterschied.
+\end{notebox}
+
+\textbf{Peeking:} Wer den laufenden Test wiederholt anschaut und beim ersten
+signifikanten Ergebnis abbricht, erhöht die Fehlerrate drastisch. In der Simulation
+mit zwei \emph{identischen} Gruppen: 5\,\% falsche Signifikanzen bei einmaliger
+Auswertung am Ende, 17\,\% bei zehnmaligem Hineinschauen.
+
+% =========================================
+\section{Architektur und Modellierung}
+% =========================================
+
+\subsection{Kopplung und Kohäsion}
+
+\begin{definitionbox}
+\textbf{Kopplung} ist das Maß dafür, wie stark ein Element mit anderen verbunden ist,
+Wissen über sie besitzt oder von ihnen abhängt.
+
+\textbf{Kohäsion} ist das Maß dafür, wie stark zusammenhängend die
+Verantwortlichkeiten innerhalb eines Elements sind.
+\end{definitionbox}
+
+Die Entwurfsregel lautet: \textbf{Kopplung minimieren, Kohäsion maximieren}. Beides
+zugleich ist oft ein Zielkonflikt, denn Verantwortlichkeiten zusammenzuziehen erhöht
+die Kohäsion und schafft neue Beziehungen nach außen.
+
+Typische Formen der Kopplung zwischen $A$ und $B$: $A$ hat ein Attribut vom Typ $B$,
+$A$ ruft einen Dienst von $B$ auf, $A$ hat eine Methode mit $B$ als Parameter,
+Rückgabewert oder lokaler Variable, $A$ erbt von $B$, $A$ implementiert die
+Schnittstelle $B$.
+
+Folgen starker Kopplung: lokale Änderungen ziehen Änderungen in verbundenen Klassen
+nach sich, Klassen sind einzeln schwer zu verstehen und schwer wiederzuverwenden.
+Folgen geringer Kohäsion: unklare Verantwortung, schlechte Verständlichkeit,
+schlechtere Wartbarkeit.
+
+\subsection{LCOM}
+\label{sec:lcom}
+
+\begin{definitionbox}
+Für eine Klasse mit $a$ Feldern und $m$ Methoden sei $n(A_i)$ die Zahl der Methoden,
+die auf Feld $A_i$ zugreifen. Dann ist
+\[
+LCOM = \frac{\left(\frac{1}{a}\sum_{i=1}^{a} n(A_i)\right) - m}{1 - m}
+\]
+mit Wertebereich $[0,1]$. $0$ bedeutet hohe Kohäsion (jede Methode nutzt jedes Feld),
+$1$ bedeutet sehr geringe Kohäsion.
+\end{definitionbox}
+
+\subsubsection*{Beispiele}
+
+\textbf{Dreieck:} $a=3$, $m=4$, jedes Feld von jeder Methode genutzt.
+\[
+LCOM = \frac{\frac{1}{3}\cdot 12 - 4}{1-4} = \frac{4-4}{-3} = 0
+\]
+
+\textbf{Figur (Dreieck und Kreis verschmolzen):} $a=4$, $m=8$, jedes Feld weiterhin von
+nur vier Methoden genutzt.
+\[
+LCOM = \frac{\frac{1}{4}\cdot 16 - 8}{1-8} = \frac{4-8}{-7} = \frac{4}{7} \approx 0{,}57
+\]
+
+\textbf{Übungsaufgabe:} $A_1, A_2, A_3$ und $m_1 \dots m_4$ mit
+$m_1: \{A_1, A_2\}$, $m_2: \{A_2\}$, $m_3: \{A_2, A_3\}$, $m_4: \{A_3\}$.
+Also $n(A_1) = 1$, $n(A_2) = 3$, $n(A_3) = 2$, Summe $6$:
+\[
+LCOM = \frac{\frac{1}{3}\cdot 6 - 4}{1-4} = \frac{2-4}{-3} = \frac{2}{3} \approx 0{,}67
+\]
+Das ist weit von $0$ entfernt und deutet auf mittlere bis geringe Kohäsion hin.
+
+\subsection{Sichten}
+
+Eine Architektur wird nicht in einem Bild dargestellt, sondern in mehreren
+\textbf{Sichten}, weil verschiedene Fragen verschiedene Strukturen betreffen:
+
+\begin{center}
+\begin{tabular}{lp{8.2cm}}
+\hline
+\textbf{Sicht} & \textbf{Beantwortet} \\
+\hline
+Baustein / Modul & Woraus besteht das System, wer hängt von wem ab? \\
+Laufzeit         & Welche Prozesse und Objekte existieren zur Laufzeit, wie kommunizieren sie? \\
+Verteilung       & Auf welcher Hardware läuft was? \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{SOLID}
+
+\begin{center}
+\begin{tabular}{llp{7.2cm}}
+\hline
+\textbf{S} & Single Responsibility & Eine Klasse hat genau einen Grund, sich zu ändern \\
+\textbf{O} & Open/Closed & Offen für Erweiterung, geschlossen für Änderung \\
+\textbf{L} & Liskov Substitution & Untertypen müssen ohne Bruch an die Stelle des Obertyps treten können \\
+\textbf{I} & Interface Segregation & Viele kleine Schnittstellen statt einer großen \\
+\textbf{D} & Dependency Inversion & Abhängigkeit auf Abstraktionen, nicht auf Implementierungen \\
+\hline
+\end{tabular}
+\end{center}
+
+Single Responsibility ist die Kohäsionsregel aus Abschnitt~\ref{sec:lcom} in Worten,
+Dependency Inversion die Kopplungsregel: Abhängigkeiten sollen von instabilen zu
+stabilen Bausteinen zeigen.
+
+\subsection{ADD 3.0: Attribute Driven Design}
+\label{sec:add}
+
+ADD ist ein \emph{iteratives} Entwurfsverfahren, das von Qualitätsattributen ausgeht
+und nicht von Funktionen. Sieben Schritte je Iteration:
+
+\begin{enumerate}
+  \item \textbf{Eingaben prüfen} -- Ziele, Use Cases, Qualitätsszenarien,
+        Randbedingungen und Concerns sichten und priorisieren.
+  \item \textbf{Iterationsziel festlegen} -- welches Designziel diese Iteration
+        verfolgt, etwa \glqq{}Primärfunktion strukturieren\grqq{} oder
+        \glqq{}Latenzproblem adressieren\grqq{}.
+  \item \textbf{Zu verfeinernde Elemente wählen} -- welche Systemteile bearbeitet
+        werden, typischerweise vom Groben zum Detail.
+  \item \textbf{Designkonzepte auswählen} -- Muster und Taktiken identifizieren und
+        gegeneinander abwägen.
+  \item \textbf{Elemente instanziieren, Verantwortungen zuordnen, Schnittstellen
+        definieren} -- konkrete Bausteine samt Protokollen und Datenflüssen.
+  \item \textbf{Sichten skizzieren und Entscheidungen protokollieren} -- inklusive
+        Begründung und verworfener Alternativen.
+  \item \textbf{Analyse und Review gegen das Iterationsziel} -- Abdeckung,
+        Restrisiken, Aufgaben für die nächste Iteration.
+\end{enumerate}
+
+Iterativ heißt: nicht die ganze Architektur auf einmal, sondern je Runde ein
+priorisiertes Ziel. Vorteile: frühe Rückmeldung, beherrschbare Entscheidungen und
+die Möglichkeit, bei geänderten Treibern die Richtung zu wechseln.
+
+% =========================================
+\section{Automation}
+% =========================================
+
+\subsection{Build und Abhängigkeiten}
+
+Ein Build-Werkzeug (Maven, Gradle, npm) macht drei Dinge reproduzierbar: die
+\textbf{Abhängigkeiten} mit ihren Versionen, die \textbf{Schritte} vom Quelltext zum
+Artefakt und die \textbf{Umgebung}, in der das geschieht.
+
+Transitive Abhängigkeiten sind der schwierige Teil: A braucht B, B braucht C in
+Version 1, D braucht C in Version 2. Version-Locking und Konfliktauflösung sind
+deshalb Kernfunktionen des Werkzeugs und keine Nebensache.
+
+\subsection{Continuous Integration und Delivery}
+
+\begin{itemize}
+  \item \textbf{Continuous Integration:} Jede Änderung wird zeitnah integriert und
+        automatisch gebaut und getestet. Ziel ist, Integrationsfehler früh und in
+        kleinen Portionen zu finden.
+  \item \textbf{Continuous Delivery:} Jeder erfolgreiche Build ist prinzipiell
+        auslieferbar. Die Freigabe bleibt eine Entscheidung.
+  \item \textbf{Continuous Deployment:} Jeder erfolgreiche Build wird automatisch
+        ausgeliefert.
+\end{itemize}
+
+Eine Pipeline ordnet die Prüfungen nach Kosten: erst Kompilieren und Modultests,
+dann Integrationstests, dann langsame Prüfungen wie Last- oder Sicherheitstests. Wer
+teuer vor billig prüft, bezahlt jede triviale Regression mit voller Laufzeit.
+
+% =========================================
+\section{Qualitätssicherung und Programmanalyse}
+% =========================================
+
+\subsection{Einordnung der Verfahren}
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+ & \textbf{statisch} (ohne Ausführung) & \textbf{dynamisch} (mit Ausführung) \\
+\hline
+\textbf{prüfend}  & Review, Coding Standards, Metriken & Test, Überdeckungsmessung \\
+\textbf{beweisend}& Programmanalyse, Model Checking, Hoare & -- \\
+\hline
+\end{tabular}
+\end{center}
+
+Ein Test zeigt die Anwesenheit von Fehlern, nie deren Abwesenheit. Ein Beweis zeigt
+die Abwesenheit, kostet aber eine Spezifikation und einen Aufwand, den man sich
+gezielt aussuchen muss.
+
+\subsection{Metriken}
+
+\begin{itemize}
+  \item \textbf{LOC:} Zeilen Code. Einfachster Indikator, misst Tippen und nicht
+        Schwierigkeit.
+  \item \textbf{LCOM:} fehlende Kohäsion, siehe Abschnitt~\ref{sec:lcom}.
+  \item \textbf{CC:} zyklomatische Komplexität, siehe unten.
+\end{itemize}
+
+Ein \textbf{Coding Standard} ist erst dann ein Standard, wenn seine Regeln
+maschinell prüfbar sind: ein Build kann daran scheitern. Werkzeuge wie PMD suchen
+dafür Muster im abstrakten Syntaxbaum.
+
+\subsection{Die Sprache While}
+
+\[
+S ::= [x := a]^l \mid [\texttt{skip}]^l \mid S_1; S_2
+      \mid \texttt{if } [b]^l \texttt{ then } S_1 \texttt{ else } S_2
+      \mid \texttt{while } [b]^l \texttt{ do } S
+\]
+
+Labels identifizieren Anweisungen \textbf{eindeutig}. Vier Funktionen darauf:
+
+\[
+\begin{aligned}
+init([x := a]^l) &= l                & final([x := a]^l) &= \{l\} \\
+init(S_1; S_2) &= init(S_1)          & final(S_1; S_2) &= final(S_2) \\
+init(\texttt{if } [b]^l \dots) &= l  & final(\texttt{if } [b]^l \texttt{ then } S_1 \texttt{ else } S_2) &= final(S_1) \cup final(S_2) \\
+init(\texttt{while } [b]^l \dots) &= l & final(\texttt{while } [b]^l \texttt{ do } S) &= \{l\}
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+flow(S_1; S_2) &= flow(S_1) \cup flow(S_2) \cup \{(l, init(S_2)) : l \in final(S_1)\}\\
+flow(\texttt{if } [b]^l \texttt{ then } S_1 \texttt{ else } S_2)
+  &= flow(S_1) \cup flow(S_2) \cup \{(l, init(S_1)), (l, init(S_2))\}\\
+flow(\texttt{while } [b]^l \texttt{ do } S)
+  &= flow(S) \cup \{(l, init(S))\} \cup \{(l', l) : l' \in final(S)\}
+\end{aligned}
+\]
+
+\begin{definitionbox}
+Der \textbf{Kontrollflussgraph} eines Programms $S$ ist $(V, E)$ mit
+$V = labels(S)$ und $E = flow(S)$.
+\end{definitionbox}
+
+\subsubsection*{Beispiel}
+
+\begin{minipage}{0.42\textwidth}
+\[
+\begin{aligned}
+&[y := x]^1;\\
+&[z := 1]^2;\\
+&\texttt{while } [y > 1]^3 \texttt{ do}\\
+&\quad [z := x * y]^4;\\
+&\quad [y := y - 1]^5;\\
+&[y := 0]^6
+\end{aligned}
+\]
+\end{minipage}
+\hfill
+\begin{minipage}{0.52\textwidth}
+\begin{tikzpicture}[
+  n/.style={draw, rounded corners, minimum width=1.9cm, minimum height=0.6cm,
+            font=\scriptsize},
+  t/.style={draw, diamond, aspect=2, inner sep=1pt, font=\scriptsize},
+  >=Stealth, node distance=0.75cm
+]
+  \node[n] (a) {$[y := x]^1$};
+  \node[n, below=of a] (b) {$[z := 1]^2$};
+  \node[t, below=of b] (c) {$[y>1]^3$};
+  \node[n, right=1.2cm of c] (d) {$[z := x{*}y]^4$};
+  \node[n, below=of d] (e) {$[y := y{-}1]^5$};
+  \node[n, below=of c] (f) {$[y := 0]^6$};
+
+  \draw[->] (a) -- (b);
+  \draw[->] (b) -- (c);
+  \draw[->] (c) -- node[above, font=\tiny] {wahr} (d);
+  \draw[->] (d) -- (e);
+  \draw[->] (e) -- ++(1.3,0) |- ++(0,2.1) -| (c);
+  \draw[->] (c) -- node[left, font=\tiny] {falsch} (f);
+\end{tikzpicture}
+\end{minipage}
+
+\[
+flow = \{(1,2), (2,3), (3,4), (4,5), (5,3), (3,6)\}
+\]
+
+\subsection{Zyklomatische Komplexität}
+
+\begin{definitionbox}
+$CC = e - n + 2p$ mit $e$ Kanten, $n$ Knoten und $p$ Zusammenhangskomponenten des
+Kontrollflussgraphen. $CC$ ist die Zahl der unabhängigen Pfade.
+\end{definitionbox}
+
+Für das Beispiel: $6 - 6 + 2 \cdot 1 = 2$. Geradliniger Code hat $CC = 1$, jede
+Verzweigung erhöht den Wert um eins. $CC$ ist eine untere Schranke für die Zahl der
+Testfälle, die man für Zweigüberdeckung braucht.
+
+\subsection{Reaching Definitions}
+
+\begin{definitionbox}
+Ein Paar $(x, l)$ bedeutet: die Zuweisung an Label $l$ kann hier noch der aktuelle
+Wert von $x$ sein. $(x, ?)$ bedeutet: $x$ ist möglicherweise nicht initialisiert.
+\end{definitionbox}
+
+\[
+\begin{aligned}
+kill_{RD}([x := a]^l) &= \{(x,?)\} \cup \{(x,l') : [B]^{l'} \text{ weist } x \text{ zu}\} \\
+gen_{RD}([x := a]^l) &= \{(x,l)\} \\
+kill_{RD}([\texttt{skip}]^l) &= kill_{RD}([b]^l) = \emptyset,\quad
+gen_{RD}([\texttt{skip}]^l) = gen_{RD}([b]^l) = \emptyset
+\end{aligned}
+\]
+
+\[
+RD_{entry}(l) =
+\begin{cases}
+\{(x,?) : x \in FV(S)\} & \text{für } l = init(S)\\
+\bigcup \{RD_{exit}(l') : (l',l) \in flow(S)\} & \text{sonst}
+\end{cases}
+\]
+\[
+RD_{exit}(l) = \bigl(RD_{entry}(l) \setminus kill_{RD}([B]^l)\bigr) \cup gen_{RD}([B]^l)
+\]
+
+Die Analyse ist \textbf{vorwärts} und eine \textbf{may}-Analyse: vereinigt wird, weil
+eine Definition ein Label erreicht, wenn sie es auf \emph{irgendeinem} Pfad erreicht.
+Anwendung: Ist $(x,?)$ am Eingang eines Labels, das $x$ liest, liegt möglicherweise
+eine Benutzung vor der Initialisierung vor.
+
+\subsection{Die vier klassischen Datenflussanalysen}
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+ & \textbf{may} (Vereinigung) & \textbf{must} (Schnitt) \\
+\hline
+\textbf{vorwärts}  & Reaching Definitions & Available Expressions \\
+\textbf{rückwärts} & Live Variables & Very Busy Expressions \\
+\hline
+\end{tabular}
+\end{center}
+
+Alle vier sind derselbe Algorithmus mit vier Stellschrauben: Richtung, Verknüpfung an
+Zusammenflüssen, Startwert und die Funktionen $kill$ und $gen$. Die Transferfunktion
+ist immer $(\text{eingehend} \setminus kill) \cup gen$.
+
+\subsection{Strukturierte operationelle Semantik}
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+$\langle \texttt{skip}, v\rangle \Rightarrow v$ & [SKIP] \\
+$\langle x := a, v\rangle \Rightarrow v[x \mapsto c]$, \ $c = \alpha[a,v]$ & [ASS] \\
+$\langle \texttt{if } b \texttt{ then } S_1 \texttt{ else } S_2, v\rangle \Rightarrow \langle S_1, v\rangle$, falls $\beta[b,v]=1$ & [IF$_T$] \\
+$\langle \texttt{if } b \texttt{ then } S_1 \texttt{ else } S_2, v\rangle \Rightarrow \langle S_2, v\rangle$, falls $\beta[b,v]=0$ & [IF$_F$] \\
+$\langle \texttt{while } b \texttt{ do } S, v\rangle \Rightarrow \langle S; \texttt{while } b \texttt{ do } S, v\rangle$, falls $\beta[b,v]=1$ & [WH$_T$] \\
+$\langle \texttt{while } b \texttt{ do } S, v\rangle \Rightarrow v$, falls $\beta[b,v]=0$ & [WH$_F$] \\
+$\dfrac{\langle S_1, v\rangle \Rightarrow \langle S_1', v'\rangle}{\langle S_1;S_2, v\rangle \Rightarrow \langle S_1';S_2, v'\rangle}$ & [COMP$_1$] \\[10pt]
+$\dfrac{\langle S_1, v\rangle \Rightarrow v'}{\langle S_1;S_2, v\rangle \Rightarrow \langle S_2, v'\rangle}$ & [COMP$_2$] \\
+\hline
+\end{tabular}
+\end{center}
+
+Zwei Axiome überführen eine Konfiguration in einen \emph{Zustand} (SKIP, ASS, WH$_F$),
+die übrigen in eine \emph{Konfiguration}. Die Schleife wird pro Schritt einmal
+abgerollt; deshalb beschreibt ein endliches Regelsystem eine unbeschränkte Ausführung.
+
+\subsection{Symbolische Ausführung}
+
+Dieselben Regeln, aber die Variablen zeigen auf \emph{Ausdrücke über symbolischen
+Werten}, und jeder Zweig trägt eine \textbf{Pfadbedingung} $\varphi$:
+
+\[
+\langle \texttt{if } b \texttt{ then } S_1 \texttt{ else } S_2, v, \varphi\rangle
+\Rightarrow \langle S_1, v, \varphi \wedge \sigma[b,v]\rangle
+\quad\text{falls erfüllbar}
+\]
+
+Beide Regeln können gelten, es entsteht ein \textbf{Ausführungsbaum}. Ein Zweig mit
+unerfüllbarer Pfadbedingung wird verworfen; das Lösen einer Pfadbedingung liefert
+konkrete Eingaben, die genau dieses Blatt erreichen -- also automatisch erzeugte
+Testfälle.
+
+Grenze: jede Schleifeniteration ist eine weitere Abrollung. Bei unbeschränkter
+Iterationszahl ist der Baum unendlich, und eine Tiefenschranke ist die praktische
+Antwort, keine Lösung.
+
+% =========================================
+\section{Verifikation}
+% =========================================
+
+\subsection{DPLL}
+
+Entscheidet die Erfüllbarkeit einer Formel in KNF. Zwei Beobachtungen sparen ganze
+Teilbäume:
+
+\begin{itemize}
+  \item \textbf{Unit-Klausel:} Bleibt in einer Klausel genau ein unbelegtes Literal,
+        ist seine Belegung erzwungen.
+  \item \textbf{Pures Literal:} Kommt eine Variable nur mit einem Vorzeichen vor, kann
+        sie entsprechend belegt werden, ohne je zu schaden.
+\end{itemize}
+
+\begin{center}
+\begin{minipage}{0.92\textwidth}
+\small
+\texttt{DPLL(C, v):}\\
+\hspace*{1em}$C^- \leftarrow \{c \in C : c[v] \to false\}$;
+\textbf{if} $C^-$ nicht leer \textbf{then return} $false$\\
+\hspace*{1em}$C^\star \leftarrow C \setminus \{c \in C : true \to c[v]\}$;
+\textbf{if} $C^\star$ leer \textbf{then return} $true$\\
+\hspace*{1em}\textbf{if} Unit-Klausel für $x$ oder $\bar{x}$ \textbf{then return}
+$DPLL(C^\star, v[x \mapsto b])$\\
+\hspace*{1em}\textbf{if} pures Literal $x$ oder $\bar{x}$ \textbf{then return}
+$DPLL(C^\star, v[x \mapsto b])$\\
+\hspace*{1em}wähle $x$; \textbf{return} $DPLL(C^\star, v[x \mapsto 0]) \vee DPLL(C^\star, v[x \mapsto 1])$
+\end{minipage}
+\end{center}
+
+\subsubsection*{Beispiel}
+
+$(x_1 \vee x_2) \wedge (\neg x_2 \vee x_3) \wedge (x_2 \vee \neg x_3)$
+
+\begin{enumerate}
+  \item $x_1$ ist pur $\Rightarrow v[x_1 \mapsto 1]$, erste Klausel erfüllt
+  \item Verzweigung $v[x_2 \mapsto 0]$
+  \item $\neg x_3$ ist Unit $\Rightarrow v[x_3 \mapsto 0]$, $C^\star$ leer
+\end{enumerate}
+
+Eine geprüfte Belegung statt $2^3 = 8$. Der Worst Case bleibt $O(2^n)$: SAT ist
+NP-vollständig, und keine der beiden Regeln ändert daran etwas.
+
+\subsection{Transitionssysteme}
+
+\begin{definitionbox}
+Ein \textbf{Transitionssystem} ist ein Tripel $T = \langle s, I, \Gamma\rangle$ mit
+einer Menge getypter Variablen $s$, einem Booleschen Ausdruck $I$ über $s$ für die
+Anfangszustände und einem Ausdruck $\Gamma$ über $s \cup s'$ für die
+Transitionsrelation.
+\end{definitionbox}
+
+Eine Komponente hat Eingaben und Ausgaben. Komponiert man sie mit einem
+\textbf{Treiber}, der Eingaben liefert, und einem \textbf{Monitor}, der Ausgaben
+prüft, entsteht ein geschlossenes System ohne Ein- und Ausgaben -- genau ein
+Transitionssystem. Komposition ist Konjunktion der Relationen; gemeinsame Namen sind
+die Verdrahtung.
+
+\subsection{Bounded Model Checking}
+
+\begin{definitionbox}
+Mit $\Gamma_{i,j} = \Gamma[s_i/s][s_j/s']$ und $P^k = P[s_k/s]$ heißt $T$
+\textbf{$k$-sicher} für $P$, wenn
+\[
+\bigl(I[s_0/s] \wedge \Gamma_{0,1} \wedge \dots \wedge \Gamma_{k-1,k}\bigr)
+\models \bigl(P^0 \wedge \dots \wedge P^k\bigr)
+\]
+\end{definitionbox}
+
+Getestet wird wie jede Implikation, über ein Modell der Negation:
+\[
+I[s_0/s] \wedge \Gamma_{0,1} \wedge \dots \wedge \Gamma_{k-1,k}
+\wedge \bigl(\neg P^0 \vee \dots \vee \neg P^k\bigr)
+\]
+
+\textbf{Algorithmus:} $k = 0$; ist der Test erfüllbar, ist ein Fehler gefunden und das
+Modell ist das Gegenbeispiel; sonst $k \leftarrow k+1$ und erneut.
+
+\subsubsection*{Beispiel (Klausuraufgabe)}
+
+$T = \langle \{s_1\},\ s_1 = 20,\ s_1' = s_1 / 2 \rangle$, $P = (s_1 \bmod 2 = 0)$.
+
+\[
+\Gamma_{0,1}: s_1^{(1)} = s_1^{(0)}/2, \quad
+\Gamma_{1,2}: s_1^{(2)} = s_1^{(1)}/2, \quad
+\Gamma_{2,3}: s_1^{(3)} = s_1^{(2)}/2
+\]
+
+Der Lauf ist $20 \to 10 \to 5 \to 2$. Für $k=0$ und $k=1$ ist das System $k$-sicher;
+für $k=2$ ist der Test erfüllbar, das Gegenbeispiel ist $20, 10, 5$ und verletzt $P$
+im dritten Zustand.
+
+\begin{notebox}
+BMC beweist \textbf{nie} Sicherheit. Die Menge der in $i$ Schritten erreichbaren
+Zustände wächst mit $i$, und es gibt keine Formel, die sagt, wann sie aufhört zu
+wachsen. Genau diese Lücke schließen induktive Invarianten.
+\end{notebox}
+
+\subsection{Induktive Invarianten}
+
+\begin{definitionbox}
+$P$ ist eine \textbf{induktive Invariante} von $T = \langle s, I, \Gamma\rangle$, wenn
+\begin{enumerate}
+  \item \textbf{Basis:} $I \models P$
+  \item \textbf{Schritt:} $P \wedge \Gamma \models P[s'/s]$
+\end{enumerate}
+\end{definitionbox}
+
+Gelten beide, so gilt $P$ in jedem erreichbaren Zustand, per Induktion über die
+Länge des Laufs -- ohne jede Schranke.
+
+\textbf{Der übliche Stolperstein:} Der Schrittbeweis startet in \emph{jedem} Zustand,
+der $P$ erfüllt, auch in unerreichbaren. Beispiel: $x' = x + 2$ mit $I: x = 0$ und
+$P: x \neq 5$. $P$ gilt in allen erreichbaren Zuständen (sie sind gerade), ist aber
+nicht induktiv: aus $x = 3$ folgt $x' = 5$. $x = 3$ ist unerreichbar, und der
+Schritttest weiß das nicht.
+
+\textbf{Verstärkung:} Man sucht ein stärkeres $Q$, das $P$ impliziert und induktiv
+ist. Hier genügt $x \bmod 2 = 0$, und $P \wedge (x \bmod 2 = 0)$ ist induktiv.
+
+\subsection{Hoare-Logik}
+
+\begin{definitionbox}
+Das Tripel $\{P\}\, S\, \{Q\}$ bedeutet: gilt $P$ vor $S$ und terminiert $S$, so gilt
+$Q$ danach (\emph{partielle} Korrektheit).
+\end{definitionbox}
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+$\{Q\}\ \texttt{skip}\ \{Q\}$ & Skip \\
+$\{Q[a/x]\}\ x := a\ \{Q\}$ & Zuweisung \\
+$\dfrac{\{P\} S_1 \{R\},\ \{R\} S_2 \{Q\}}{\{P\}\ S_1;S_2\ \{Q\}}$ & Komposition \\[10pt]
+$\dfrac{\{P \wedge b\} S_1 \{Q\},\ \{P \wedge \neg b\} S_2 \{Q\}}{\{P\}\ \texttt{if } b \texttt{ then } S_1 \texttt{ else } S_2\ \{Q\}}$ & Verzweigung \\[10pt]
+$\dfrac{\{I \wedge b\}\ S\ \{I\}}{\{I\}\ \texttt{while } b \texttt{ do } S\ \{I \wedge \neg b\}}$ & Schleife \\[10pt]
+$\dfrac{P \to P',\ \{P'\} S \{Q'\},\ Q' \to Q}{\{P\}\ S\ \{Q\}}$ & Konsequenz \\
+\hline
+\end{tabular}
+\end{center}
+
+Die Zuweisungsregel läuft \textbf{rückwärts}: um zu wissen, was vor $x := a$ gelten
+muss, ersetzt man $x$ in $Q$ durch $a$. Vorwärts wäre es geraten, rückwärts ist es
+eine Gleichung.
+
+Die Schleife ist die einzige Regel mit echter Arbeit: sie braucht eine
+\textbf{Invariante}, die keine Regel liefert.
+
+\subsubsection*{Beispiel (Übungsblatt 6)}
+
+\begin{center}
+\begin{minipage}{0.62\textwidth}
+\small
+\texttt{\{ true \}}\\
+\texttt{if (a >= b) \{ while (a != b) a := a - 1; \}}\\
+\texttt{else \{ while (a != b) a := a + 1; \}}\\
+\texttt{\{ a = b \}}
+\end{minipage}
+\end{center}
+
+Invarianten: im \texttt{then}-Zweig $a \geq b$, im \texttt{else}-Zweig $a \leq b$.
+Nachweis für den \texttt{then}-Zweig: aus $a \geq b \wedge a \neq b$ folgt $a > b$,
+also $a - 1 \geq b$, die Invariante bleibt erhalten. Beim Verlassen gilt
+$a \geq b \wedge \neg(a \neq b)$, also $a = b$.
+
+% =========================================
+\section{Modellbasiertes Testen}
+% =========================================
+
+\subsection{Mealy-Automaten}
+
+Ein Mealy-Automat antwortet auf jedes Eingabesymbol mit einem Ausgabesymbol; ein Wort
+der Länge $n$ erzeugt ein Ausgabewort der Länge $n$. Damit ist er das natürliche
+Modell einer reaktiven Komponente.
+
+\begin{center}
+\begin{tabular}{ccc}
+\hline
+\textbf{Zustand} & \textbf{bei a} & \textbf{bei b} \\
+\hline
+$q_0$ & $q_1/0$ & $q_2/1$ \\
+$q_1$ & $q_1/1$ & $q_2/0$ \\
+$q_2$ & $q_0/0$ & $q_2/1$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Für $M_1$: $Out(abba) = 0010$ und $Out(baab) = 1000$. Ein \textbf{Testorakel}
+vergleicht die behauptete Ausgabe eines Systems mit dieser Vorhersage.
+
+\subsection{Überdeckungen}
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+\textbf{Überdeckung} & \textbf{Idee} & \textbf{Größe für $M_1$} \\
+\hline
+Zustandsüberdeckung & jeden Zustand erreichen & 3 \\
+Transitionsüberdeckung & jede Transition ausführen & 6 \\
+Transition-Switch & jedes ausführbare Transitionspaar & 12 \\
+W-Methode & Transitionsüberdeckung + Unterscheidungsmenge & vollständig unter Annahme \\
+\hline
+\end{tabular}
+\end{center}
+
+Bei $n$ Zuständen und $k$ Eingabesymbolen gibt es $n \cdot k \cdot k$ Paare direkt
+aufeinanderfolgender Transitionen, für $M_1$ also $3 \cdot 2 \cdot 2 = 12$. Die Suite
+baut man systematisch über Zugriffssequenzen $\alpha(q)$:
+\[
+T = \{\alpha(q)\,xy : q \in Q,\ x,y \in \Sigma\}
+\]
+mit $\alpha(q_0) = \varepsilon$, $\alpha(q_1) = a$, $\alpha(q_2) = b$.
+
+\subsection{Observation Table und L*}
+
+Ein Lerner sieht das System nicht und darf zwei Fragen stellen:
+\textbf{Membership Query} (führe dieses Wort aus, was kommt zurück?) und
+\textbf{Equivalence Query} (stimmt diese Hypothese, und wenn nicht, wo weicht sie ab?).
+
+\begin{definitionbox}
+Die \textbf{Observation Table} hat Zeilen $U$ (Zugriffswörter) und $U\!\cdot\!A$
+(Rand), Spalten $V$ (Suffixe) und in jeder Zelle das \emph{letzte} Ausgabesymbol von
+$u \cdot v$.
+\begin{itemize}
+  \item \textbf{closed:} jede Zeile aus $U\!\cdot\!A$ kommt bereits in $U$ vor
+  \item \textbf{consistent:} gleich aussehende Zeilen bleiben nach einem weiteren
+        Symbol gleich
+\end{itemize}
+\end{definitionbox}
+
+Reparatur: nicht geschlossen $\Rightarrow$ Zeile nach $U$ verschieben (neuer Zustand);
+nicht konsistent $\Rightarrow$ Spalte hinzufügen (neues Experiment).
+
+\textbf{Ablauf von L*:} Tabelle füllen, schließen, konsistent machen, Hypothese bauen,
+Äquivalenz anfragen; bei Gegenbeispiel Tabelle verfeinern und wiederholen. Jede Runde
+fügt mindestens einen Zustand hinzu, das Ziel hat endlich viele, also terminiert es.
+
+\begin{notebox}
+Die Equivalence Query beantwortet in der Praxis niemand. Sie wird durch eine
+Testsuite angenähert -- und damit ist das gelernte Modell nur so gut wie diese Suite.
+Lernen liefert die Tests, die Tests liefern das Lernen: dieser Kreis ist der
+tatsächliche Stand des Verfahrens, kein Darstellungsfehler.
+\end{notebox}
+
+% =========================================
+\section{Formelsammlung}
+% =========================================
+
+\begin{center}
+\begin{tabular}{lp{9.6cm}}
+\hline
+\textbf{Thema} & \textbf{Formel} \\
+\hline
+Zyklomatische Komplexität & $CC = e - n + 2p$ \\
+LCOM & $\left(\frac{1}{a}\sum n(A_i) - m\right) / (1-m)$, Bereich $[0,1]$ \\
+Punktschätzung & $E = \frac{a + r c + b}{2+r}$, \ $S = \frac{b-a}{u}$;
+                 2-Pkt.: $r=0$, 3-Pkt./PERT: $r=4$, $u=6$ \\
+Aggregation & $E = \sum E_i$, \ $S = \sqrt{\sum S_i^2}$ \\
+Velocity & Story Points fertiger Stories pro Sprint; Planung mit Median \\
+Implikation & $\varphi \models \psi$ gdw. $\varphi \wedge \neg\psi$ unerfüllbar \\
+$k$-Sicherheit & $I[s_0] \wedge \Gamma_{0,1} \wedge \dots \wedge \Gamma_{k-1,k}
+                  \models P^0 \wedge \dots \wedge P^k$ \\
+Induktive Invariante & Basis $I \models P$; Schritt $P \wedge \Gamma \models P[s'/s]$ \\
+Hoare-Zuweisung & $\{Q[a/x]\}\ x := a\ \{Q\}$ \\
+Reaching Definitions & $RD_{exit}(l) = (RD_{entry}(l) \setminus kill) \cup gen$ \\
+Transitionspaare & $n \cdot k^2$ bei $n$ Zuständen und $k$ Eingabesymbolen \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{1em}
+\begin{notebox}
+Zu jedem Kapitel dieser Notizen gibt es lauffähigen Code im Verzeichnis
+\texttt{swk/}: \texttt{program-analysis} für While, CFG und Datenfluss,
+\texttt{verification} für DPLL, BMC, Invarianten und Hoare,
+\texttt{model-based-testing} für Mealy, L* und Überdeckungen,
+\texttt{metrics} für LCOM und Kopplung, \texttt{estimation} für Schätzung, Velocity
+und A/B-Tests. Alle Beispiele dieser Notizen sind dort nachgerechnet.
+\end{notebox}
+
+\end{document}
