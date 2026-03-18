@@ -2116,18 +2116,28 @@ Das Auge mittelt Farben benachbarter Pixel. Indem der Fehler auf die Nachbarscha
 \subsection{Signalverarbeitungspipeline}
 % -----------------------------------------
 
-Reihenfolge der 7 Schritte vom Rohsignal zur Interpretation:
+Der Weg eines physikalischen Reizes vom Sensor bis zur Interpretation — 7 Schritte in 3 Phasen:
 
-\begin{enumerate}
-  \item \textbf{Signalaufnahme:} Licht registrieren.
-  \item \textbf{Signaldiskretisierung:} Abtasten und Quantisieren.
-  \item \textbf{Signalrestauration:} Technische Kamerafehler korrigieren.
-  \item \textbf{Signalverbesserung:} Filter anwenden (Kontrast, Rauschen).
-  \item \textbf{Signalsegmentierung:} Bild in Bereiche unterteilen
-        (z.\,B.\ Vorder-/Hintergrund).
-  \item \textbf{Merkmalsextraktion:} Eigenschaften messen (Kanten, Formen).
-  \item \textbf{Klassifikation/Interpretation:} System trifft Entscheidung.
-\end{enumerate}
+\textbf{Phase 1: Signalgewinnung}
+\begin{itemize}
+  \item \textbf{Signalaufnahme:} Sensoren (Kamera, Mikrofon) erfassen physikalische Reize. Problem: Informationsverlust, Rauschen, Messfehler.
+  \item \textbf{Signaldiskretisierung:} Analoges Signal → digitale Werte (Abtastung + Quantisierung). \textbf{Abtasttheorem} beachten, um Alias-Effekte zu vermeiden.
+\end{itemize}
+
+\textbf{Phase 2: Signalbearbeitung}
+\begin{itemize}
+  \item \textbf{Signalrestauration:} Modellbasierte Korrektur von Aufnahmefehlern (z.\,B.\ Kalibrierung).
+  \item \textbf{Signalverbesserung:} Anwendungsbezogene Aufbereitung — Rauschreduktion, Kontrasterhöhung.
+  \item \textbf{Signalsegmentierung:} Signal in bedeutungsvolle Teilsignale zerlegen (Vorder-/Hintergrund, Wortgrenzen).
+\end{itemize}
+
+\textbf{Phase 3: Signalerkennung}
+\begin{itemize}
+  \item \textbf{Merkmalsextraktion:} Teilsignalen spezifische Merkmale zuordnen (Kanten, Formen, Spektrum).
+  \item \textbf{Klassifikation/Synthese:} Signal einer Klasse zuordnen (Objekterkennung) oder neues Signal erzeugen.
+\end{itemize}
+
+\textbf{Ergebnis:} Einzelwerte oder Wertfolgen — Zeichen, Positionen, Töne, Bilder. Wichtigste Gütemerkmale: \textbf{Latenz} und \textbf{Abweichung} (Soll vs.\ Ist).
 
 % =========================================
 \section{D -- Bilderzeugung}
