@@ -3146,6 +3146,25 @@ Statt Objekte auf den Bildschirm zu projizieren, wird der Lichtweg \textit{rück
 \textit{Eingabegrößen:} 3D-Szene (Geometrie), Lichtquellenpositionen, Oberflächenattribute (Reflexionsgrad), Augenpunkt + Projektionsebene, Bildauflösung.
 
 \medskip
+\textbf{Effizienz beim Ray Tracing}
+
+Das naive Testen jedes Strahls gegen jedes Dreieck ist zu langsam ($O(n)$ pro Strahl). Lösung: \textbf{Beschleunigungsstrukturen}, die den Raum oder die Geometrie hierarchisch organisieren, sodass der Strahl nur wenige relevante Objekte testen muss.
+
+\textbf{Hüllquader (Bounding Volumes):} Jedes Objekt wird in eine einfache geometrische Form eingeschlossen (z.\,B. achsenparallele Box = AABB). Trifft der Strahl den Hüllquader \textit{nicht}, wird das Innere komplett übersprungen. \textit{Vorteil:} schneller Schnitttest. \textit{Nachteil:} Hüllquader approximiert nur — kann den Strahl „treffen", auch wenn er das eigentliche Objekt verfehlt (false positive → weiterer Test nötig).
+
+\textbf{Geschachtelte Hüllquader (Bounding Volume Hierarchy, BVH):} Hüllquader werden hierarchisch zu einem Baum zusammengefasst. Man prüft von oben nach unten: trifft der Strahl keinen Elternknoten, werden alle Kinder übersprungen. Sehr populär in der Praxis (z.\,B. in Vulkan/DXR).
+
+\textbf{kd-Baum (k-dimensional tree):} Raumzerlegung durch \textbf{achsenparallele Schnittebenen} — abwechselnd entlang $x$-, $y$-, $z$-Achse. Jede Zelle enthält die Dreiecke, die sie überdecken. Der Strahl traversiert nur die Zellen, die er tatsächlich schneidet. \textit{Vorteil:} sehr effizient bei dünn besetzten Szenen.
+
+\textbf{Octree:} Rekursive Unterteilung des Raums in \textbf{$2\times2\times2 = 8$ gleich große Würfel}. Einfach zu implementieren, aber weniger adaptiv als kd-Baum.
+
+\textbf{Reguläres Gitter:} Szene wird in gleichmäßige Voxel unterteilt. Jeder Voxel enthält die ihn durchschneidenden Primitive. Sehr schnelle Traversierung, aber ineffizient bei ungleichmäßig verteilter Geometrie (leere Zellen verschwenden Speicher). \textbf{Hierarchische Gitter} lösen das durch Untergitter in dichten Bereichen.
+
+\begin{notebox}{Engpass bei Echtzeit-Ray Tracing}
+Moderne GPUs (NVIDIA RTX, RT-Cores) können Ray Tracing in Echtzeit berechnen — der Schlüssel ist massiver \textbf{SIMD-Parallelismus} (viele Strahlen gleichzeitig). Der eigentliche \textbf{Engpass} ist die Aktualisierung der Suchdatenstruktur (z.\,B. BVH) bei \textit{bewegten Szenen}: die BVH muss jedes Frame neu aufgebaut oder refittet werden. Statische Szenen profitieren am meisten von Echtzeit-Ray Tracing.
+\end{notebox}
+
+\medskip
 \textbf{Radiosity (Strahlungsverfahren)} — „From Light to Surface":
 
 Physikalisch basiertes Verfahren für \textbf{diffuse} Oberflächen (Lambert). Die Szene wird in kleine Teilflächen (\textbf{Patches}) zerlegt. Licht wird von Lichtquellen ausgesendet und iterativ zwischen Patches ausgetauscht, bis ein \textbf{Energiegleichgewicht} erreicht ist. Effekte: weiches indirektes Licht, Farbbluten zwischen Oberflächen. \textbf{Vorteil:} Lösung ist blickpunktunabhängig — einmal berechnet, freie Kamerabewegung ohne Neuberechnung.
