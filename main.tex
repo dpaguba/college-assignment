@@ -1989,18 +1989,29 @@ Das Whittaker-Shannon-Abtasttheorem liefert nur eine \textbf{hinreichende} Bedin
 Quantisierung = Rundung der kontinuierlichen Intensitätswerte auf
 eine \textbf{endliche Menge diskreter Stufen}.
 
+\subsubsection*{Mach-Band-Effekt}
+
+Bei zu wenigen Graustufen werden Helligkeitsverläufe als Treppenstufen dargestellt. An jeder Stufenkante nimmt das Auge \textbf{illusorische helle und dunkle Streifen} wahr, die im Original nicht vorhanden sind.
+
+\textit{Warum?} Das visuelle System verstärkt Kontraste an Kanten -- ein Mechanismus, der in der Natur nützlich ist (schärfere Wahrnehmung von Objekträndern), bei grober Quantisierung aber als Artefakt sichtbar wird. Der Effekt ist rein neuronal: das Auge \glqq{}erfindet\grqq{} Streifen dort, wo nur eine abrupte Helligkeitsstufe ist.
+
+\subsubsection*{Lineare vs.\ Logarithmische Quantisierung}
+
+\textbf{Lineare Quantisierung:} Die $N$ Stufen sind gleichmäßig über den gesamten Helligkeitsbereich verteilt -- gleicher Abstand zwischen je zwei benachbarten Werten.
+
+\textbf{Problem:} Das menschliche Auge ist \textbf{nicht linear empfindlich}. Im dunklen Bereich nimmt es sehr feine Unterschiede wahr; im hellen Bereich sind dieselben absoluten Unterschiede kaum sichtbar. Bei linearer Quantisierung:
 \begin{itemize}
-  \item \textbf{Mach-Band-Effekt:} Bei zu wenigen Graustufen (z.\,B.\ 16)
-        nimmt das Auge an Übergängen künstliche helle/dunkle Streifen
-        wahr, die im Original nicht vorhanden sind.
-  \item \textbf{Logarithmische Quantisierung:} Das menschliche Auge
-        unterscheidet bei dunklen Tönen feinere Abstufungen als bei
-        hellen $\Rightarrow$ logarithmische Stufenverteilung ist
-        effizienter als eine lineare.
-  \item \textbf{Dithering:} Pixel verschiedener Farben werden so verteilt,
-        dass das Auge aus der Distanz einen neuen Farbton wahrnimmt
-        (siehe Abschnitt~\ref{sec:dithering}).
+  \item Im \textbf{dunklen Bereich}: zu wenige Stufen $\Rightarrow$ sichtbare Treppenstufen, Mach-Bänder.
+  \item Im \textbf{hellen Bereich}: zu viele Stufen $\Rightarrow$ Präzision, die das Auge ohnehin nicht unterscheiden kann -- verschwendete Bits.
 \end{itemize}
+
+\textbf{Logarithmische Quantisierung:} Die Stufen werden \textbf{nicht gleichmäßig}, sondern entsprechend der menschlichen Wahrnehmung verteilt -- im dunklen Bereich eng beieinander, im hellen Bereich weiter auseinander.
+
+\textit{Ergebnis:} Bei gleicher Anzahl von Bits wirkt das Bild subjektiv deutlich besser -- weniger Banding, keine Mach-Bänder. Dieses Prinzip steckt z.\,B.\ in der Gamma-Korrektur von Bildschirmen und in Videocodecs (JPEG, H.264).
+
+\textbf{Dithering:} Pixel verschiedener Farben werden so verteilt,
+dass das Auge aus der Distanz einen neuen Farbton wahrnimmt
+(siehe Abschnitt~\ref{sec:dithering}).
 
 % -----------------------------------------
 \subsection{Dithering}
