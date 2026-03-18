@@ -3089,14 +3089,6 @@ Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung o
 
 \textbf{Compute Shader:} Allgemeine GPU-Berechnungen \textit{außerhalb} der Grafik-Pipeline (z.\,B.\ Physik, KI) — kein fester Platz in der Pipeline-Kette.
 
-\textbf{Shader-Lebenszyklus} (Laufzeit-Kompilierung):
-\begin{enumerate}
-  \item \texttt{glCreateShader} — Shader-Objekt erzeugen
-  \item \texttt{glShaderSource} + \texttt{glCompileShader} — Quellcode übergeben und kompilieren
-  \item \texttt{glAttachShader} + \texttt{glLinkProgram} — Stufen zu einem Programm zusammenbinden
-  \item \texttt{glUseProgram} — Programm als aktiven Zustand der State Machine setzen
-\end{enumerate}
-
 \medskip
 \textbf{Datenübertragung CPU → GPU:}
 
