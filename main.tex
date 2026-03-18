@@ -1938,18 +1938,19 @@ Das Spektrum $F_\Delta(u,v)$ besteht aus \textbf{unendlich vielen periodischen K
      b_y := \frac{2\pi}{\Delta y} > 2\,b_v. \]
 \end{definitionbox}
 
-\textbf{Beweisidee (anschaulich):}
-\begin{itemize}
-  \item Durch die Abtastung wiederholt sich das Spektrum $F(u,v)$ im
-        Frequenzbereich periodisch (Abstand $\Delta u = 2\pi/\Delta x$).
-  \item Ist die Abtastfrequenz zu niedrig, \textbf{überlappen} sich
-        diese Kopien $\Rightarrow$ \textbf{Aliasing} (Spektren nicht
-        mehr trennbar).
-  \item Ist sie hoch genug, bleiben die Kopien getrennt, und das
-        Original-Spektrum lässt sich mit einem
-        \textbf{Rechtecktiefpassfilter} exakt herausschneiden:
-        \[ F(u,v) = F_d(u,v)\cdot H_{TP}(u,v). \]
-\end{itemize}
+\textbf{Was ist $b_u$?} -- $b_u$ ist der \textbf{Radius} im Ortsfrequenzbereich, d.\,h.\ die höchste Frequenz, die der Sensor (Chip) überhaupt erfassen kann. Ein Chip hat eine bestimmte physische Ausdehnung; diese bestimmt, welche maximale Frequenz er darstellen kann. $b_u$ ist also keine Eigenschaft des Signals, sondern des \textbf{Systems} (Sensor).
+
+\textbf{Warum $\Delta u$ und $\Delta x$ antiproportional sind:}
+\[
+  \Delta u = \frac{2\pi}{\Delta x}
+\]
+Je feiner das Ortsgitter (kleines $\Delta x$), desto weiter auseinander liegen die Spektralkopien (großes $\Delta u$) -- und umgekehrt. Abtastung im Ortsbereich entspricht dem Abstand $\Delta x$; im Ortsfrequenzbereich dem Abstand $\Delta u$.
+
+\textbf{Anschaulich -- wann ist das Theorem erfüllt?}
+
+Das Theorem ist genau dann erfüllt, wenn die \textbf{Spektralkopien (Hütchen) sich nicht überlappen}. Jede Kopie hat die Ausdehnung $b_u$ nach links und rechts; der Abstand zwischen den Mittelpunkten ist $\Delta u$. Damit keine Überlappung entsteht, muss $\Delta u > 2b_u$ gelten.
+
+\textbf{Chip besteht aus einem Rect-Signal:} Jeder Sensor-Pixel hat eine rechteckige Ausdehnung. Die FT eines Rechtecks ist eine si-Funktion -- daher hat jeder Chip im Frequenzbereich ein si-förmiges Spektrum mit einer endlichen Bandbreite $b_u$.
 
 \textbf{Äquivalente Bedingung für die Abtastintervalle:}
 \[
@@ -1957,31 +1958,45 @@ Das Spektrum $F_\Delta(u,v)$ besteht aus \textbf{unendlich vielen periodischen K
 \]
 (Hälfte der kleinsten Periode der höchsten vorkommenden Frequenz.)
 
-\textbf{Rekonstruktion (wenn Theorem erfüllt):}
+\textbf{Rekonstruktion -- Idee:}
 
-Wenn $\Delta u > 2b_u$ und $\Delta v > 2b_v$, lässt sich das Original durch einen \textbf{idealen Rechtecktiefpassfilter} $H_{TP}$ exakt rekonstruieren:
+Rekonstruktion bedeutet: wir wenden einen \textbf{Rechtecktiefpassfilter} $H_{TP}$ auf das Spektrum $F_\Delta(u,v)$ im Ortsfrequenzbereich an. Dieser Filter schneidet genau die zentrale Kopie (den \glqq{}primären Anteil\grqq{}) heraus und verwirft alle anderen:
 \[
   F(u,v) = F_\Delta(u,v)\cdot H_{TP}(u,v)
-  \quad\Longrightarrow\quad
+  \quad\xrightarrow{\text{iFT}}\quad
   f(x,y) = f_\Delta(x,y)\ast\!\ast\,h_{TP}(x,y).
 \]
 
-Explizit (Rücktransformation):
+Damit sehen wir garantiert nur die Anteile unterhalb der Grenzfrequenz -- \textbf{Garantie der Überlappungsfreiheit}.
+
+\textit{Warum funktioniert das in der Praxis nicht perfekt?} Ein idealer Rechtecktiefpassfilter entspricht im Ortsbereich einer unendlich ausgedehnten si-Funktion. Reale Filter sind immer begrenzt, daher ist die Rekonstruktion nur näherungsweise möglich.
+
+Die explizite Rekonstruktionsformel:
 \[
   f(x,y) = \frac{\Delta x\,\Delta y\,\xi\,\eta}{\pi^2}
   \sum_{m,n} f(m\Delta x,\,n\Delta y)\;
   \operatorname{si}\!\bigl(\xi(x - m\Delta x)\bigr)\;
   \operatorname{si}\!\bigl(\eta(y - n\Delta y)\bigr),
 \]
-wobei $\xi$, $\eta$ die Grenzfrequenzen des Tiefpassfilters sind.
+wobei $\xi$, $\eta$ die Ausdehnung des Rechteck-Tiefpassfilters bestimmen.
 
-\textbf{Aliasing-Effekte bei Verletzung des Theorems:}
+\textbf{Aliasing bei Verletzung des Theorems:}
 \begin{itemize}
   \item \textbf{Moiré-Muster:} Falsche Streifenmuster auf fein
         strukturierten Flächen -- entstehen durch Überlappung der Spektralkopien.
-  \item \textbf{Lösung:} Vor der Abtastung einen Tiefpassfilter
-        anwenden ($\Rightarrow$ Bild wird leicht unscharf, aber Aliasing
-        verschwindet).
+  \item \textbf{Lösung:} Vor der Abtastung einen Tiefpassfilter anwenden,
+        der hohe Frequenzen abschneidet $\Rightarrow$ Bild wird leicht
+        unscharf, aber Aliasing verschwindet.
+\end{itemize}
+
+\textbf{Tiefpass- vs.\ Hochpassfilter:}
+\begin{itemize}
+  \item \textbf{Tiefpassfilter:} Lässt tiefe Frequenzen (langsame Änderungen,
+        grobe Strukturen) durch, löscht hohe Frequenzen (feine Details, Kanten)
+        $\Rightarrow$ Bild wird \textbf{unscharf}.
+  \item \textbf{Hochpassfilter:} Lässt hohe Frequenzen durch, löscht tiefe
+        Frequenzen $\Rightarrow$ Bild wird \textbf{schärfer / kontrastreicher}
+        (Kanten werden betont).
 \end{itemize}
 
 \begin{notebox}{Bemerkung: Hinreichende, nicht notwendige Bedingung}
