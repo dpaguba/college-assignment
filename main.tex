@@ -2139,6 +2139,16 @@ Reihenfolge der 7 Schritte vom Rohsignal zur Interpretation:
 
 Die Bilderzeugungs-Pipeline beschreibt, wie aus einer abstrakten 3D-Szenenbeschreibung ein fertiges 2D-Rasterbild auf dem Monitor entsteht.
 
+\textbf{Eingabe in die Pipeline -- Grafikelemente:}
+\begin{itemize}
+  \item \textbf{Polygonbasierte Darstellung:} Objekte werden durch Punktmengen und verbindende Geraden (Polygone, meist Dreiecke) beschrieben. Einfache Form, keine optimale Form.
+    \begin{itemize}
+      \item \textit{Nachteil 1:} Zu viele Daten werden benötigt.
+      \item \textit{Nachteil 2:} Man kann die Auflösung nicht nachträglich ändern.
+    \end{itemize}
+  \item \textbf{Nicht-polygonbasierte Darstellung (implizit):} Man definiert eine Funktion $f(x)$, die das Objekt beschreibt, z.\,B.\ eine Kugel durch $x^2+y^2+z^2=r^2$. Man nutzt in der Regel eine Kombination aus beiden Arten.
+\end{itemize}
+
 \textbf{2D- vs.\ 3D-Pipeline:}
 \begin{itemize}
   \item \textbf{2D-Pipeline:} Transformation $\to$ Clipping $\to$ Verrasterung.
@@ -2218,7 +2228,7 @@ Die Bilderzeugungs-Pipeline beschreibt, wie aus einer abstrakten 3D-Szenenbeschr
 % -----------------------------------------
 
 \begin{definitionbox}
-Eine \textbf{affine Abbildung} im 3D-Raum besteht aus einer linearen Abbildung (Matrix $\mathbf{A}$) und einer Translation (Vektor $\mathbf{t}$):
+Eine \textbf{affine Abbildung} (auch \textbf{rigide Transformation}, da Winkel erhalten bleiben) im 3D-Raum besteht aus einer linearen Abbildung (Matrix $\mathbf{A}$) und einer Translation (Vektor $\mathbf{t}$):
 \[
   \bar{\mathbf{p}} = \mathbf{A}\cdot\mathbf{p} + \mathbf{t}, \qquad
   \mathbf{A} = \begin{pmatrix} a_{11}&a_{12}&a_{13}\\a_{21}&a_{22}&a_{23}\\a_{31}&a_{32}&a_{33} \end{pmatrix},\quad
