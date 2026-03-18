@@ -3232,7 +3232,7 @@ Das naive Testen jedes Strahls gegen jedes Dreieck ist zu langsam ($O(n)$ pro St
 
 \textbf{Geschachtelte Hüllquader (Bounding Volume Hierarchy, BVH):} Hüllquader werden hierarchisch zu einem Baum zusammengefasst. Man prüft von oben nach unten: trifft der Strahl keinen Elternknoten, werden alle Kinder übersprungen. Sehr populär in der Praxis (z.\,B. in Vulkan/DXR).
 
-\textbf{kd-Baum (k-dimensional tree):} Raumzerlegung durch \textbf{achsenparallele Schnittebenen} — abwechselnd entlang $x$-, $y$-, $z$-Achse. Jede Zelle enthält die Dreiecke, die sie überdecken. Der Strahl traversiert nur die Zellen, die er tatsächlich schneidet. \textit{Vorteil:} sehr effizient bei dünn besetzten Szenen.
+\textbf{kd-Baum (k-dimensional tree):} Der Raum wird rekursiv durch achsenparallele Ebenen in zwei Hälften geteilt — abwechselnd entlang $x$, $y$, $z$. Stell dir vor, du legst erst eine vertikale Wand in die Szene, dann eine horizontale, dann eine Tiefenwand, und so weiter. Jede entstandene Zelle enthält nur die Dreiecke, die in ihr liegen. Beim Raytracing verfolgt man den Strahl durch den Baum: liegt eine Zelle komplett neben dem Strahl, wird sie übersprungen — nur die Zellen, die der Strahl wirklich durchquert, müssen geprüft werden. \textit{Vorteil:} funktioniert sehr gut, wenn die Geometrie ungleichmäßig verteilt ist (große leere Bereiche werden schnell übersprungen).
 
 \textbf{Octree:} Rekursive Unterteilung des Raums in \textbf{$2\times2\times2 = 8$ gleich große Würfel}. Einfach zu implementieren, aber weniger adaptiv als kd-Baum.
 
