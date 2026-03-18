@@ -3428,6 +3428,20 @@ Man teilt jede Kante des Kontrollpolygons im Verhältnis $t^* : (1-t^*)$ und ver
 Algebraische Herleitung und Graderhöhung sind \textbf{nicht prüfungsrelevant}. Wichtig: graphische Erklärung des De-Casteljau-Algorithmus + die vier Eigenschaften oben.
 \end{notebox}
 
+\subsubsection*{Grad und Kontrollpunkte — Zusammenhang}
+
+Bei einer Bézier-Kurve mit $n+1$ Kontrollpunkten $b_0, \dots, b_n$ ist der Polynomgrad \textbf{fest} gleich $n$:
+\[
+  \text{Grad} = \underbrace{(\text{Anzahl Kontrollpunkte})}_{ } - 1
+\]
+Das bedeutet: \textbf{mehr Kontrollpunkte = höherer Grad}. Das hat direkte Konsequenzen:
+\begin{itemize}
+  \item \textbf{Mehr Freiheit:} Eine Kurve vom Grad $n$ kann $n-1$ Wendepunkte haben — mehr Kontrollpunkte erlauben komplexere Formen.
+  \item \textbf{Globale Wirkung:} Jeder Kontrollpunkt beeinflusst über sein Bernstein-Polynom die \textit{gesamte} Kurve — kein Punkt ist „lokal". Bei 10 Kontrollpunkten = Grad 9, jede Änderung wirkt überall.
+  \item \textbf{Rechenaufwand steigt:} De Casteljau braucht $O(n^2)$ — bei hohem $n$ teuer und numerisch instabil.
+\end{itemize}
+\textit{Fazit:} Bézier ist ideal für einfache Formen mit wenigen Punkten. Für komplexe Modelle → B-Splines.
+
 \subsection{B-Splines}
 
 \subsubsection*{Nachteile der Bézier-Technik}
@@ -3462,6 +3476,36 @@ Eine B-Spline-Kurve $P(t)$ wird durch \textbf{de Boor-Punkte} $B_i$ (Kontrollpun
   \item \textbf{Konvexe Hülle:} Kurve liegt innerhalb der konvexen Hülle der Kontrollpunkte.
   \item \textbf{Partition der Eins:} $\sum_i N_{i,k}(t) = 1$ für alle $t$.
 \end{itemize}
+
+\subsubsection*{Ordnung, Grad und Kontrollpunkte — Zusammenhang}
+
+Bei B-Splines gibt es drei Parameter, die man unterscheiden muss:
+
+\begin{center}
+\begin{tabular}{lll}
+  \textbf{Parameter} & \textbf{Symbol} & \textbf{Bedeutung} \\
+  \hline
+  Anzahl Kontrollpunkte & $n$ & wie viele de Boor-Punkte \\
+  Ordnung & $k$ & Anzahl Punkte pro Segment \\
+  Grad & $k-1$ & Polynomgrad in jedem Segment \\
+\end{tabular}
+\end{center}
+
+\textbf{Ordnung $k$} steuert alles außer der Anzahl der Kontrollpunkte:
+\begin{itemize}
+  \item \textbf{Grad des Polynoms} = $k-1$ (in jedem Segment). Ordnung 3 → quadratische Segmente, Ordnung 4 → kubische Segmente.
+  \item \textbf{Stetigkeit} = $C^{k-2}$. Ordnung 4 → $C^2$-stetig (zweimal differenzierbar, glatte Kurve).
+  \item \textbf{Support} = $k$ Intervalle. Ein Kontrollpunkt beeinflusst genau $k$ benachbarte Segmente — je größer $k$, desto weiter reicht sein Einfluss.
+\end{itemize}
+
+\textbf{Mehr Kontrollpunkte $n$} erhöhen \textit{nicht} den Grad — sie fügen einfach mehr Segmente hinzu. Die Kurve wird länger/komplexer, bleibt aber überall Grad $k-1$. Das ist der Kernvorteil gegenüber Bézier.
+
+\textbf{Maximalregel:} Die Ordnung kann höchstens $k = n$ sein. Bei $k = n$ und offenem Knotenvektor → Bézier-Kurve.
+
+\begin{notebox}{Merkhilfe}
+Bézier: Grad = Anzahl Punkte $- 1$ (zwingend). \\
+B-Spline: Grad = $k-1$ (frei wählbar, unabhängig von $n$).
+\end{notebox}
 
 \subsubsection*{Knotenvektor}
 
