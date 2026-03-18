@@ -3711,4 +3711,102 @@ Inkrementeller Algorithmus zur Konstruktion der \textbf{konvexen Hülle}, Grundl
 
 \textit{Laplace-Operator, Glättungsformel und diskreter Informationsfluss sind \textbf{nicht prüfungsrelevant}.}
 
+% =========================================
+\section{G -- Interaktionsgestaltung}
+% =========================================
+
+\subsection{Interaktionsstile}
+
+Ein Interaktionsstil beschreibt die Art des Dialogs zwischen Mensch und System.
+
+\textbf{Kommandos (CLI):} Anweisungen als Zeichenfolgen/Abkürzungen. Erfordert aktives Abrufen von Syntax aus dem Gedächtnis. \textit{Vorteil:} effizient für Experten, Skripting möglich. \textit{Nachteil:} hoher Lernaufwand, hohe Fehlerquote bei Gelegenheitsnutzern.
+
+\textbf{Dialoge und Formulare:} Vordefinierte Schritte für zusammengesetzte Aufgaben. Widgets: Textfelder, Checkboxen, Radiobuttons (Einfachauswahl), Listboxen. \textbf{Modal} = muss abgeschlossen werden bevor weiteres möglich ist; \textbf{nicht-modal} = kann jederzeit unterbrochen werden.
+
+\textbf{Direkte Manipulation (DMI):} Visuelle Objekte werden direkt mit Eingabegeräten beeinflusst. WYSIWYG, sofortiges Feedback, umkehrbare Schritte. \textit{Nachteil:} kein Geschwindigkeitsvorteil für Profis, Icons können mehrdeutig sein.
+
+\textbf{Sprachbasierte Interaktion:} Kommandosprachen (SQL, Shell) oder natürliche Sprache. Natürliche Sprache: geringer Lernaufwand, aber anfällig für Mehrdeutigkeiten.
+
+\textbf{Gestenbasierte Interaktion:} \textbf{Posen} (statische Haltungen) und \textbf{Gesten} (Bewegungen). Stile: deiktisch (zeigen/auswählen), manipulativ (Objekte steuern), symbolisch (kodierte Zeichen).
+
+\textbf{Suche, Browsen, interaktive Visualisierungen:} Exploration großer Datenmengen; z.\,B.\ Paperlens für Forschungsdaten.
+
+% -----------------------------------------
+\subsection{Gestaltprinzipien der visuellen Wahrnehmung}
+% -----------------------------------------
+
+\textbf{Prägnanzgesetz (Gesetz der guten Gestalt):} Menschen bevorzugen klare, geordnete Formen — sie werden leichter wahrgenommen, besser behalten und schneller verarbeitet.
+
+\textbf{Spezielle Gestaltgesetze:}
+\begin{itemize}
+  \item \textbf{Gesetz der Nähe:} Nah beieinanderliegende Elemente werden als zusammengehörig wahrgenommen.
+  \item \textbf{Gesetz der Ähnlichkeit:} Ähnliche Elemente (Form, Farbe, Größe) werden als Gruppe interpretiert.
+  \item \textbf{Korrespondierende Muster:} Symmetrische oder sich ergänzende Elemente (z.\,B.\ Klammern, \texttt{>>}) werden als Einheit gesehen.
+\end{itemize}
+
+\textbf{Kanizsa-Dreieck:} Beispiel für \textbf{subjektive Konturen} — das Gehirn ergänzt physikalisch nicht vorhandene Linien, um eine geschlossene Form wahrzunehmen.
+
+\textbf{Anwendung im Design:} Gestaltgesetze reduzieren Fehler, erhöhen Verarbeitungsgeschwindigkeit und schaffen intuitive funktionale Gruppierungen.
+
+% -----------------------------------------
+\subsection{Sensomotorische Designanforderungen}
+% -----------------------------------------
+
+\subsubsection*{Grundlagen sensomotorischer Handlungen}
+
+Gesamtzeit = \textbf{Reaktionszeit} + \textbf{Bewegungszeit}. Reaktionszeit: auditiv $\approx 150\,$ms, visuell $\approx 200\,$ms, Schmerz $\approx 700\,$ms. Bewegungszeit hängt von Entfernung und Zielgröße ab.
+
+\subsubsection*{Fitts' Law — Positionierung}
+
+\[
+  MT = a + b \cdot \log_2\!\left(1 + \frac{D}{W}\right)
+\]
+$D$ = Entfernung zum Ziel, $W$ = Zielbreite. Ziele müssen \textbf{groß} und \textbf{nah} sein für schnelle Interaktion.
+
+\subsubsection*{Steering Law — Tunnelbewegung}
+
+\[
+  MT = a + b \cdot \frac{D}{W}
+\]
+Beschreibt die Zeit, sich durch einen engen Pfad zu bewegen (z.\,B.\ horizontale Bewegung durch ein Untermenü). Linearer Anstieg mit Länge/Breite-Verhältnis.
+
+\textbf{Kombination im Menü-Design:} Vertikale Auswahl im Obermenü → Fitts' Law; horizontales Traversieren ins Untermenü → Steering Law.
+
+\subsubsection*{Hick's Law — Entscheidungszeit}
+
+\[
+  RT = a + b \cdot \log_2(n)
+\]
+$n$ = Anzahl gleich wahrscheinlicher Alternativen; $b \approx 0{,}155\,$s. \textbf{Konsequenz:} Flache Menüs sind schneller als tiefe Hierarchien. Beispiel: ein Menü mit 8 Einträgen ($\log_2 8 = 3$) schlägt zwei Ebenen à 4 Einträge ($2 \cdot \log_2 4 = 4$).
+
+% -----------------------------------------
+\subsection{WIMP-Systeme}
+% -----------------------------------------
+
+\textbf{WIMP} = \textbf{W}indows, \textbf{I}cons, \textbf{M}enus, \textbf{P}ointers. Verwaltet den Grafikbildschirm und bietet geräteunabhängigen Zugriff auf Ein-/Ausgabe über eine API.
+
+\subsubsection*{Fenster-Funktionalitäten}
+\begin{enumerate}
+  \item Verschiebbar und skalierbar (manuell oder per Fenstermanager: gekachelt / kaskadierend).
+  \item Überlappbar.
+  \item Ikonifizierbar (auf Icon verkleinern).
+  \item Vordergrund/Hintergrund-Wechsel (Fokus).
+  \item Scrolling bei größerem Inhalt.
+  \item \textbf{Datenübertragung:} Clipboard (Kopieren) oder \textbf{OLE} (Object Linking \& Embedding — Änderungen am Original wirken sich auf alle Referenzen aus).
+  \item \textbf{Koordination:} synchronisiertes Scrollen, hierarchisches Browsen, virtuelle Desktops.
+\end{enumerate}
+
+\subsubsection*{Piktogramme (Icons)}
+
+Selektierbar, aktivierbar (öffnet z.\,B.\ Fenster), per Drag-and-Drop bewegbar. Gestaltung: einheitlicher Stil, klare Funktionstrennung, hoher Kontrast, Normen beachten (DIN-ISO/IEC 11581-1).
+
+\subsubsection*{Metaphern}
+
+Übertragung bekannter Konzepte auf das System, um das mentale Modell des Nutzers zu unterstützen:
+\begin{itemize}
+  \item \textbf{Desktop:} Ordner, Papierkorb, Posteingang.
+  \item \textbf{Buch:} Seiten, Kapitel, Inhaltsverzeichnis.
+  \item \textbf{Atlas:} Karten, Legenden, Zoom.
+\end{itemize}
+
 \end{document}
