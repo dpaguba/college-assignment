@@ -2538,43 +2538,27 @@ Jeder Vertex $p_j$ enthält: Koordinaten $(x,y,z)$, Normalenvektor $(n_x, n_y, n
 \end{tikzpicture}
 \end{figure}
 
-\textbf{Flat-Shading:} Keine Interpolation -- ein \textbf{Farbwert pro Polygon}:
-\begin{itemize}
-  \item Variante 1: Mittelwert der Farbwerte an allen Eckpunkten (nach dem Beleuchtungsmodell)
-  \item Variante 2: Auswahl eines repräsentativen Punktes; Farbe nur an diesem Punkt berechnet
-\end{itemize}
-Einzelne Polygone sind als klare Flächen deutlich sichtbar. Schnell, aber \textbf{geringe Qualität} (keine Plastizität).
+\textbf{Flat-Shading} berechnet \textit{einen einzigen} Farbwert für das gesamte Polygon -- entweder als Mittelwert der Vertex-Farben oder für einen repräsentativen Punkt. Jeder Pixel des Polygons bekommt diese eine Farbe. Das Ergebnis: Man sieht jedes Dreieck als klare, gleichmäßig gefärbte Fläche -- wie ein Papier-Polygon. Schnell, aber unrealistisch.
 
-\textbf{Gouraud-Shading (,,Smooth Shading''):}
-\begin{enumerate}
-  \item Berechne die Farbwerte \textbf{an den Eckpunkten (Vertices)} nach dem Beleuchtungsmodell.
-  \item \textbf{Lineare Interpolation} der Farbwerte von den Ecken ins Innere des Polygons (entlang der Scanlines).
-\end{enumerate}
-Kanten zwischen Polygonen sind nicht mehr sichtbar. \textbf{Problem:} Liegt ein Glanzpunkt in der Mitte eines Polygons, wird er verschluckt -- die Lokalität geht verloren.
+\textbf{Gouraud-Shading} wertet das Beleuchtungsmodell nur an den \textit{Vertices} aus und interpoliert die Farben linear ins Innere (entlang der Scanlines). Dadurch verschwinden die harten Kanten zwischen Polygonen -- die Oberfläche sieht glatt aus. Das Problem: Wenn ein Glanzpunkt physikalisch in der Mitte eines Polygons liegen müsste, liegt er auf keinem Vertex. Da nur zwischen den (dunklen) Eckfarben interpoliert wird, verschwindet der Glanzpunkt einfach.
 
-\textbf{Phong-Shading:}
-\begin{enumerate}
-  \item Benötige Material- und \textbf{Normalenattribute} für die Eckpunkte.
-  \item \textbf{Interpoliere die Normalenvektoren} der Eckpunkte über die Fläche des Polygons.
-  \item Berechne an \textbf{jedem Pixel} einen Farbwert aus der interpolierten Normalen.
-\end{enumerate}
-Beste Ergebnisse, Glanzpunkte korrekt. Aufwendiger -- das Beleuchtungsmodell wird pro Pixel ausgewertet.
+\textbf{Phong-Shading} löst genau dieses Problem. Statt Farben zu interpolieren, werden die \textit{Normalenvektoren} der Vertices über die Fläche interpoliert. An \textit{jedem Pixel} wird dann das volle Beleuchtungsmodell mit dem lokalen interpolierten Normalenvektor ausgewertet. Dadurch entstehen korrekte Glanzpunkte auch im Inneren von Polygonen -- zum Preis von deutlich mehr Berechnungen.
 
 \begin{examplebox}{Klausurbeispiel: Rechenaufwand}
 Dreieck mit \textbf{3 Eckpunkten} und \textbf{28 inneren Pixeln} (31 Punkte gesamt):
 \begin{itemize}
-  \item \textbf{Gouraud:} 3 Beleuchtungsberechnungen (nur Eckpunkte)
-  \item \textbf{Phong:} 31 Beleuchtungsberechnungen (3 Eckpunkte + 28 innere Pixel)
+  \item \textbf{Gouraud:} 3 Beleuchtungsberechnungen (nur Vertices) $+$ günstige Interpolation für 28 Pixel
+  \item \textbf{Phong:} 31 Beleuchtungsberechnungen (jeder der 31 Punkte einzeln)
 \end{itemize}
 \end{examplebox}
 
 \begin{notebox}{Vergleich der Shading-Verfahren}
-\begin{tabular}{lccc}
-  & \textbf{Flat} & \textbf{Gouraud} & \textbf{Phong} \\
+\begin{tabular}{lp{3.2cm}p{3.8cm}p{4.2cm}}
+  \textbf{Merkmal} & \textbf{Flat} & \textbf{Gouraud} & \textbf{Phong} \\
   \hline
-  BSF ausgewertet & 1$\times$/Polygon & 1$\times$/Vertex & 1$\times$/Pixel \\
-  Interpoliert & -- & Farben & Normalenvektoren \\
-  Glanzpunkte & flächig/falsch & können fehlen & korrekt \\
+  BSF ausgewertet & 1$\times$ pro Polygon & 1$\times$ pro Vertex & 1$\times$ pro Pixel \\
+  Interpoliert & nichts & Farben (linear) & Normalenvektoren \\
+  Glanzpunkte & flächig / falsch & können fehlen & korrekt \\
   Qualität & gering & mittel & hoch \\
   Rechenaufwand & sehr gering & gering & hoch \\
 \end{tabular}
