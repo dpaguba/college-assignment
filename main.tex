@@ -1400,27 +1400,6 @@ Quantisierung (Rundung der Intensität auf diskrete Stufen, $y$-Achse).}
         \textbf{Quantisierungsrauschen}.
 \end{enumerate}
 
-\textbf{2D-Fall (Bild/Foto):} Abtastgitter mit Abständen $\Delta x$
-(Spalten) und $\Delta y$ (Zeilen). Die diskretisierte Funktion:
-\[
-  f_{\Delta}(m,n) :=
-  \begin{cases}
-    f(x,y) & \text{für } x = m\,\Delta x,\; y = n\,\Delta y \\
-    0       & \text{sonst}
-  \end{cases}
-\]
-($m$ = Spaltenindex, $n$ = Zeilenindex.) Zwischen den Gitterpunkten ist
-der Wert 0 (nicht definiert). Bei reiner Abtastung ohne Quantisierung
-bleiben die Werte reelle Zahlen.
-
-\textbf{Abtastabstand und Abtastfrequenz} (umgekehrt proportional):
-\begin{itemize}
-  \item \textbf{Abtastabstand} $\Delta x$: räumlicher Abstand zwischen
-        zwei Messpunkten.
-  \item \textbf{Abtastfrequenz} $b_x$: Anzahl der Abtastpunkte pro
-        Einheit: $b_x = \dfrac{2\pi}{\Delta x}$,\quad
-        $b_y = \dfrac{2\pi}{\Delta y}$.
-\end{itemize}
 
 % -----------------------------------------
 \subsection{Mathematische Grundlagen: Komplexe Zahlen}
