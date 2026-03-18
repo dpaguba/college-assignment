@@ -3303,4 +3303,49 @@ Das Objekt wird über seine \textbf{begrenzenden Hüllflächen} beschrieben — 
 \textbf{3. Feature-basierte und parametrische Modellierung:}
 Objekte werden durch \textbf{Konstruktionselemente} (Features, z.\,B.\ Bohrung, Fase, Rippe) und \textbf{Variablen/Parameter} beschrieben. Änderung eines Parameters (z.\,B.\ Durchmesser) aktualisiert automatisch das gesamte Modell. Grundlage moderner CAD-Software.
 
+\subsection{Darstellung von Kurven und Flächen}
+
+\subsubsection*{F.2.1 Parameterdarstellung einer Kurve}
+
+Die Koordinaten eines Punktes $\mathbf{p}$ auf der Kurve werden als Funktionen einer einzigen reellen Variable $t$ (dem Parameter) beschrieben:
+\[
+  \mathbf{p} = \mathbf{k}(t), \quad t \in P \subseteq \mathbb{R}
+\]
+In 3D ergibt das drei Komponentenfunktionen $x(t),\, y(t),\, z(t)$. Der Parameterbereich $P$ ist typischerweise ein Intervall wie $[0,1]$.
+
+\textbf{Beispiele:}
+\begin{itemize}
+  \item \textbf{Kreis} in der $xy$-Ebene: $x = m_x + r\cos t,\quad y = m_y + r\sin t,\quad t \in [0, 2\pi]$
+  \item \textbf{Schraubenlinie}: $x = \sin t,\quad y = \cos t,\quad z = t$
+\end{itemize}
+
+\subsubsection*{F.2.2 Implizite Darstellung einer Kurve}
+
+Eine Kurve ist die \textbf{Nullstellenmenge} einer Funktion — alle Punkte, die eine Bedingung erfüllen:
+\[
+  F(x, y) = 0
+\]
+
+\textbf{Vorteil:} Einfacher Inzidenztest — einfach Koordinaten einsetzen und prüfen ob $= 0$. Eine einzige Gleichung genügt für eine vollständige Form (z.\,B.\ Einheitskreis: $x^2 + y^2 - 1 = 0$, statt zwei explizite Äste $y = \pm\sqrt{1-x^2}$).
+
+\textbf{Kegelschnitte:}
+\begin{itemize}
+  \item Ellipse: $\dfrac{x^2}{a^2} + \dfrac{y^2}{b^2} - 1 = 0$
+  \item Parabel: $y^2 - 2px = 0$
+\end{itemize}
+
+Im 3D-Raum entsteht eine Raumkurve als \textbf{Schnitt zweier impliziter Flächen}: $F(x,y,z)=0$ \textit{und} $G(x,y,z)=0$.
+
+\subsubsection*{F.2.3 Parameterdarstellung einer Fläche}
+
+Erweiterung auf \textbf{zwei Parameter} $(u, v)$:
+\[
+  \mathbf{p} = \mathbf{f}(u, v), \quad (u,v) \in P \subseteq \mathbb{R}^2
+\]
+Hält man einen Parameter fest (z.\,B.\ $u = u^*$), beschreibt $\mathbf{f}(u^*, v)$ eine \textbf{Kurve im Raum}. Eine Fläche ist damit eine \textbf{Schar von Kurven} — man kann sie zeilenweise oder spaltenweise durchfahren.
+
+\begin{notebox}{Prüfungshinweis}
+Für einfache Polynomkurven bestimmen die Koeffizienten die Form — aber das ist wenig intuitiv. In der Praxis und in der Klausur stehen deshalb \textbf{Bézier-Kurven und Splines} im Vordergrund.
+\end{notebox}
+
 \end{document}
