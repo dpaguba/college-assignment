@@ -3292,17 +3292,6 @@ Es gibt vier grundlegende Ansätze, um 3D-Objekte im Computer zu repräsentieren
   \item \textbf{Solid Modeling (Volumenmodellierung):} Im Gegensatz zur Flächenmodellierung enthalten diese Modelle sowohl Volumen- als auch Randinformationen. Das Objekt ist vollständig und eindeutig definiert — man kann z.\,B.\ das Gewicht berechnen oder prüfen, ob ein Punkt innen liegt.
 \end{itemize}
 
-\subsubsection*{Solid Modeling — Unterformen}
-
-\textbf{1. Konstruktive Volumenkörpergeometrie (CSG — Constructive Solid Geometry):}
-Komplexe Objekte entstehen durch \textbf{Mengenoperationen} (Vereinigung $\cup$, Schnitt $\cap$, Differenz $\setminus$) auf einfachen \textbf{geometrischen Primitiven} (Quader, Zylinder, Kugel, …). Beispiel: Quader $-$ Zylinder ergibt einen Quader mit Bohrung. Das Ergebnis lässt sich auch auf verschiedene Weisen konstruieren: $(A - B) + C$ oder $A + (C - B)$ — gleiche Form, unterschiedliche Konstruktionshistorie.
-
-\textbf{2. Boundary Representation (B-Rep):}
-Das Objekt wird über seine \textbf{begrenzenden Hüllflächen} beschrieben — Flächen, Kanten und Eckpunkte sowie ihre topologischen Verbindungen. Enthält sowohl Geometrie als auch Topologie. Standard in CAD-Systemen.
-
-\textbf{3. Feature-basierte und parametrische Modellierung:}
-Objekte werden durch \textbf{Konstruktionselemente} (Features, z.\,B.\ Bohrung, Fase, Rippe) und \textbf{Variablen/Parameter} beschrieben. Änderung eines Parameters (z.\,B.\ Durchmesser) aktualisiert automatisch das gesamte Modell. Grundlage moderner CAD-Software.
-
 \subsection{Darstellung von Kurven und Flächen}
 
 \subsubsection*{F.2.1 Parameterdarstellung einer Kurve}
