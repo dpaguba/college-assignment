@@ -3003,6 +3003,31 @@ Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung o
 \textbf{SIMD-Prinzip:} Derselbe Shader-Code läuft gleichzeitig auf Tausende von Vertices/Fragmenten (Single Instruction, Multiple Data). Deshalb hat die GPU viele kleine parallele Kerne.
 
 \medskip
+\textbf{GLSL (OpenGL Shading Language):} Shader werden in GLSL geschrieben — C-ähnliche Syntax, mit Vektoren (\texttt{vec2/3/4}) und Matrizen (\texttt{mat4}) als eingebaute Typen. Jeder Shader braucht zwingend eine \texttt{void main()}. Rekursion ist verboten.
+
+\textbf{Variablen-Qualifizierer} steuern den Datenfluss:
+\begin{itemize}
+  \item \texttt{in} / \texttt{out} — Eingabe vom vorherigen Schritt / Ausgabe an den nächsten Schritt
+  \item \texttt{uniform} — von der CPU gesetzt, für alle Vertices/Fragmente eines Draw Calls konstant (z.\,B.\ Transformationsmatrix)
+  \item \texttt{buffer} — globaler GPU-Speicher, les- und schreibbar
+\end{itemize}
+
+\textbf{Weitere Shader-Typen:}
+\begin{itemize}
+  \item \textbf{Tessellation Shader:} Unterteilt grobe Geometrie (Patches) in feinere Primitive — für LOD (Level of Detail).
+  \item \textbf{Geometry Shader:} Kann Primitive ändern, löschen oder neue erzeugen (z.\,B.\ Punkt → Dreieck).
+  \item \textbf{Compute Shader:} Allgemeine GPU-Berechnungen außerhalb der Grafik-Pipeline (z.\,B.\ Physik, KI).
+\end{itemize}
+
+\textbf{Shader-Lebenszyklus} (Laufzeit-Kompilierung):
+\begin{enumerate}
+  \item \texttt{glCreateShader} — Shader-Objekt erzeugen
+  \item \texttt{glShaderSource} + \texttt{glCompileShader} — Quellcode übergeben und kompilieren
+  \item \texttt{glAttachShader} + \texttt{glLinkProgram} — Stufen zu einem Programm zusammenbinden
+  \item \texttt{glUseProgram} — Programm als aktiven Zustand der State Machine setzen
+\end{enumerate}
+
+\medskip
 \textbf{Datenübertragung CPU → GPU:}
 
 \begin{itemize}
