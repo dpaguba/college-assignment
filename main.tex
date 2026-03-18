@@ -4015,4 +4015,52 @@ Navigation = \textbf{Reisen} (motorisch, Bewegung durch den Raum) + \textbf{Wegs
   \item \textbf{Dynamische 3D-Modelle} — Echtzeit-Abbilder mitbewegter Objekte.
 \end{enumerate}
 
+\subsection{Adaptives Streaming für XR}
+
+\textbf{Grundidee:} Datendurchsatz dynamisch an verfügbare Bandbreite anpassen. Basis: \textbf{DASH} (Dynamic Adaptive Streaming over HTTP) — Inhalte liegen in mehreren Qualitätsstufen vor, Client wählt je nach Pufferfüllung und Bandbreite.
+
+\textbf{XR-spezifische Varianten:}
+\begin{itemize}
+  \item \textbf{Tile-basiert:} Bild in räumliche Kacheln unterteilen — nur Tiles im aktuellen Sichtfeld in hoher Qualität übertragen.
+  \item \textbf{Viewport-adaptiv:} Kopfbewegung vorhersagen (ggf. per Deep Reinforcement Learning) → Kompressionsstufen an erwarteten Blickwinkel anpassen.
+  \item \textbf{Foveated Rendering:} Nur der fixierte Bereich (Fovea) wird hochaufgelöst gerendert; Peripherie bleibt unscharf. Erfordert Eye-Tracking und sehr geringe Motion-to-Photon-Latenz. Umsetzung: \textbf{Variable Rate Shading (VRS)}.
+\end{itemize}
+
+\textbf{Standards:} MPEG-I (ISO/IEC 23090) — OMAF (360°), VVC/H.266 (4K/8K/VR), Punktwolken-Kompression.
+
+\subsection{Interaktionsaufgaben in virtuellen 3D-Umgebungen}
+
+\subsubsection*{Navigation}
+Traveling (motorisch: Fortbewegung) + Wayfinding (kognitiv: Orientierung, Planung). Aufgaben: Exploration, gezielte Suche, Manövrieren.
+
+\subsubsection*{Selektion und Manipulation}
+
+\textbf{Direkte Techniken:}
+\begin{itemize}
+  \item \textbf{Virtuelle Hand:} getrackte Hand greift direkt (Datenhandschuh, Leap Motion).
+  \item \textbf{Go-Go:} virtueller Arm wächst überproportional — ermöglicht weit entfernte Objekte zu greifen.
+  \item \textbf{Selektionsstrahl/-kegel:} Strahl/Kegel vom Nutzer, Objekte werden per Rang-Metrik ausgewählt (Taschenlampen-Metapher).
+\end{itemize}
+
+\textbf{Indirekte Techniken:} 3D-Widgets (Griffe, Rahmen) an Objekten für Präzisionssteuerung.
+
+\subsubsection*{Systemsteuerung}
+Änderung des Systemzustands: Sprachkommandos, Gesten, virtuelle Werkzeuge. \textbf{Pie-Menüs:} kreisförmige 3D-Menüs, per Handrotation oder Selektionsstrahl bedient.
+
+\subsubsection*{2D-Interaktion in 3D-Umgebungen}
+\begin{itemize}
+  \item \textbf{Voll-immersiv:} physische Eingabefläche für Nutzer unsichtbar, Darstellung in VR projiziert.
+  \item \textbf{Semi-immersiv:} transparentes Zeichenbrett mit UI-Einblendung an korrekter Stelle (z.\,B.\ System \textit{Studierstube}).
+\end{itemize}
+
+\subsection{Haptische 3D-Umgebungen}
+
+Haptische Systeme übertragen Kräfte (Force Feedback) via Aktuatoren — z.\,B.\ Simulation des Greifens. Virtuelle Hand wird durch Kontrollpunkte abstrahiert, Bewegungen folgen mechanischen Gesetzen.
+
+\textbf{Kollisionsdetektion:} bestimmt Wechselwirkung zwischen Manipulator und Szene:
+\begin{itemize}
+  \item Kollision feststellen, minimalen Abstand berechnen, Kollisionszeitpunkt bestimmen.
+  \item \textbf{Suchstrukturen} reduzieren die Anzahl notwendiger Schnitttests zwischen polygonalen Objekten.
+\end{itemize}
+
 \end{document}
