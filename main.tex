@@ -2823,7 +2823,13 @@ $\mathbf{L}$ bringt jeden Weltpunkt ins Kamerakoordinatensystem.
   \item \textbf{Tonnenförmig:} Kanten wölben sich nach außen — typisch bei Weitwinkel.
 \end{itemize}
 
-\textbf{View Frustum \& NDC:} Die Kamera erfasst nur einen pyramidenstumpfförmigen Bereich (\textit{View Frustum}), begrenzt durch near/far-Ebenen und den Öffnungswinkel (FOV). Die Projektion normiert dieses Frustum auf einen $2\times2\times1$-Quader in \textit{Normalized Device Coordinates (NDC)} — damit ist die Darstellung auflösungsunabhängig.
+\textbf{View Frustum \& NDC:}
+
+\textbf{FOV (Field of View)} ist der Öffnungswinkel der Kamera — wie viel von der Szene sie erfasst. Kleiner FOV = schmaler Blick, Objekte erscheinen groß (Teleobjektiv). Großer FOV = breiter Blick, mehr Szene sichtbar (Weitwinkel). Typisch: 60–90° in Spielen.
+
+Das \textbf{View Frustum} (Sichtpyramide) ist der Bereich, den die Kamera tatsächlich sieht: ein Pyramidenstumpf, begrenzt durch die \textit{near plane} (zu Nahes abschneiden), die \textit{far plane} (zu Fernes abschneiden) und den FOV-Winkel. Alles außerhalb wird geclippt.
+
+\textbf{NDC (Normalized Device Coordinates):} Das Problem ist, dass jede Kamera andere Parameter hat — anderen FOV, andere Auflösung, andere near/far-Abstände. Die GPU kann nicht für jede Kamera individuell rechnen. Die Lösung: die Projektionsmatrix quetscht das View Frustum in einen einheitlichen $2\times2\times1$-Quader mit $x,y \in [-1,1]$ und $z \in [-1,1]$. Das sind die NDC. Alle sichtbaren Punkte landen garantiert in diesem Würfel — egal welche Kamera. Danach genügt eine einfache Multiplikation mit der Auflösung, um Pixelkoordinaten zu erhalten. Der Faktor $\frac{z_f+z_n}{z_n-z_f}$ in der Projektionsmatrix normiert genau die $z$-Koordinate in diesen Bereich.
 
 % --- Weiter mit Schritten 5–6 ---
 
