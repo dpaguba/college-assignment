@@ -3679,4 +3679,36 @@ Inkrementeller Algorithmus zur Konstruktion der \textbf{konvexen Hülle}, Grundl
 
 \textbf{Zeitaufwand:} $O(n \log n)$ (dominiert durch die Sortierung).
 
+\subsection{Netzverbesserung}
+
+\subsubsection*{Qualitätskriterien}
+\begin{itemize}
+  \item \textbf{Geometrische Qualität:} ausgeglichene Dreiecke (kein langes, dünnes Dreieck).
+  \item \textbf{Kombinatorische Qualität:} möglichst regulärer Knotengrad — Zielwert bei Dreiecksnetzen: \textbf{6}.
+  \item \textbf{Flächenqualität:} Glattheit und Ausgeglichenheit (Krümmungsfunktionale).
+\end{itemize}
+
+\subsubsection*{Lokale Operatoren}
+\begin{itemize}
+  \item Knotenentfernung / -einfügung
+  \item Halbkantenkontraktion / Vertex Split
+  \item Kantenkontraktion / Edge Split
+  \item \textbf{Kantenflip (Edge Flip):} korrigiert Knotengrad oder stellt Delaunay-Eigenschaft wieder her.
+  \item \textbf{Knotenkontraktion:} einzige Operation, die die \textbf{Topologie} verändern kann.
+\end{itemize}
+
+\subsubsection*{Umvernetzungsalgorithmus (Kobbelt et al.)}
+\begin{enumerate}
+  \item \textbf{Kurze Kanten entfernen:} Kanten kürzer als $\varepsilon_{\min}$ per Halbkantenkontraktion kollabieren; Knoten mit geringerem Grad wird in den mit höherem Grad verschoben.
+  \item \textbf{Lange Kanten unterteilen:} Kanten länger als $\varepsilon_{\max}$ durch neuen Mittelpunkt halbieren.
+  \item \textbf{Knotengrad optimieren:} Kantentausche (Edge Flips) minimieren die Summe der Abweichungen vom Zielgrad 6.
+  \item \textbf{Iteration} bis alle Kanten im Intervall $[\varepsilon_{\min}, \varepsilon_{\max}]$ liegen.
+\end{enumerate}
+
+\subsubsection*{Glättung (Denoising)}
+
+\textbf{Laplace'sche Glättung:} Knoten werden in Richtung des diskreten Laplace-Operators verschoben — eliminiert Rauschen aus der Abtastung. \textit{Nachteil:} Objekt kann schrumpfen (z.\,B.\ Torus); wird durch Dämpfungsfaktor $t$ gemindert.
+
+\textit{Laplace-Operator, Glättungsformel und diskreter Informationsfluss sind \textbf{nicht prüfungsrelevant}.}
+
 \end{document}
