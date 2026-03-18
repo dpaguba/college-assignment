@@ -1648,6 +1648,37 @@ Nullstellen bei $u = \pm n/X$.}
   \quad u,v \in \mathbb{R}.
 \]
 
+\textbf{Bezeichnungen:}
+\begin{itemize}
+  \item $f(x)$ und $F(u)$ bzw.\ $f(x,y)$ und $F(u,v)$ heißen
+        \textbf{Fouriertransformationspaar}, Schreibweise:
+        \[ f(x) \;\circ\!\text{---}\!\bullet\; F(u)
+           \qquad
+           f(x,y) \;\circ\!=\!\bullet\; F(u,v). \]
+  \item $x,\,y$ heißen \textbf{Ortskoordinaten} (räumliche Position).
+  \item $f(x,y)$ heißt \textbf{Ortsfunktion} (das Bild im Ortsbereich).
+  \item $u,\,v$ heißen \textbf{Ortsfrequenzkoordinaten}.
+  \item $F(u,v)$ heißt \textbf{Ortsfrequenzspektrum}.
+  \item $xy$-Ebene: \textbf{Ortsbereich} \quad|\quad
+        $uv$-Ebene: \textbf{Ortsfrequenzbereich}.
+\end{itemize}
+
+\textbf{Eigenschaften von $F(u,v)$:}
+\begin{itemize}
+  \item $F(u,v)$ ist üblicherweise \textbf{komplexwertig}:
+        \[ F(u,v) = \operatorname{Re}F(u,v) + i\cdot\operatorname{Im}F(u,v)
+                  = |F(u,v)|\,\exp[i\phi(u,v)]. \]
+  \item $|F(u,v)| = \sqrt{\operatorname{Re}F(u,v)^2 +
+        \operatorname{Im}F(u,v)^2}$ \quad heißt \textbf{Amplitudenspektrum}
+        ($|F(u)|$ -- wie stark ist Frequenz ($u,v$) im Bild vertreten).
+  \item $\phi(u,v) = \arctan\!\left(\dfrac{\operatorname{Im}F(u,v)}
+        {\operatorname{Re}F(u,v)}\right)$ \quad heißt \textbf{Phasenspektrum}
+        ($\phi$ -- wo beginnt die Welle der Frequenz ($u,v$)).
+  \item $|F(u,v)|^2 = F(u,v)\cdot\overline{F(u,v)}$ \quad heißt
+        \textbf{Leistungsspektrum} von $f(x,y)$ \quad
+        ($\overline{\phantom{F}}$ := konjugiert komplex).
+\end{itemize}
+
 \textbf{Frequenz ($u, v$) bei Bildern:} Eine Sinus-/Cosinuswelle, bei der
 helle Grautöne große Werte und dunkle Grautöne niedrige Werte
 visualisieren.
