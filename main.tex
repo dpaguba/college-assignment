@@ -3097,29 +3097,6 @@ Früher war die Pipeline „fest verdrahtet" — kein Einfluss auf Beleuchtung o
 
 \textit{Fensterverwaltung:} Die OpenGL-API selbst hat kein Fenster- oder Eingabe-System. Hilfsbibliotheken wie \textbf{GLUT} oder \textbf{GLFW} übernehmen die Fenstererstellung und Benutzerinteraktion.
 
-\textbf{Ablauf der GPU-Pipeline:}
-\begin{enumerate}
-  \item Vertex-Daten aus VBOs → \textbf{Vertex Shader} (Transformation + Beleuchtung pro Vertex)
-  \item \textbf{Primitive Assembly \& Clipping}: Punkte zu Dreiecken zusammenfügen; alles außerhalb des View Frustums verwerfen
-  \item \textbf{Rasterizer}: Dreiecke → Fragmente; Werte zwischen Eckpunkten interpolieren
-  \item \textbf{Fragment Shader}: Texturierung + Phong-Beleuchtung pro Fragment
-  \item \textbf{Output Merging}: Z-Buffer-Test + Blending → Ergebnis in Framebuffer
-\end{enumerate}
-
-\begin{notebox}{GPU-Pipeline vs. abstrakte Pipeline}
-\begin{tabular}{ll}
-  \textbf{Abstrakte Pipeline (D)} & \textbf{GPU-Pipeline (E)} \\
-  \hline
-  Transformation & Vertex Shader \\
-  Beleuchtung (Gouraud) & Vertex Shader \\
-  Projektion & Vertex Shader \\
-  Clipping & Primitive Assembly \& Clipping \\
-  Verrasterung & Rasterizer \\
-  Beleuchtung (Phong) / Textur & Fragment Shader \\
-  Sichtbarkeit (Z-Buffer) & Output Merging \\
-\end{tabular}
-\end{notebox}
-
 \subsection*{E.2. Szenengraphen}
 
 Ein Szenengraph ist eine hierarchische Datenstruktur zur Verwaltung komplexer 3D-Szenen. Grundstruktur: \textbf{gerichteter azyklischer Graph (DAG)} — keine Zyklen, Beziehungen nur in eine Richtung. In der einfachsten Form ein Baum.
