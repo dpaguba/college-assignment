@@ -1340,6 +1340,54 @@ Sampling) bezeichnet die Umwandlung eines kontinuierlichen Signals in ein
 Millisekunde). Diskret: wir messen nur jede Stunde und runden auf ganze
 Zahlen.
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[line width=0.7pt, >=Stealth, font=\scriptsize]
+  % Achsen
+  \draw[->] (0, 0) -- (8.8, 0);
+  \draw[->] (0, -0.1) -- (0, 5.2);
+
+  % Tick-Marks (Quantisierungsstufen)
+  \foreach \y in {0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5} {
+    \draw (-0.07, \y) -- (0.07, \y);
+  }
+
+  % Y-Achsenbeschriftung
+  \node[rotate=90, align=center] at (-1.3, 2.6)
+    {diskrete Abtastwerte\\[2pt]\textbf{Quantisierung}};
+
+  % Kontinuierliches Signal
+  \draw[thick] plot[smooth, tension=0.5] coordinates {
+    (0.5, 2.9) (0.8, 2.7) (1.1, 2.2) (1.4, 1.4) (1.8, 0.9)
+    (2.0, 0.8) (2.3, 1.0) (2.6, 2.4) (2.9, 3.4) (3.2, 4.0)
+    (3.5, 3.9) (3.8, 3.6) (4.1, 3.2) (4.4, 3.2) (4.7, 3.5)
+    (5.0, 3.8) (5.3, 3.6) (5.6, 3.5) (5.9, 3.1) (6.2, 2.8)
+    (6.5, 2.4) (6.8, 2.2) (7.1, 2.1) (7.4, 2.0) (7.8, 1.9)
+  };
+
+  % Abtastpunkte: gestrichelte Linien + Punkte
+  \foreach \x/\y in {
+    0.8/2.7, 1.4/1.4, 2.0/0.8, 2.6/2.4, 3.2/4.0,
+    3.8/3.6, 4.4/3.2, 5.0/3.8, 5.6/3.5,
+    6.2/2.8, 6.8/2.2, 7.4/2.0
+  } {
+    \draw[dashed, thin] (\x, \y) -- (\x, 0);
+    \fill (\x, \y) circle (2pt);
+  }
+
+  % Annotation mit Pfeil
+  \node[align=left] (note) at (5.5, 4.7)
+    {Quantisierung:\\Intensitäten auf\\diskrete Werte gerundet};
+  \draw[->, thin] (note.south) to[out=-60, in=110] (6.8, 2.5);
+
+  % X-Achsenbeschriftung
+  \node[align=center] at (4.4, -0.65)
+    {diskrete Abtastpunkte \quad \textbf{Sampling}};
+\end{tikzpicture}
+\caption{Sampling (gleichmäßige Abtastpunkte, $x$-Achse) und
+Quantisierung (Rundung der Intensität auf diskrete Stufen, $y$-Achse).}
+\end{figure}
+
 \textbf{Zwei Hauptschritte:}
 \begin{enumerate}
   \item \textbf{Abtastung (Sampling):} Diskretisierung des \textbf{Ortes}
