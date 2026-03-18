@@ -2134,6 +2134,30 @@ Reihenfolge der 7 Schritte vom Rohsignal zur Interpretation:
 % =========================================
 
 % -----------------------------------------
+\subsection{Daten-/Prozessmodell der Bilderzeugung}
+% -----------------------------------------
+
+Das Modell beschreibt, wie aus einer abstrakten Szenenbeschreibung eine menschliche Wahrnehmung entsteht — den vollständigen Daten- und Prozessfluss von Input bis Auge.
+
+\textbf{1. Szenenbeschreibung (Input):} Alle statischen Informationen über die virtuelle Welt: Geometrie der Objekte, Beleuchtungsmodell (z.\,B. Phong), Materialeigenschaften (Farbe, Reflexionsgrad, Transparenz) sowie die Kamera (Position, Blickrichtung, Projektion/FOV).
+
+\textbf{2. CPU — Szenenmanagement:} Die CPU verwaltet und bereitet die Szene vor: Laden und Generieren von Modellen/Texturen, Organisation der Geometrie in Datenstrukturen (z.\,B. BVH für schnelle Schnitttests), Verwaltung des Szenengraphen (Transformationshierarchie, Abhängigkeiten).
+
+\textbf{3. GPU — Rendering:} Die GPU übernimmt den rechenintensiven Teil. Ausgabe ist zunächst die \textbf{Radianz der Pixel} — physikalisch berechnete Lichtmengen mit hohem Dynamikumfang (HDR), der weit über die Darstellungsfähigkeit von Monitoren hinausgeht.
+
+\textbf{4. Post-Processing \& Ausgabe:}
+\begin{itemize}
+  \item \textbf{Tone Mapping:} Wandelt HDR-Radianzwerte in darstellbare RGB-Werte um, da Monitore nur begrenzte Helligkeitsstufen abbilden können.
+  \item \textbf{Wahrnehmung:} Das Endergebnis ist der Farbreiz auf den Netzhautzellen des Betrachters — im Idealfall entsprechend der realen Weltwahrnehmung.
+\end{itemize}
+
+\textbf{5. Interaktiver Kreislauf:} Benutzerinteraktion (Bewegung, Eingabe) löst eine Neuberechnung aus — entweder ab der Szenenbeschreibung (Szenenänderung) oder ab der CPU-Verarbeitung. Dies macht den Prozess zu einem \textbf{dynamischen Regelkreis} statt einer einmaligen Berechnung.
+
+\begin{notebox}{Kernidee}
+Szenenbeschreibung $\to$ CPU (Szenenmanagement) $\to$ GPU (Rendering) $\to$ Tone Mapping $\to$ menschliche Wahrnehmung $\circlearrowleft$ Interaktion.
+\end{notebox}
+
+% -----------------------------------------
 \subsection{Bilderzeugungs-Pipeline}
 % -----------------------------------------
 
