@@ -2632,6 +2632,55 @@ Gerade Anzahl $\Rightarrow$ Punkt liegt \textbf{außerhalb}.
 \]
 Objekte erscheinen gleich groß unabhängig vom Abstand. Geeignet für technische Zeichnungen und CAD.
 
+\begin{center}
+\begin{tikzpicture}[>=Stealth, thick, font=\small]
+
+  % === PARALLELPROJEKTION (oben) ===
+  \begin{scope}[yshift=4.4cm]
+    % Projektionsebene
+    \draw[thin] (0,-0.3) -- (0,1.9) node[above, font=\scriptsize] {Projektionsebene};
+    % Objekt
+    \draw (3.0,0.0) rectangle (3.8,1.4);
+    \node[right, font=\scriptsize] at (3.85,0.7) {Objekt};
+    % Parallele Projektionsstrahlen
+    \foreach \y in {0.2,0.7,1.2} { \draw[->] (3.0,\y) -- (0.1,\y); }
+    \node[above, font=\scriptsize] at (1.5,1.2) {Projektionsstrahlen};
+    % Bild auf Projektionsebene
+    \draw[line width=2.5pt] (0,0.2) -- (0,1.2);
+    \node[right, font=\scriptsize, xshift=2pt] at (0,0.7) {\textit{Bild}};
+    % Augenpunkt = ∞
+    \draw[->] (-0.1,0.7) -- (-2.4,0.7) node[left, font=\scriptsize] {Augenpunkt $= \infty$};
+    \node[font=\scriptsize] at (-1.3,0.25) {(Strahlen parallel)};
+  \end{scope}
+
+  % Trennlinie
+  \draw[dotted, thin] (-3.0,3.1) -- (5.2,3.1);
+
+  % === PERSPEKTIVISCHE PROJEKTION (unten) ===
+  \begin{scope}[yshift=0cm]
+    % Projektionsebene
+    \draw[thin] (0,-0.3) -- (0,1.9) node[above, font=\scriptsize] {Projektionsebene};
+    % Objekt
+    \draw (3.0,0.0) rectangle (3.8,1.4);
+    \node[right, font=\scriptsize] at (3.85,0.7) {Objekt};
+    % Augenpunkt (endlich)
+    \fill (-1.8,0.7) circle (2.5pt);
+    \node[below left, font=\scriptsize] at (-1.8,0.65) {Augenpunkt};
+    % Projektionsstrahlen konvergierend
+    % Top (3.0,1.4)→(-1.8,0.7): bei x=0 → y≈0.963
+    % Bottom (3.0,0.0)→(-1.8,0.7): bei x=0 → y≈0.438
+    \draw[->] (3.0,1.4) -- (-1.6,0.715);
+    \draw[->] (3.0,0.0) -- (-1.6,0.685);
+    \node[above, font=\scriptsize] at (1.5,1.4) {Projektionsstrahlen};
+    % Bild auf Projektionsebene
+    \draw[line width=2.5pt] (0,0.438) -- (0,0.963);
+    \node[right, font=\scriptsize, xshift=2pt] at (0,0.7) {\textit{Bild}};
+    \node[font=\scriptsize] at (-0.9,0.1) {(Strahlen konvergieren)};
+  \end{scope}
+
+\end{tikzpicture}
+\end{center}
+
 \textbf{Perspektivische Projektion:} Das Projektionszentrum liegt im Endlichen — alle Strahlen laufen in einem Punkt zusammen. Entferntere Objekte erscheinen kleiner, weil sich dieselbe Größe auf einen kleineren Winkel verteilt. Entspricht dem menschlichen Sehen.
 
 Die Formel ergibt sich direkt aus dem \textbf{Strahlensatz}:
