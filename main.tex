@@ -3968,4 +3968,51 @@ Navigation = \textbf{Reisen} (motorisch, Bewegung durch den Raum) + \textbf{Wegs
 
 \textbf{Redirected Walking:} realer Pfad wird unbemerkt manipuliert, um einen größeren virtuellen Raum mit begrenztem physischem Platz zu simulieren.
 
+\subsection{Tracking und Detektion}
+
+\subsubsection*{Physikalische Wirkprinzipien}
+\begin{itemize}
+  \item \textbf{Aktiv:} künstliche Signalquellen (Emitter) — mechanisch, magnetisch, Ultraschall, GPS, WiFi.
+  \item \textbf{Passiv:} keine eigenen Emitter — Inertialsensoren (Gyrometer), Computer Vision.
+  \item \textbf{Hybrid:} Kombination mehrerer Methoden (z.\,B.\ Bild + Inertial) für höhere Genauigkeit.
+\end{itemize}
+
+\subsubsection*{Gerätetypen}
+\begin{itemize}
+  \item \textbf{Mechanisch:} physische Verbindung → sehr präzise, aber begrenzter Bewegungsradius.
+  \item \textbf{Magnetisch:} misst Lage im Magnetfeld. Nachteil: anfällig für Metallgegenstände.
+  \item \textbf{Inertialsensoren:} Gyroskop + Beschleunigungsmesser. Geringe Latenz, klein — aber hoher \textbf{Drift} (kumulierende Abweichung).
+  \item \textbf{Optisch:}
+    \begin{itemize}
+      \item \textit{Marker-basiert:} Infrarot-Marker am Körper/Gerät — robust, einfach zu berechnen.
+      \item \textit{Markerlos:} natürliche Merkmale der Umgebung.
+    \end{itemize}
+  \item \textbf{Distanzsensoren:} Tiefenbild (z-Bild) via Time-of-Flight, Laser oder strukturiertes Licht (z.\,B.\ Kinect).
+\end{itemize}
+
+\subsubsection*{Tracking-Ansätze (Software)}
+
+\textbf{Merkmalsbasiert:}
+\begin{itemize}
+  \item \textbf{SLAM} (Simultaneous Localization and Mapping): gleichzeitig Umgebung kartieren und eigene Position bestimmen.
+  \item \textbf{SfM} (Structure from Motion): 3D-Strukturen aus Bewegungssequenzen ableiten.
+  \item Optisches Tracking: kantenbasiert, vorlagenbasiert, Interest-Point-basiert.
+\end{itemize}
+
+\textbf{Deep Learning:}
+\begin{itemize}
+  \item \textbf{CNNs} (Convolutional Neural Networks): lernen hierarchisch Merkmale aus Bilddaten — Convolution → ReLU → Pooling → semantische Merkmale. End-to-End-Training statt manueller Merkmalsextraktion.
+  \item \textbf{Skelett-basierte Aktionserkennung:} Keypoints (Gelenkpunkte) detektieren, dann \textbf{GCNs} (Graph Convolutional Networks) für spatio-temporale Graphen (Posen, Bewegungssequenzen).
+  \item \textbf{Inverses Rendering:} aus Bildern Materialeigenschaften (Normalen, Rauheit) schätzen.
+\end{itemize}
+
+\textbf{Modell-basiertes Tracking:} CAD-Modell des Zielobjekts gegen Kamerabild abgleichen (Kanten oder Tiefendaten).
+
+\subsubsection*{Detektionsaufgaben}
+\begin{enumerate}
+  \item \textbf{Posen- und Gestenerkennung} — Skelett-basierte Körperhaltungsidentifikation.
+  \item \textbf{Aktionserkennung} — Bewegungsabfolgen interpretieren (gehen, laufen, \dots).
+  \item \textbf{Dynamische 3D-Modelle} — Echtzeit-Abbilder mitbewegter Objekte.
+\end{enumerate}
+
 \end{document}
