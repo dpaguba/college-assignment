@@ -3117,4 +3117,40 @@ Ein Szenengraph ist eine hierarchische Datenstruktur zur Verwaltung komplexer 3D
 \textbf{Geometrie steht immer in den Blättern.} Transformationen stehen in den inneren Gruppenknoten und wirken auf alle darunter liegenden Knoten.
 \end{notebox}
 
+\subsection*{Globale Beleuchtungsmodelle}
+
+Das Phong-Modell ist \textit{lokal} — es betrachtet nur eine Lichtquelle und einen Objektpunkt. Globale Modelle berücksichtigen die Wechselwirkung \textbf{aller Objekte untereinander}: indirekte Beleuchtung, Schlagschatten, Spiegelungen, Brechungen.
+
+\medskip
+\textbf{Ray Tracing (Strahlverfolgung)} — „From Eye to Light":
+
+\begin{enumerate}
+  \item Für jeden Pixel: \textbf{Sehstrahl} vom Augenpunkt in die Szene schicken.
+  \item \textbf{Schnittpunkt} mit dem nächsten Objekt bestimmen.
+  \item Lokale Beleuchtung (Phong) am Schnittpunkt berechnen.
+  \item \textbf{Rekursion}: weitere Strahlen in Reflexions- und Brechungsrichtung verfolgen.
+  \item Pixelfarbe = gewichtete Summe aller Beiträge.
+\end{enumerate}
+
+Abbruch: maximale Rekursionstiefe erreicht oder Intensität unter Schwellenwert. Effekte: Spiegelungen, Transparenz, \textbf{implizite Schatten} (Schattenstrahl zur Lichtquelle).
+
+\medskip
+\textbf{Radiosity (Strahlungsverfahren)} — „From Light to Surface":
+
+Physikalisch basiertes Verfahren für \textbf{diffuse} Oberflächen (Lambert). Die Szene wird in kleine Teilflächen (\textbf{Patches}) zerlegt. Licht wird von Lichtquellen ausgesendet und iterativ zwischen Patches ausgetauscht, bis ein \textbf{Energiegleichgewicht} erreicht ist. Effekte: weiches indirektes Licht, Farbbluten zwischen Oberflächen. \textbf{Vorteil:} Lösung ist blickpunktunabhängig — einmal berechnet, freie Kamerabewegung ohne Neuberechnung.
+
+\begin{notebox}{Ray Tracing vs. Radiosity}
+\begin{tabular}{lll}
+  & \textbf{Ray Tracing} & \textbf{Radiosity} \\
+  \hline
+  Prinzip & From Eye to Light & From Light to Surface \\
+  Reflexion & spekular (glänzend) & diffus (matt) \\
+  Haupteffekt & Spiegelung, Brechung & indirektes Licht, Farbbluten \\
+  Aufwand & abhängig von Pixelzahl & abhängig von Geometrie (Patches) \\
+  Blickpunkt & abhängig & unabhängig \\
+\end{tabular}
+\end{notebox}
+
+\textbf{Rendering Equation (Kajiya):} Beschreibt die abgestrahlte Radianz an einem Punkt als Summe aus Eigenleuchten und dem integral über alle einfallenden Richtungen reflektierten Licht. Eine \textbf{exakte Lösung ist im Allgemeinen nicht möglich} — Ray Tracing und Radiosity sind Näherungsverfahren dafür.
+
 \end{document}
