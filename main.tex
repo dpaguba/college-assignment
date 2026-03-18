@@ -3361,4 +3361,51 @@ Hält man einen Parameter fest (z.\,B.\ $u = u^*$), beschreibt $\mathbf{f}(u^*, 
 Für einfache Polynomkurven bestimmen die Koeffizienten die Form — aber das ist wenig intuitiv. In der Praxis und in der Klausur stehen deshalb \textbf{Bézier-Kurven und Splines} im Vordergrund.
 \end{notebox}
 
+\subsection{Bézier-Kurven}
+
+\subsubsection*{Grundidee}
+
+Statt einer Kurve durch Koeffizienten zu beschreiben, steuert man sie über \textbf{Kontrollpunkte} $b_0, b_1, \dots, b_n$ — das \textbf{Bézier-Kontrollpolygon}. Die Kurve folgt dem Polygon, berührt es aber nur an den Endpunkten. Sehr intuitiv: Kontrollpunkte verschieben → Kurve verändert sich vorhersehbar.
+
+\subsubsection*{Bernstein-Polynome}
+
+Die mathematische Basis sind die \textbf{Bernstein-Polynome} vom Grad $n$:
+\[
+  B_i^n(t) = \binom{n}{i} t^i (1-t)^{n-i}, \quad i = 0, \dots, n,\quad t \in [0,1]
+\]
+Sie wirken als \textbf{Gewichtsfunktionen} — jeder Kontrollpunkt $b_i$ wird mit $B_i^n(t)$ gewichtet.
+
+\textbf{Eigenschaften:}
+\begin{itemize}
+  \item \textbf{Partition der Eins:} $\sum_{i=0}^{n} B_i^n(t) = 1$ — die Gewichte summieren sich immer zu 1.
+  \item \textbf{Positivität:} $B_i^n(t) \geq 0$ für $t \in [0,1]$.
+  \item \textbf{Maximum:} $B_i^n(t)$ erreicht sein Maximum genau bei $t = i/n$ — Kontrollpunkt $b_i$ hat dort den größten Einfluss.
+\end{itemize}
+
+\subsubsection*{Algorithmus von De Casteljau}
+
+Berechnung eines Kurvenpunkts $\mathbf{b}(t^*)$ durch \textbf{wiederholte lineare Interpolation}:
+
+Man teilt jede Kante des Kontrollpolygons im Verhältnis $t^* : (1-t^*)$ und verbindet die neuen Punkte zu einem kleineren Polygon. Das wiederholt man, bis nur noch ein Punkt übrig bleibt — dieser liegt auf der Kurve.
+
+\textbf{Eigenschaften des Algorithmus:}
+\begin{itemize}
+  \item \textbf{Aufwand:} $O(n^2)$ pro Kurvenpunkt.
+  \item \textbf{Numerisch stabil:} Nur Konvexkombinationen, keine Subtraktionen großer Zahlen.
+  \item \textbf{Kurvenunterteilung:} Die Zwischenpunkte sind die Kontrollpunkte der beiden Teilsegmente — jede Bézier-Kurve lässt sich so in zwei Bézier-Kurven gleichen Grades aufteilen.
+\end{itemize}
+
+\subsubsection*{Eigenschaften von Bézier-Kurven}
+
+\begin{itemize}
+  \item \textbf{Interpolation der Endpunkte:} Die Kurve geht \textit{exakt} durch $b_0$ und $b_n$.
+  \item \textbf{Tangente in den Endpunkten:} Die Kurve liegt dort tangential zum ersten bzw.\ letzten Segment des Kontrollpolygons.
+  \item \textbf{Konvexe-Hülle-Eigenschaft:} Die gesamte Kurve liegt innerhalb der konvexen Hülle der Kontrollpunkte.
+  \item \textbf{Beschränkte Schwankung:} Keine Gerade schneidet die Kurve öfter als das Kontrollpolygon — die Kurve „schwingt" nie stärker als ihre Kontrollpunkte.
+\end{itemize}
+
+\begin{notebox}{Prüfungshinweis}
+Algebraische Herleitung und Graderhöhung sind \textbf{nicht prüfungsrelevant}. Wichtig: graphische Erklärung des De-Casteljau-Algorithmus + die vier Eigenschaften oben.
+\end{notebox}
+
 \end{document}
