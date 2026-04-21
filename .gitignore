@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
@@ -90,3 +91,35 @@ _minted*/
 >>>>>>> tex-swk/main
 =======
 >>>>>>> tex-mmi/main
+=======
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data / models
+*.pt
+*.pth
+*.ckpt
+data/
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+
+# OS
+.DS_Store
+>>>>>>> thesis-ml/main
