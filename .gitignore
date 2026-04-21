@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
@@ -42,6 +43,8 @@ testem.log
 .DS_Store
 Thumbs.db
 =======
+=======
+>>>>>>> tex-mmi/main
 # LaTeX build artifacts
 *.aux
 *.log
@@ -83,4 +86,7 @@ _minted*/
 *.swp
 *.swo
 .DS_Store
+<<<<<<< HEAD
 >>>>>>> tex-swk/main
+=======
+>>>>>>> tex-mmi/main
