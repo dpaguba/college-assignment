@@ -1,0 +1,108 @@
+\documentclass[12pt, a4paper]{article}
+
+% ---------- Encoding & Language ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+% ---------- Fonts ----------
+\usepackage{lmodern}
+
+% ---------- Layout ----------
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+]{geometry}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ---------- Header / Footer ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Sections styling ----------
+\usepackage{titlesec}
+
+% Section: groß, fett, mit Linie darunter
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection}{1em}{}
+  [\vspace{2pt}\hrule height 0.8pt\vspace{4pt}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+% Subsection: normal fett, deutlich sichtbar
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+  [\vspace{1pt}\hrule height 0.3pt\vspace{2pt}]
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% Subsubsection: normalsize, fett
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% ---------- Boxes ----------
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{definitionbox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Definition}, #1
+}
+\newtcolorbox{notebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Hinweis}, #1
+}
+\newtcolorbox{examplebox}[1][]{
+  colback=white, colframe=black, coltext=black,
+  fonttitle=\bfseries, title={Beispiel}, #1
+}
+
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, decorations.pathreplacing}
+
+% ---------- Math ----------
+\usepackage{amsmath, amssymb}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt}
+
+% ---------- Figures ----------
+\usepackage{float}
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Misc ----------
+\usepackage{microtype}
+
+% =========================================
+%                DOCUMENT
+% =========================================
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries SWK}\\[6pt]
+  {\large Vorlesungsnotizen}\\[4pt]
+  {\small Stand: \today}
+\end{center}
+
+\vspace{1em}
+\tableofcontents
+\newpage
+
+% =========================================
+% Content begins here
+% =========================================
+
+\end{document}
