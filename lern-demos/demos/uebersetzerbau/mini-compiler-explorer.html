@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini-Compiler Explorer</title>
+<style>
+:root{
+  --bg:#12141a; --panel:#191c24; --panel2:#20242e; --line:#2b3040;
+  --fg:#e6e9f0; --dim:#8b93a7; --accent:#6ea8fe; --accent2:#7ee0a2;
+  --warn:#ffcc66; --err:#ff7b7b; --hl:#3a4a6b;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;
+  align-items:baseline;gap:14px;flex-wrap:wrap}
+h1{font-size:17px;margin:0;font-weight:650}
+header .sub{color:var(--dim);font-size:12.5px}
+.wrap{display:grid;grid-template-columns:minmax(320px,30%) 1fr;gap:0;height:calc(100vh - 52px)}
+.left{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.right{display:flex;flex-direction:column;min-width:0}
+.bar{padding:9px 14px;border-bottom:1px solid var(--line);display:flex;gap:8px;
+  align-items:center;flex-wrap:wrap;background:var(--panel)}
+.bar label{color:var(--dim);font-size:12px}
+select,button{font:inherit;font-size:13px;background:var(--panel2);color:var(--fg);
+  border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer}
+button:hover:not(:disabled),select:hover{border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button.primary{background:var(--accent);color:#0d1017;border-color:var(--accent);font-weight:600}
+input[type=range]{width:96px;accent-color:var(--accent)}
+
+/* editor with highlight backdrop */
+.ed{position:relative;flex:1;min-height:0;overflow:hidden}
+.ed pre,.ed textarea{margin:0;position:absolute;inset:0;padding:12px 14px;
+  font:13px/1.6 var(--mono);tab-size:2;white-space:pre-wrap;word-wrap:break-word;
+  border:0;overflow:auto}
+.ed pre{color:transparent;pointer-events:none;z-index:1}
+.ed pre mark{background:var(--hl);color:transparent;border-radius:2px}
+.ed pre mark.err{background:#5c2230}
+.ed textarea{background:transparent;color:var(--fg);resize:none;outline:none;z-index:2;
+  caret-color:var(--accent)}
+.legend{padding:8px 14px;border-top:1px solid var(--line);color:var(--dim);
+  font-size:11.5px;font-family:var(--mono);background:var(--panel)}
+
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--panel);overflow-x:auto}
+.tab{padding:10px 14px;border:0;background:none;color:var(--dim);border-radius:0;
+  border-bottom:2px solid transparent;white-space:nowrap;font-size:13px}
+.tab.on{color:var(--fg);border-bottom-color:var(--accent)}
+.tab .n{display:inline-block;width:17px;height:17px;line-height:17px;text-align:center;
+  border-radius:50%;background:var(--panel2);font-size:10.5px;margin-right:6px;vertical-align:1px}
+.tab.on .n{background:var(--accent);color:#0d1017;font-weight:700}
+
+.pane{flex:1;overflow:auto;padding:14px 16px;min-height:0}
+.pane[hidden]{display:none}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 16px;
+  border-bottom:1px solid var(--line);background:var(--panel)}
+.ctl .count{font-family:var(--mono);font-size:12px;color:var(--dim);min-width:96px}
+.say{padding:9px 16px;background:var(--panel2);border-bottom:1px solid var(--line);
+  font-size:13px;min-height:38px;display:flex;align-items:center;gap:8px}
+.say b{color:var(--accent2);font-weight:600}
+
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{text-align:left;padding:5px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+tr.cur td{background:var(--hl)}
+tr.done td{color:var(--dim)}
+code,.m{font-family:var(--mono)}
+.t{display:inline-block;padding:1px 6px;border-radius:4px;background:var(--panel2);
+  font-family:var(--mono);font-size:11.5px;border:1px solid var(--line)}
+.t.kw{color:#c9a0ff;border-color:#4a3a66}
+.t.num{color:var(--accent2)}
+.t.id{color:var(--accent)}
+.t.op{color:var(--warn)}
+.ty{color:var(--accent2);font-family:var(--mono);font-size:11.5px}
+.err{color:var(--err)}
+.dim{color:var(--dim)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+h3{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);
+  margin:0 0 8px;font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.stack{display:flex;flex-direction:column-reverse;gap:3px;min-height:60px}
+.cell{background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+  padding:4px 9px;font-family:var(--mono);font-size:12.5px}
+.cell.top{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.out{font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;color:var(--accent2)}
+.trace{font-family:var(--mono);font-size:12px;line-height:1.75}
+.trace div{padding:1px 0;color:var(--dim)}
+.trace div.cur{color:var(--fg);background:var(--hl);border-radius:3px}
+.trace div.seen{color:#aab2c5}
+.trace .r{color:#c9a0ff}
+.trace .mt{color:var(--warn)}
+svg text{font-family:var(--mono);font-size:11.5px;fill:var(--fg)}
+svg .nd{fill:var(--panel2);stroke:var(--line)}
+svg .nd.lit{stroke:var(--accent2)}
+svg .nd.var{stroke:var(--accent)}
+svg .nd.op{stroke:var(--warn)}
+svg .lk{stroke:var(--line);fill:none}
+svg .ty{fill:var(--accent2);font-size:10px}
+.banner{margin:0 0 12px;padding:9px 12px;border-radius:8px;font-size:13px;
+  background:#3a1f26;border:1px solid #5c2230;color:#ffd6d6}
+.banner ul{margin:6px 0 0 18px;padding:0}
+.ok{background:#1c3326;border-color:#2b5c3f;color:#c8f0d8}
+.pcarrow{color:var(--accent);font-weight:700}
+.pipe{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--dim);
+  font-family:var(--mono)}
+.pipe span.s{padding:2px 8px;border:1px solid var(--line);border-radius:20px;background:var(--panel2)}
+.pipe span.s.on{border-color:var(--accent);color:var(--fg)}
+.pipe span.s.bad{border-color:#5c2230;color:#ffb3b3}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;height:auto}
+ .left{border-right:0;border-bottom:1px solid var(--line);height:46vh}
+ .grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Mini-Compiler Explorer</h1>
+  <span class="sub">Übersetzerbau &middot; scanning &rarr; parsing &rarr; AST &rarr; symbol &amp; type analysis &rarr; code generation &rarr; execution</span>
+</header>
+<div class="wrap">
+  <div class="left">
+    <div class="bar">
+      <label for="sample">Program</label>
+      <select id="sample"></select>
+      <button id="reset">Reset</button>
+    </div>
+    <div class="ed">
+      <pre id="backdrop" aria-hidden="true"></pre>
+      <textarea id="src" spellcheck="false"></textarea>
+    </div>
+    <div class="legend" id="pipe"></div>
+  </div>
+  <div class="right">
+    <div class="tabs" id="tabs"></div>
+    <div class="ctl">
+      <button id="back">&#9664; Back</button>
+      <button id="step" class="primary">Step &#9654;</button>
+      <button id="play">Play</button>
+      <button id="end">Skip to end</button>
+      <span class="count" id="count"></span>
+      <label for="speed">Speed</label>
+      <input type="range" id="speed" min="1" max="20" value="9">
+    </div>
+    <div class="say" id="say"></div>
+    <div class="pane" id="pane"></div>
+  </div>
+</div>
+<script>
+// ---------- 1. SCANNER ----------
+const KEYWORDS = ['let','print','if','else','while','true','false'];
+function scan(src){
+  const toks=[], errs=[]; let i=0, line=1, col=1;
+  const push=(type,value,start,end)=>toks.push({type,value,start,end,line:lineAt(start)});
+  const lineAt=p=>src.slice(0,p).split('\n').length;
+  while(i<src.length){
+    const c=src[i];
+    if(c===' '||c==='\t'||c==='\r'||c==='\n'){ i++; continue; }
+    if(c==='/'&&src[i+1]==='/'){ while(i<src.length&&src[i]!=='\n') i++; continue; }
+    const start=i;
+    if(/[0-9]/.test(c)){ while(i<src.length&&/[0-9]/.test(src[i])) i++;
+      push('NUMBER', parseInt(src.slice(start,i),10), start, i); continue; }
+    if(/[A-Za-z_]/.test(c)){ while(i<src.length&&/[A-Za-z0-9_]/.test(src[i])) i++;
+      const w=src.slice(start,i);
+      push(KEYWORDS.includes(w)?w:'IDENT', w, start, i); continue; }
+    const two=src.substr(i,2);
+    if(['==','!=','<=','>=','&&','||'].includes(two)){ i+=2; push(two,two,start,i); continue; }
+    if('+-*/%()<>{};='.includes(c)){ i++; push(c,c,start,i); continue; }
+    i++; errs.push({msg:`unexpected character '${c}'`, start, end:i});
+  }
+  push('EOF','<eof>',src.length,src.length);
+  return {toks, errs};
+}
+
+// ---------- 2. PARSER (recursive descent) ----------
+function parse(toks){
+  let p=0; const errs=[]; const trace=[];
+  const peek=()=>toks[p];
+  const at=t=>toks[p].type===t;
+  const depthStack=[];
+  function enter(rule){ trace.push({kind:'enter',rule,tok:toks[p],depth:depthStack.length}); depthStack.push(rule); }
+  function leave(rule,node){ depthStack.pop(); trace.push({kind:'leave',rule,depth:depthStack.length,node}); return node; }
+  function eat(t){
+    if(at(t)){ const tk=toks[p++]; trace.push({kind:'match',rule:t,tok:tk,depth:depthStack.length}); return tk; }
+    errs.push({msg:`expected ${t} but found '${toks[p].value}'`, tok:toks[p]});
+    return {type:t,value:t,start:toks[p].start,end:toks[p].end,line:toks[p].line,bad:true};
+  }
+  function program(){ enter('program'); const body=[];
+    while(!at('EOF')){ const before=p; body.push(statement()); if(p===before) p++; }
+    return leave('program',{kind:'Program',body}); }
+  function block(){ enter('block'); eat('{'); const body=[];
+    while(!at('}')&&!at('EOF')){ const before=p; body.push(statement()); if(p===before) p++; }
+    eat('}'); return leave('block',{kind:'Block',body}); }
+  function statement(){
+    if(at('let')){ enter('varDecl'); const kw=eat('let'); const id=eat('IDENT'); eat('='); const init=expr(); eat(';');
+      return leave('varDecl',{kind:'VarDecl',name:id.value,init,tok:kw}); }
+    if(at('print')){ enter('printStmt'); const kw=eat('print'); const arg=expr(); eat(';');
+      return leave('printStmt',{kind:'Print',arg,tok:kw}); }
+    if(at('if')){ enter('ifStmt'); const kw=eat('if'); eat('('); const cond=expr(); eat(')');
+      const then=block(); let alt=null; if(at('else')){ eat('else'); alt=block(); }
+      return leave('ifStmt',{kind:'If',cond,then,alt,tok:kw}); }
+    if(at('while')){ enter('whileStmt'); const kw=eat('while'); eat('('); const cond=expr(); eat(')'); const body=block();
+      return leave('whileStmt',{kind:'While',cond,body,tok:kw}); }
+    if(at('IDENT')){ enter('assign'); const id=eat('IDENT'); eat('='); const value=expr(); eat(';');
+      return leave('assign',{kind:'Assign',name:id.value,value,tok:id}); }
+    errs.push({msg:`unexpected '${toks[p].value}' at start of statement`, tok:toks[p]});
+    return {kind:'Error',tok:toks[p]};
+  }
+  function expr(){ enter('expr'); const n=comparison(); return leave('expr',n); }
+  function comparison(){ enter('comparison'); let left=addition();
+    while(['<','>','<=','>=','==','!='].includes(peek().type)){ const op=toks[p++].type;
+      trace.push({kind:'match',rule:op,tok:toks[p-1],depth:depthStack.length});
+      const right=addition(); left={kind:'Binary',op,left,right}; }
+    return leave('comparison',left); }
+  function addition(){ enter('addition'); let left=multiplication();
+    while(peek().type==='+'||peek().type==='-'){ const op=toks[p++].type;
+      trace.push({kind:'match',rule:op,tok:toks[p-1],depth:depthStack.length});
+      const right=multiplication(); left={kind:'Binary',op,left,right}; }
+    return leave('addition',left); }
+  function multiplication(){ enter('multiplication'); let left=unary();
+    while(['*','/','%'].includes(peek().type)){ const op=toks[p++].type;
+      trace.push({kind:'match',rule:op,tok:toks[p-1],depth:depthStack.length});
+      const right=unary(); left={kind:'Binary',op,left,right}; }
+    return leave('multiplication',left); }
+  function unary(){ if(peek().type==='-'){ enter('unary'); const t=eat('-'); const operand=unary();
+      return leave('unary',{kind:'Unary',op:'-',operand,tok:t}); } return primary(); }
+  function primary(){ enter('primary');
+    if(at('NUMBER')){ const t=eat('NUMBER'); return leave('primary',{kind:'Num',value:t.value,tok:t}); }
+    if(at('true')||at('false')){ const t=toks[p++]; trace.push({kind:'match',rule:t.type,tok:t,depth:depthStack.length});
+      return leave('primary',{kind:'Bool',value:t.type==='true',tok:t}); }
+    if(at('IDENT')){ const t=eat('IDENT'); return leave('primary',{kind:'Var',name:t.value,tok:t}); }
+    if(at('(')){ eat('('); const e=expr(); eat(')'); return leave('primary',e); }
+    errs.push({msg:`expected a value but found '${peek().value}'`, tok:peek()});
+    return leave('primary',{kind:'Error',tok:peek()});
+  }
+  const ast=program();
+  return {ast,errs,trace};
+}
+
+// ---------- 3. SEMANTIC ANALYSIS ----------
+function analyze(ast){
+  const errs=[]; const scopes=[new Map()]; const symbols=[]; let order=0;
+  const declare=(name,type,node)=>{
+    const cur=scopes[scopes.length-1];
+    if(cur.has(name)) errs.push({msg:`'${name}' already declared in this scope`,node});
+    const rec={name,type,scope:scopes.length-1,order:order++};
+    cur.set(name,rec); symbols.push(rec); return rec; };
+  const lookup=name=>{ for(let i=scopes.length-1;i>=0;i--) if(scopes[i].has(name)) return scopes[i].get(name); return null; };
+  function typeOf(n){
+    switch(n.kind){
+      case 'Num': return n.type='int';
+      case 'Bool': return n.type='bool';
+      case 'Var': { const s=lookup(n.name);
+        if(!s){ errs.push({msg:`'${n.name}' is not declared`,node:n}); return n.type='error'; }
+        n.ref=s; return n.type=s.type; }
+      case 'Unary': { const t=typeOf(n.operand);
+        if(t!=='int'&&t!=='error') errs.push({msg:`unary '-' needs int, got ${t}`,node:n});
+        return n.type='int'; }
+      case 'Binary': {
+        const lt=typeOf(n.left), rt=typeOf(n.right);
+        if(['<','>','<=','>='].includes(n.op)){
+          if((lt!=='int'&&lt!=='error')||(rt!=='int'&&rt!=='error'))
+            errs.push({msg:`'${n.op}' compares int with int, got ${lt} and ${rt}`,node:n});
+          return n.type='bool'; }
+        if(['==','!='].includes(n.op)){
+          if(lt!==rt&&lt!=='error'&&rt!=='error')
+            errs.push({msg:`'${n.op}' needs both sides same type, got ${lt} and ${rt}`,node:n});
+          return n.type='bool'; }
+        if((lt!=='int'&&lt!=='error')||(rt!=='int'&&rt!=='error'))
+          errs.push({msg:`'${n.op}' needs int operands, got ${lt} and ${rt}`,node:n});
+        return n.type='int'; }
+      default: return n.type='error';
+    }
+  }
+  function walk(n){
+    switch(n.kind){
+      case 'Program': n.body.forEach(walk); break;
+      case 'Block': scopes.push(new Map()); n.body.forEach(walk); scopes.pop(); break;
+      case 'VarDecl': { const t=typeOf(n.init); n.declType=t; n.sym=declare(n.name,t,n); break; }
+      case 'Assign': { const s=lookup(n.name); const t=typeOf(n.value);
+        if(!s) errs.push({msg:`'${n.name}' is not declared`,node:n});
+        else { n.sym=s; if(s.type!==t&&t!=='error') errs.push({msg:`cannot assign ${t} to ${s.type} variable '${n.name}'`,node:n}); }
+        break; }
+      case 'Print': typeOf(n.arg); break;
+      case 'If': { const t=typeOf(n.cond);
+        if(t!=='bool'&&t!=='error') errs.push({msg:`if condition must be bool, got ${t}`,node:n});
+        walk(n.then); if(n.alt) walk(n.alt); break; }
+      case 'While': { const t=typeOf(n.cond);
+        if(t!=='bool'&&t!=='error') errs.push({msg:`while condition must be bool, got ${t}`,node:n});
+        walk(n.body); break; }
+    }
+  }
+  walk(ast);
+  return {errs,symbols};
+}
+
+// ---------- 4. CODE GENERATION ----------
+function codegen(ast){
+  const code=[]; let lbl=0;
+  const emit=(op,arg,note)=>code.push({op,arg,note,i:code.length});
+  const newLabel=()=>'L'+(lbl++);
+  function gen(n){
+    switch(n.kind){
+      case 'Program': n.body.forEach(gen); emit('HALT',null,'end of program'); break;
+      case 'Block': n.body.forEach(gen); break;
+      case 'VarDecl': gen(n.init); emit('STORE',n.name,`let ${n.name}`); break;
+      case 'Assign': gen(n.value); emit('STORE',n.name,`${n.name} = ...`); break;
+      case 'Print': gen(n.arg); emit('PRINT',null,'print top of stack'); break;
+      case 'If': { const lElse=newLabel(), lEnd=newLabel();
+        gen(n.cond); emit('JZ',n.alt?lElse:lEnd,'skip then-branch if false');
+        gen(n.then);
+        if(n.alt){ emit('JMP',lEnd,'skip else-branch'); emit('LABEL',lElse,'else:'); gen(n.alt); }
+        emit('LABEL',lEnd,'end if'); break; }
+      case 'While': { const lTop=newLabel(), lEnd=newLabel();
+        emit('LABEL',lTop,'loop test'); gen(n.cond); emit('JZ',lEnd,'exit loop if false');
+        gen(n.body); emit('JMP',lTop,'back to test'); emit('LABEL',lEnd,'end while'); break; }
+      case 'Num': emit('PUSH',n.value,`literal ${n.value}`); break;
+      case 'Bool': emit('PUSH',n.value?1:0,`literal ${n.value}`); break;
+      case 'Var': emit('LOAD',n.name,`value of ${n.name}`); break;
+      case 'Unary': gen(n.operand); emit('NEG',null,'negate'); break;
+      case 'Binary': { gen(n.left); gen(n.right);
+        const m={'+':'ADD','-':'SUB','*':'MUL','/':'DIV','%':'MOD','<':'LT','>':'GT','<=':'LE','>=':'GE','==':'EQ','!=':'NE'};
+        emit(m[n.op],null,`apply ${n.op}`); break; }
+    }
+  }
+  gen(ast);
+  const labels={}; code.forEach((c,i)=>{ if(c.op==='LABEL') labels[c.arg]=i; });
+  return {code,labels};
+}
+
+// ---------- 5. VIRTUAL MACHINE ----------
+function run({code,labels},maxSteps=20000){
+  const states=[]; let pc=0, stack=[], vars={}, out=[], steps=0, error=null;
+  states.push({pc:0,stack:[],vars:{},out:[],note:'start'});
+  while(pc<code.length && steps++<maxSteps){
+    const ins=code[pc]; let note=ins.op; let next=pc+1;
+    const pop=()=>{ if(!stack.length){ error='stack underflow'; return 0; } return stack.pop(); };
+    switch(ins.op){
+      case 'PUSH': stack.push(ins.arg); note=`push ${ins.arg}`; break;
+      case 'LOAD': if(!(ins.arg in vars)){ error=`'${ins.arg}' used before assignment`; }
+        stack.push(vars[ins.arg]??0); note=`load ${ins.arg} = ${vars[ins.arg]??0}`; break;
+      case 'STORE': { const v=pop(); vars[ins.arg]=v; note=`${ins.arg} := ${v}`; break; }
+      case 'ADD': { const b=pop(),a=pop(); stack.push(a+b); note=`${a} + ${b} = ${a+b}`; break; }
+      case 'SUB': { const b=pop(),a=pop(); stack.push(a-b); note=`${a} - ${b} = ${a-b}`; break; }
+      case 'MUL': { const b=pop(),a=pop(); stack.push(a*b); note=`${a} * ${b} = ${a*b}`; break; }
+      case 'DIV': { const b=pop(),a=pop(); if(b===0){ error='division by zero'; stack.push(0); }
+        else { stack.push(Math.trunc(a/b)); note=`${a} / ${b} = ${Math.trunc(a/b)}`; } break; }
+      case 'MOD': { const b=pop(),a=pop(); if(b===0){ error='modulo by zero'; stack.push(0); }
+        else { stack.push(a%b); note=`${a} % ${b} = ${a%b}`; } break; }
+      case 'NEG': { const a=pop(); stack.push(-a); note=`negate ${a}`; break; }
+      case 'LT': { const b=pop(),a=pop(); stack.push(a<b?1:0); note=`${a} < ${b} = ${a<b}`; break; }
+      case 'GT': { const b=pop(),a=pop(); stack.push(a>b?1:0); note=`${a} > ${b} = ${a>b}`; break; }
+      case 'LE': { const b=pop(),a=pop(); stack.push(a<=b?1:0); note=`${a} <= ${b}`; break; }
+      case 'GE': { const b=pop(),a=pop(); stack.push(a>=b?1:0); note=`${a} >= ${b}`; break; }
+      case 'EQ': { const b=pop(),a=pop(); stack.push(a===b?1:0); note=`${a} == ${b}`; break; }
+      case 'NE': { const b=pop(),a=pop(); stack.push(a!==b?1:0); note=`${a} != ${b}`; break; }
+      case 'PRINT': { const a=pop(); out=out.concat([a]); note=`output ${a}`; break; }
+      case 'JMP': next=labels[ins.arg]; note=`jump to ${ins.arg}`; break;
+      case 'JZ': { const a=pop(); if(a===0){ next=labels[ins.arg]; note=`top was 0, jump to ${ins.arg}`; }
+        else note=`top was ${a}, no jump`; break; }
+      case 'LABEL': note=`label ${ins.arg}`; break;
+      case 'HALT': next=code.length; note='halt'; break;
+    }
+    states.push({pc,next,stack:stack.slice(),vars:{...vars},out:out.slice(),note,error});
+    if(error) break;
+    pc=next;
+  }
+  if(steps>=maxSteps) error='step limit reached (infinite loop?)';
+  return {states,out,error};
+}
+
+function compile(src){
+  const s=scan(src);
+  const p=parse(s.toks);
+  const a=analyze(p.ast);
+  const errs=[...s.errs.map(e=>({phase:'scan',...e})),
+              ...p.errs.map(e=>({phase:'parse',...e})),
+              ...a.errs.map(e=>({phase:'analyze',...e}))];
+  let cg=null, vm=null;
+  if(!errs.length){ cg=codegen(p.ast); vm=run(cg); }
+  return {tokens:s.toks, ast:p.ast, trace:p.trace, symbols:a.symbols, code:cg, vm, errs};
+}
+
+
+/* ============================ SAMPLE PROGRAMS ============================ */
+const SAMPLES = {
+  "Fibonacci (while loop)": `// first 10 Fibonacci numbers
+let a = 0;
+let b = 1;
+let n = 10;
+while (n > 0) {
+  print a;
+  let t = a + b;
+  a = b;
+  b = t;
+  n = n - 1;
+}`,
+  "Precedence (2 + 3 * 4)": `// watch how the AST encodes precedence
+print 2 + 3 * 4;
+print (2 + 3) * 4;
+print 17 / 5;
+print 17 % 5;
+print -5 + 10;`,
+  "if / else": `let x = 7;
+if (x > 5) {
+  print 100;
+} else {
+  print 0;
+}
+if (x == 7) { print 77; }`,
+  "Nested loops": `let sum = 0;
+let i = 1;
+while (i <= 3) {
+  let j = 1;
+  while (j <= 3) {
+    sum = sum + i * j;
+    j = j + 1;
+  }
+  i = i + 1;
+}
+print sum;`,
+  "Type error (caught in phase 4)": `let n = 5;
+// a number is not a truth value
+if (n) {
+  print n;
+}`,
+  "Undeclared variable": `let a = 1;
+print a + b;`,
+  "Syntax error (caught in phase 2)": `let a = 1;
+let b = ;
+print a;`,
+  "Unknown character (phase 1)": `let a = 1 $ 2;
+print a;`
+};
+
+/* ============================ STATE ============================ */
+const PHASES = [
+  {id:'scan',  label:'Scanner'},
+  {id:'parse', label:'Parser'},
+  {id:'ast',   label:'AST'},
+  {id:'sem',   label:'Symbols & Types'},
+  {id:'code',  label:'Code'},
+  {id:'run',   label:'Execute'}
+];
+let R = null;        // compile result
+let phase = 'scan';
+let cursor = 0;      // step index inside current phase
+let timer = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ============================ BOOTSTRAP ============================ */
+function init(){
+  const sel = $('sample');
+  Object.keys(SAMPLES).forEach(k => {
+    const o = document.createElement('option'); o.value = k; o.textContent = k; sel.appendChild(o);
+  });
+  sel.onchange = () => { $('src').value = SAMPLES[sel.value]; recompile(true); };
+  $('reset').onclick = () => { $('src').value = SAMPLES[sel.value]; recompile(true); };
+
+  $('tabs').innerHTML = PHASES.map((p,i) =>
+    `<button class="tab" data-p="${p.id}"><span class="n">${i+1}</span>${p.label}</button>`).join('');
+  $('tabs').onclick = e => {
+    const b = e.target.closest('.tab'); if(!b) return;
+    stop(); phase = b.dataset.p; cursor = 0; render();
+  };
+
+  $('step').onclick = () => { stop(); move(1); };
+  $('back').onclick = () => { stop(); move(-1); };
+  $('end').onclick  = () => { stop(); cursor = maxStep(); render(); };
+  $('play').onclick = () => timer ? stop() : play();
+
+  const ta = $('src');
+  let deb;
+  ta.oninput = () => { clearTimeout(deb); deb = setTimeout(() => recompile(false), 220); };
+  ta.onscroll = () => { $('backdrop').scrollTop = ta.scrollTop; $('backdrop').scrollLeft = ta.scrollLeft; };
+  ta.value = SAMPLES[Object.keys(SAMPLES)[0]];
+  recompile(true);
+}
+
+function recompile(resetCursor){
+  R = compile($('src').value);
+  if(resetCursor) cursor = 0;
+  cursor = Math.min(cursor, maxStep());
+  render();
+}
+
+function play(){
+  if(cursor >= maxStep()) cursor = 0;
+  $('play').textContent = 'Pause';
+  const tick = () => {
+    if(cursor >= maxStep()){ stop(); return; }
+    cursor++; render();
+    timer = setTimeout(tick, 1100 - $('speed').value * 50);
+  };
+  timer = setTimeout(tick, 60);
+}
+function stop(){ if(timer){ clearTimeout(timer); timer = null; } $('play').textContent = 'Play'; }
+function move(d){ cursor = Math.max(0, Math.min(maxStep(), cursor + d)); render(); }
+
+function maxStep(){
+  if(!R) return 0;
+  switch(phase){
+    case 'scan':  return R.tokens.length;
+    case 'parse': return R.trace.length;
+    case 'code':  return R.code ? R.code.code.length : 0;
+    case 'run':   return R.vm ? R.vm.states.length - 1 : 0;
+    default:      return 0;
+  }
+}
+
+/* ============================ RENDER ============================ */
+function render(){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.p === phase));
+  const max = maxStep();
+  $('count').textContent = max ? `step ${cursor} / ${max}` : '';
+  ['step','back','play','end'].forEach(id => $(id).disabled = (max === 0));
+  $('back').disabled = $('back').disabled || cursor === 0;
+  $('step').disabled = $('step').disabled || cursor >= max;
+  renderPipeline();
+  let hl = null, say = '', html = '';
+  switch(phase){
+    case 'scan':  ({hl,say,html} = viewScan());  break;
+    case 'parse': ({hl,say,html} = viewParse()); break;
+    case 'ast':   ({hl,say,html} = viewAst());   break;
+    case 'sem':   ({hl,say,html} = viewSem());   break;
+    case 'code':  ({hl,say,html} = viewCode());  break;
+    case 'run':   ({hl,say,html} = viewRun());   break;
+  }
+  $('say').innerHTML = say;
+  $('pane').innerHTML = html;
+  paintBackdrop(hl);
+}
+
+function renderPipeline(){
+  const bad = ph => R.errs.some(e => e.phase === ph);
+  const s = (id, on, isBad) =>
+    `<span class="s${on ? ' on' : ''}${isBad ? ' bad' : ''}">${id}</span>`;
+  const arrow = ' &rarr; ';
+  $('pipe').innerHTML = '<div class="pipe">' + [
+    s('SCAN',  phase === 'scan',  bad('scan')),
+    s('PARSE', phase === 'parse' || phase === 'ast', bad('parse')),
+    s('WEED',  phase === 'sem',   bad('analyze')),
+    s('CODE',  phase === 'code',  false),
+    s('RUN',   phase === 'run',   !!(R.vm && R.vm.error))
+  ].join(arrow) + '</div>';
+}
+
+function paintBackdrop(hl){
+  const src = $('src').value;
+  const marks = [];
+  R.errs.forEach(e => {
+    const t = e.tok || e.node && (e.node.tok || (e.node.init && e.node.init.tok));
+    if(e.start != null) marks.push({s:e.start, e:e.end, cls:'err'});
+    else if(t && t.start != null) marks.push({s:t.start, e:t.end, cls:'err'});
+  });
+  if(hl && hl.start != null && hl.end > hl.start) marks.push({s:hl.start, e:hl.end, cls:''});
+  marks.sort((a,b) => a.s - b.s);
+  let out = '', pos = 0;
+  for(const m of marks){
+    if(m.s < pos) continue;
+    out += esc(src.slice(pos, m.s)) + `<mark class="${m.cls}">` + esc(src.slice(m.s, m.e)) + '</mark>';
+    pos = m.e;
+  }
+  out += esc(src.slice(pos)) + '\n';
+  $('backdrop').innerHTML = out;
+  $('backdrop').scrollTop = $('src').scrollTop;
+}
+
+function errBanner(ph){
+  const es = R.errs.filter(e => e.phase === ph);
+  if(!es.length) return '';
+  return `<div class="banner"><b>${es.length} error${es.length > 1 ? 's' : ''} in this phase</b>
+    <ul>${es.map(e => `<li>${esc(e.msg)}</li>`).join('')}</ul></div>`;
+}
+function blockedBanner(){
+  if(!R.errs.length) return '';
+  const ph = R.errs[0].phase;
+  const name = {scan:'1 Scanner', parse:'2 Parser', analyze:'4 Symbols & Types'}[ph];
+  return `<div class="banner"><b>Compilation stopped in phase ${name}.</b>
+    Later phases never run, so there is nothing to show here. Fix the source on the left.
+    <ul>${R.errs.slice(0,6).map(e => `<li>${esc(e.msg)}</li>`).join('')}</ul></div>`;
+}
+
+/* ---------- phase 1: scanner ---------- */
+function tokClass(t){
+  if(['NUMBER'].includes(t.type)) return 'num';
+  if(t.type === 'IDENT') return 'id';
+  if(/^[a-z]+$/.test(t.type)) return 'kw';
+  if(t.type === 'EOF') return '';
+  return 'op';
+}
+function viewScan(){
+  const toks = R.tokens;
+  const cur = cursor > 0 ? toks[cursor - 1] : null;
+  const rows = toks.map((t,i) => {
+    const st = i < cursor - 1 ? 'done' : (i === cursor - 1 ? 'cur' : '');
+    return `<tr class="${st}"><td class="dim m">${i}</td>
+      <td><span class="t ${tokClass(t)}">${esc(t.type)}</span></td>
+      <td class="m">${esc(t.value)}</td>
+      <td class="dim m">${t.start}..${t.end}</td>
+      <td class="dim m">${t.line}</td></tr>`;
+  }).join('');
+  const say = cur
+    ? `<b>Token ${cursor}:</b> the scanner read <span class="t ${tokClass(cur)}">${esc(cur.type)}</span>
+       from characters ${cur.start}..${cur.end} (highlighted on the left). Whitespace and comments produce no token.`
+    : `The scanner turns a flat character stream into tokens. Press <b>Step</b> to consume one token at a time.`;
+  return {hl: cur, say, html: errBanner('scan') +
+    `<table><thead><tr><th>#</th><th>type</th><th>lexeme</th><th>chars</th><th>line</th></tr></thead>
+     <tbody>${rows}</tbody></table>`};
+}
+
+/* ---------- phase 2: parser ---------- */
+function viewParse(){
+  const tr = R.trace;
+  const shown = tr.slice(0, cursor);
+  const cur = cursor > 0 ? tr[cursor - 1] : null;
+  const lines = shown.map((e,i) => {
+    const pad = '&nbsp;'.repeat(e.depth * 3);
+    const isCur = i === cursor - 1;
+    let body;
+    if(e.kind === 'enter')      body = `${pad}<span class="r">${e.rule}</span> ( <span class="dim">lookahead <span class="mt">${esc(e.tok.value)}</span></span>`;
+    else if(e.kind === 'match') body = `${pad}&#10003; consume <span class="mt">${esc(e.tok.value)}</span>`;
+    else                        body = `${pad})<span class="dim"> ${e.rule} done</span>`;
+    return `<div class="${isCur ? 'cur' : 'seen'}">${body}</div>`;
+  }).join('');
+  const say = cur
+    ? (cur.kind === 'enter'
+        ? `<b>${cur.rule}</b> is entered. The parser looks at the next token <code>${esc(cur.tok.value)}</code> and picks a rule from it. This is what "predictive, one token lookahead" means.`
+        : cur.kind === 'match'
+          ? `<b>Consume</b> <code>${esc(cur.tok.value)}</code>. The token matched what the grammar expected, so the parser advances.`
+          : `<b>${cur.rule}</b> returns. Its subtree is finished and handed to the caller.`)
+    : `Recursive descent: one function per grammar rule. Nesting on the right mirrors the call stack. Press <b>Step</b>.`;
+  const gram = `<div class="card" style="margin-top:14px"><h3>Grammar used</h3><div class="trace dim">
+statement  &rarr; "let" IDENT "=" expr ";" | IDENT "=" expr ";" | "print" expr ";"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| "if" "(" expr ")" block ["else" block] | "while" "(" expr ")" block<br>
+expr       &rarr; comparison<br>
+comparison &rarr; addition { ("&lt;"|"&gt;"|"&lt;="|"&gt;="|"=="|"!=") addition }<br>
+addition   &rarr; multiplication { ("+"|"-") multiplication }<br>
+multiplication &rarr; unary { ("*"|"/"|"%") unary }<br>
+unary      &rarr; "-" unary | primary<br>
+primary    &rarr; NUMBER | "true" | "false" | IDENT | "(" expr ")"
+  </div></div>`;
+  return {hl: cur && cur.tok, say, html: errBanner('parse') + `<div class="trace">${lines}</div>` + gram};
+}
+
+/* ---------- phase 3: AST ---------- */
+function astChildren(n){
+  switch(n.kind){
+    case 'Program': case 'Block': return n.body;
+    case 'VarDecl': return [n.init];
+    case 'Assign':  return [n.value];
+    case 'Print':   return [n.arg];
+    case 'If':      return n.alt ? [n.cond, n.then, n.alt] : [n.cond, n.then];
+    case 'While':   return [n.cond, n.body];
+    case 'Binary':  return [n.left, n.right];
+    case 'Unary':   return [n.operand];
+    default: return [];
+  }
+}
+function astLabel(n){
+  switch(n.kind){
+    case 'Program': return 'Program';
+    case 'Block':   return 'Block';
+    case 'VarDecl': return `let ${n.name}`;
+    case 'Assign':  return `${n.name} =`;
+    case 'Print':   return 'print';
+    case 'If':      return n.alt ? 'if/else' : 'if';
+    case 'While':   return 'while';
+    case 'Binary':  return n.op;
+    case 'Unary':   return 'neg';
+    case 'Num':     return String(n.value);
+    case 'Bool':    return String(n.value);
+    case 'Var':     return n.name;
+    default:        return n.kind;
+  }
+}
+function astCls(n){
+  if(n.kind === 'Num' || n.kind === 'Bool') return 'lit';
+  if(n.kind === 'Var') return 'var';
+  if(n.kind === 'Binary' || n.kind === 'Unary') return 'op';
+  return '';
+}
+function viewAst(){
+  if(R.errs.some(e => e.phase === 'scan' || e.phase === 'parse'))
+    return {hl:null, say:'The tree below may be incomplete because parsing reported errors.',
+            html: blockedBanner() + astSvg()};
+  const say = `The AST drops punctuation: no semicolons, no parentheses. Precedence is now <b>shape</b>: in <code>2 + 3 * 4</code> the <code>*</code> node sits below <code>+</code>, so it is evaluated first. Types added in phase 4 are shown in green.`;
+  return {hl:null, say, html: astSvg()};
+}
+function astSvg(){
+  const nodes = [], links = [];
+  let leafX = 0;
+  const H = 62, W = 96;
+  (function layout(n, depth){
+    const kids = astChildren(n).filter(Boolean);
+    const rec = {n, depth, x:0, y:depth * H + 26};
+    nodes.push(rec);
+    if(!kids.length){ rec.x = (leafX++) * W + W / 2; }
+    else {
+      const cs = kids.map(k => layout(k, depth + 1));
+      cs.forEach(c => links.push([rec, c]));
+      rec.x = (cs[0].x + cs[cs.length - 1].x) / 2;
+    }
+    return rec;
+  })(R.ast, 0);
+  const maxX = Math.max(...nodes.map(r => r.x)) + W;
+  const maxY = Math.max(...nodes.map(r => r.y)) + 44;
+  const lk = links.map(([a,b]) =>
+    `<path class="lk" d="M${a.x} ${a.y + 11} C ${a.x} ${a.y + 34}, ${b.x} ${b.y - 34}, ${b.x} ${b.y - 11}"/>`).join('');
+  const nd = nodes.map(r => {
+    const lab = astLabel(r.n), w = Math.max(30, lab.length * 8 + 16);
+    const ty = r.n.type ? `<text class="ty" x="${r.x}" y="${r.y + 25}" text-anchor="middle">:${r.n.type}</text>` : '';
+    return `<g><rect class="nd ${astCls(r.n)}" x="${r.x - w/2}" y="${r.y - 11}" width="${w}" height="22" rx="6"/>
+      <text x="${r.x}" y="${r.y + 4}" text-anchor="middle">${esc(lab)}</text>${ty}</g>`;
+  }).join('');
+  return `<svg width="${maxX}" height="${maxY}" viewBox="0 0 ${maxX} ${maxY}">${lk}${nd}</svg>`;
+}
+
+/* ---------- phase 4: symbols & types ---------- */
+function viewSem(){
+  const syms = R.symbols;
+  const rows = syms.length
+    ? syms.map(s => `<tr><td class="m">${esc(s.name)}</td><td class="ty">${s.type}</td>
+        <td class="dim m">${s.scope === 0 ? 'global' : 'block ' + s.scope}</td></tr>`).join('')
+    : `<tr><td colspan="3" class="dim">no variables declared</td></tr>`;
+  const ok = !R.errs.filter(e => e.phase === 'analyze').length;
+  const say = ok
+    ? `<b>Static semantics passed.</b> Every name resolves to a declaration and every operator got operands of the right type. Nothing here needs the program to run.`
+    : `<b>Static semantics failed.</b> The program is grammatically valid but meaningless. This is the difference between syntax and semantics.`;
+  return {hl:null, say, html: errBanner('analyze') +
+    `<div class="grid2">
+      <div class="card"><h3>Symbol table</h3>
+        <table><thead><tr><th>name</th><th>type</th><th>scope</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="card"><h3>Typing rules checked</h3><div class="trace dim">
+        + - * / %&nbsp;&nbsp;: int &times; int &rarr; int<br>
+        &lt; &gt; &lt;= &gt;=&nbsp;: int &times; int &rarr; bool<br>
+        == !=&nbsp;&nbsp;&nbsp;&nbsp;: T &times; T &rarr; bool<br>
+        if / while&nbsp;: condition must be bool<br>
+        assignment&nbsp;: declared type must match<br>
+        every name must be declared before use<br>
+        no redeclaration inside one block
+      </div></div>
+    </div>`};
+}
+
+/* ---------- phase 5: code ---------- */
+function viewCode(){
+  if(!R.code) return {hl:null, say:'No code was generated.', html: blockedBanner()};
+  const c = R.code.code;
+  const rows = c.map((ins,i) => {
+    const st = i < cursor - 1 ? 'done' : (i === cursor - 1 ? 'cur' : '');
+    const label = ins.op === 'LABEL';
+    return `<tr class="${st}"><td class="dim m">${i}</td>
+      <td class="m"${label ? ' style="color:#c9a0ff"' : ''}>${esc(ins.op)}</td>
+      <td class="m">${ins.arg === null || ins.arg === undefined ? '' : esc(ins.arg)}</td>
+      <td class="dim">${esc(ins.note || '')}</td></tr>`;
+  }).join('');
+  const cur = cursor > 0 ? c[cursor - 1] : null;
+  const say = cur
+    ? `<b>${cur.arg === null ? cur.op : cur.op + ' ' + cur.arg}</b> &mdash; ${esc(cur.note || '')}. The machine has no registers: operands come off the stack and results go back on it.`
+    : `Every AST node becomes a short instruction sequence for a stack machine. Post-order: children first, then the operator. Press <b>Step</b> to walk the listing.`;
+  return {hl:null, say, html:
+    `<table><thead><tr><th>#</th><th>op</th><th>arg</th><th>meaning</th></tr></thead><tbody>${rows}</tbody></table>`};
+}
+
+/* ---------- phase 6: execute ---------- */
+function viewRun(){
+  if(!R.vm) return {hl:null, say:'Nothing to execute.', html: blockedBanner()};
+  const st = R.vm.states[cursor] || R.vm.states[0];
+  const code = R.code.code;
+  const rows = code.map((ins,i) => {
+    const isPc = cursor > 0 && st.pc === i;
+    return `<tr class="${isPc ? 'cur' : ''}"><td class="m" style="width:26px">${isPc ? '<span class="pcarrow">&#9654;</span>' : ''}</td>
+      <td class="dim m">${i}</td><td class="m">${esc(ins.op)}</td>
+      <td class="m">${ins.arg === null || ins.arg === undefined ? '' : esc(ins.arg)}</td></tr>`;
+  }).join('');
+  const stack = st.stack.length
+    ? st.stack.map((v,i) => `<div class="cell ${i === st.stack.length - 1 ? 'top' : ''}">${v}</div>`).join('')
+    : `<div class="dim">empty</div>`;
+  const vars = Object.keys(st.vars).length
+    ? Object.entries(st.vars).map(([k,v]) => `<tr><td class="m">${esc(k)}</td><td class="m">${v}</td></tr>`).join('')
+    : `<tr><td colspan="2" class="dim">none yet</td></tr>`;
+  const err = R.vm.error
+    ? `<div class="banner">Runtime: ${esc(R.vm.error)}</div>`
+    : (cursor >= R.vm.states.length - 1
+        ? `<div class="banner ok">Program finished. ${st.out.length} value(s) printed.</div>` : '');
+  const say = cursor === 0
+    ? `The stack machine starts empty. Press <b>Play</b> to watch the stack rise and fall.`
+    : `<b>${esc(st.note)}</b> &nbsp;<span class="dim">stack depth ${st.stack.length}</span>`;
+  return {hl:null, say, html: err +
+    `<div class="grid3">
+      <div class="card" style="max-height:52vh;overflow:auto"><h3>Instructions</h3>
+        <table><tbody>${rows}</tbody></table></div>
+      <div class="card"><h3>Stack (top on top)</h3><div class="stack">${stack}</div></div>
+      <div>
+        <div class="card" style="margin-bottom:14px"><h3>Variables</h3>
+          <table><tbody>${vars}</tbody></table></div>
+        <div class="card"><h3>Output</h3><div class="out">${st.out.join('\n') || '<span class="dim">nothing printed yet</span>'}</div></div>
+      </div>
+    </div>`};
+}
+
+init();
+</script>
+</body>
+</html>
